@@ -8,14 +8,25 @@ import { Footer } from '@/components/Footer'
 import { CartProvider } from '@/context/CartContext'
 import { AuthProvider } from '@/context/AuthContext'
 import { Toaster } from 'react-hot-toast'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
 // Move metadata to a separate component since we're now using 'use client'
 function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
   const isLoginPage = pathname === '/'
+
+  // Handle GitHub Pages SPA redirect
+  useEffect(() => {
+    const redirect = sessionStorage.redirect;
+    delete sessionStorage.redirect;
+    if (redirect && redirect !== location.pathname) {
+      router.replace(redirect);
+    }
+  }, [router])
   
   return (
     <AuthProvider>
