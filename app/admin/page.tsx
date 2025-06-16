@@ -3,7 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { Plus, Edit, Trash2, Users, Package, DollarSign, TrendingUp, Eye, EyeOff } from 'lucide-react';
+import { 
+  Plus, Edit, Trash2, Users, Package, DollarSign, TrendingUp, Eye, EyeOff, 
+  BarChart3, ShoppingCart, AlertTriangle, Search, Filter, Download,
+  Calendar, ArrowUp, ArrowDown, Star, Zap, Shield, Activity
+} from 'lucide-react';
 import { Product, User } from '@/types';
 import productsData from '@/data/products.json';
 import toast from 'react-hot-toast';
@@ -16,6 +20,8 @@ export default function AdminPanel() {
   const [users, setUsers] = useState<User[]>([]);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const [newProduct, setNewProduct] = useState({
     name: '',
@@ -45,10 +51,10 @@ export default function AdminPanel() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/80 text-lg">Loading admin panel...</p>
         </div>
       </div>
     );
@@ -59,6 +65,7 @@ export default function AdminPanel() {
   }
 
   const categories = [
+    'All',
     'Graphics Cards',
     'Processors',
     'Motherboards',
@@ -181,285 +188,321 @@ export default function AdminPanel() {
 
   const totalRevenue = products.reduce((sum, product) => sum + (product.price * (100 - product.stock)), 0);
   const lowStockProducts = products.filter(p => p.stock < 10);
+  const totalOrders = 847; // Mock data
+  const avgRating = products.reduce((sum, p) => sum + p.rating, 0) / products.length;
+
+  // Filter products for display
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const StatCard = ({ title, value, change, icon: Icon, color, bgColor }: any) => (
+    <div className={`${bgColor} border border-white/10 rounded-2xl p-6 hover:scale-105 transition-all duration-300 shadow-lg backdrop-blur-sm`}>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-white/70 text-sm font-medium">{title}</p>
+          <p className="text-2xl font-bold text-white mt-1">{value}</p>
+          {change && (
+            <div className="flex items-center mt-2">
+              {change > 0 ? (
+                <ArrowUp className="w-4 h-4 text-green-400 mr-1" />
+              ) : (
+                <ArrowDown className="w-4 h-4 text-red-400 mr-1" />
+              )}
+              <span className={`text-sm ${change > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {Math.abs(change)}%
+              </span>
+            </div>
+          )}
+        </div>
+        <div className={`p-3 rounded-xl ${color}`}>
+          <Icon className="w-6 h-6 text-white" />
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
-          <p className="text-gray-600 mt-2">Manage your VertixHub store</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Header */}
+      <div className="border-b border-white/10 bg-black/20 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-white">VertixHub Admin</h1>
+              <p className="text-white/70 mt-1">Manage your premium PC hardware store</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2 backdrop-blur-sm">
+                <Calendar className="w-5 h-5 text-white/70" />
+                <span className="text-white/90 text-sm">
+                  {new Date().toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2 bg-gradient-primary rounded-lg px-4 py-2">
+                <Shield className="w-5 h-5 text-white" />
+                <span className="text-white font-medium">Admin</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Tabs */}
-        <div className="border-b border-gray-200 mb-8">
-          <nav className="-mb-px flex space-x-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Navigation Tabs */}
+        <div className="mb-8">
+          <div className="flex space-x-1 bg-white/10 p-1 rounded-2xl backdrop-blur-sm">
             {[
-              { id: 'dashboard', name: 'Dashboard', icon: TrendingUp },
+              { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
               { id: 'products', name: 'Products', icon: Package },
               { id: 'users', name: 'Users', icon: Users },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
                   activeTab === tab.id
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'bg-gradient-primary text-white shadow-lg'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <tab.icon className="w-5 h-5 mr-2" />
-                {tab.name}
+                <tab.icon className="w-5 h-5" />
+                <span>{tab.name}</span>
               </button>
             ))}
-          </nav>
+          </div>
         </div>
 
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
           <div className="space-y-8">
-            {/* Stats Cards */}
+            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="flex items-center">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Users className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Total Users</p>
-                    <p className="text-2xl font-bold text-gray-900">{users.length}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="flex items-center">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Package className="w-6 h-6 text-green-600" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Total Products</p>
-                    <p className="text-2xl font-bold text-gray-900">{products.length}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="flex items-center">
-                  <div className="p-2 bg-yellow-100 rounded-lg">
-                    <DollarSign className="w-6 h-6 text-yellow-600" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Estimated Revenue</p>
-                    <p className="text-2xl font-bold text-gray-900">${totalRevenue.toFixed(0)}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="flex items-center">
-                  <div className="p-2 bg-red-100 rounded-lg">
-                    <Package className="w-6 h-6 text-red-600" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Low Stock Items</p>
-                    <p className="text-2xl font-bold text-gray-900">{lowStockProducts.length}</p>
-                  </div>
-                </div>
-              </div>
+              <StatCard
+                title="Total Revenue"
+                value={`$${totalRevenue.toLocaleString()}`}
+                change={12.5}
+                icon={DollarSign}
+                color="bg-green-500/20"
+                bgColor="bg-gradient-to-br from-green-500/20 to-emerald-600/20"
+              />
+              <StatCard
+                title="Total Orders"
+                value={totalOrders.toLocaleString()}
+                change={8.2}
+                icon={ShoppingCart}
+                color="bg-blue-500/20"
+                bgColor="bg-gradient-to-br from-blue-500/20 to-cyan-600/20"
+              />
+              <StatCard
+                title="Products"
+                value={products.length}
+                change={-2.4}
+                icon={Package}
+                color="bg-purple-500/20"
+                bgColor="bg-gradient-to-br from-purple-500/20 to-pink-600/20"
+              />
+              <StatCard
+                title="Active Users"
+                value={users.filter(u => !u.isBanned).length}
+                change={15.8}
+                icon={Users}
+                color="bg-orange-500/20"
+                bgColor="bg-gradient-to-br from-orange-500/20 to-red-600/20"
+              />
             </div>
 
-            {/* Low Stock Alert */}
-            {lowStockProducts.length > 0 && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-yellow-800 mb-4">Low Stock Alert</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {lowStockProducts.map((product) => (
-                    <div key={product.id} className="bg-white p-4 rounded border">
-                      <h4 className="font-medium text-gray-900">{product.name}</h4>
-                      <p className="text-sm text-red-600">Only {product.stock} left</p>
+            {/* Quick Actions & Alerts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Low Stock Alert */}
+              <div className="bg-gradient-to-br from-red-500/20 to-orange-600/20 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-semibold text-white flex items-center">
+                    <AlertTriangle className="w-6 h-6 text-red-400 mr-2" />
+                    Low Stock Alert
+                  </h3>
+                  <span className="bg-red-500/20 text-red-300 px-3 py-1 rounded-full text-sm font-medium">
+                    {lowStockProducts.length} items
+                  </span>
+                </div>
+                <div className="space-y-3 max-h-64 overflow-y-auto">
+                  {lowStockProducts.map(product => (
+                    <div key={product.id} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-10 h-10 rounded-lg object-cover"
+                        />
+                        <div>
+                          <p className="text-white font-medium text-sm">{product.name}</p>
+                          <p className="text-white/60 text-xs">{product.category}</p>
+                        </div>
+                      </div>
+                      <span className="text-red-300 font-bold">{product.stock} left</span>
                     </div>
                   ))}
                 </div>
               </div>
-            )}
+
+              {/* Quick Stats */}
+              <div className="bg-gradient-to-br from-purple-500/20 to-pink-600/20 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+                <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
+                  <Activity className="w-6 h-6 text-purple-400 mr-2" />
+                  Quick Insights
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/70">Average Rating</span>
+                    <div className="flex items-center space-x-1">
+                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                      <span className="text-white font-semibold">{avgRating.toFixed(1)}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/70">Featured Products</span>
+                    <span className="text-white font-semibold">
+                      {products.filter(p => p.featured).length}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/70">Total Categories</span>
+                    <span className="text-white font-semibold">{categories.length - 1}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/70">Banned Users</span>
+                    <span className="text-red-300 font-semibold">
+                      {users.filter(u => u.isBanned).length}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
         {/* Products Tab */}
         {activeTab === 'products' && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">Products Management</h2>
-              <button
-                onClick={() => setIsAddingProduct(true)}
-                className="bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors flex items-center"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Product
-              </button>
+            {/* Products Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 w-5 h-5 text-white/50" />
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 backdrop-blur-sm w-80"
+                  />
+                </div>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 backdrop-blur-sm"
+                >
+                  {categories.map(category => (
+                    <option key={category} value={category} className="bg-slate-800 text-white">
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center space-x-3">
+                <button className="flex items-center space-x-2 bg-white/10 text-white px-4 py-3 rounded-xl hover:bg-white/20 transition-colors backdrop-blur-sm">
+                  <Download className="w-5 h-5" />
+                  <span>Export</span>
+                </button>
+                <button
+                  onClick={() => setIsAddingProduct(true)}
+                  className="flex items-center space-x-2 bg-gradient-primary text-white px-6 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-lg"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span>Add Product</span>
+                </button>
+              </div>
             </div>
 
-            {/* Add/Edit Product Form */}
-            {(isAddingProduct || editingProduct) && (
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold mb-4">
-                  {editingProduct ? 'Edit Product' : 'Add New Product'}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder="Product Name"
-                    value={newProduct.name}
-                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                  <select
-                    value={newProduct.category}
-                    onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  >
-                    {categories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                  <input
-                    type="number"
-                    placeholder="Price"
-                    value={newProduct.price}
-                    onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Original Price (Optional)"
-                    value={newProduct.originalPrice}
-                    onChange={(e) => setNewProduct({...newProduct, originalPrice: e.target.value})}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Stock"
-                    value={newProduct.stock}
-                    onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                  <input
-                    type="url"
-                    placeholder="Image URL"
-                    value={newProduct.image}
-                    onChange={(e) => setNewProduct({...newProduct, image: e.target.value})}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                  <textarea
-                    placeholder="Description"
-                    value={newProduct.description}
-                    onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
-                    className="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    rows={3}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Tags (comma separated)"
-                    value={newProduct.tags}
-                    onChange={(e) => setNewProduct({...newProduct, tags: e.target.value})}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={newProduct.featured}
-                      onChange={(e) => setNewProduct({...newProduct, featured: e.target.checked})}
-                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.map((product) => (
+                <div key={product.id} className="bg-gradient-to-br from-white/10 to-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm hover:scale-105 transition-all duration-300 group">
+                  <div className="relative mb-4">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-40 object-cover rounded-xl"
                     />
-                    <span>Featured Product</span>
-                  </label>
-                </div>
-                <div className="flex space-x-4 mt-6">
-                  <button
-                    onClick={editingProduct ? handleUpdateProduct : handleAddProduct}
-                    className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
-                  >
-                    {editingProduct ? 'Update Product' : 'Add Product'}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsAddingProduct(false);
-                      setEditingProduct(null);
-                      setNewProduct({
-                        name: '',
-                        description: '',
-                        price: '',
-                        originalPrice: '',
-                        image: '',
-                        category: 'Graphics Cards',
-                        stock: '',
-                        rating: '4.5',
-                        reviews: '0',
-                        featured: false,
-                        tags: ''
-                      });
-                    }}
-                    className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-400 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Products List */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {products.map((product) => (
-                      <tr key={product.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <img className="h-10 w-10 rounded object-cover" src={product.image} alt={product.name} />
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                              {product.featured && (
-                                <div className="text-xs text-yellow-600">Featured</div>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.category}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${product.price}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`text-sm ${product.stock < 10 ? 'text-red-600 font-medium' : 'text-gray-900'}`}>
-                            {product.stock}
+                    {product.originalPrice && (
+                      <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-medium z-10">
+                        {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                      </div>
+                    )}
+                    {product.featured && (
+                      <div className="absolute top-2 right-2 bg-gradient-primary text-white px-2 py-1 rounded-lg text-xs font-medium z-10">
+                        Featured
+                      </div>
+                    )}
+                    {product.stock < 10 && (
+                      <div className="absolute top-2 left-2 bg-orange-500/90 text-white px-2 py-1 rounded-lg text-xs font-medium z-10" style={{ top: product.originalPrice ? '2.5rem' : '0.5rem' }}>
+                        Low Stock
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:text-purple-300 transition-colors">
+                        {product.name}
+                      </h3>
+                      <p className="text-white/60 text-xs">{product.category}</p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-white font-bold text-lg">${product.price}</span>
+                        {product.originalPrice && (
+                          <span className="text-white/50 text-sm line-through ml-2">
+                            ${product.originalPrice}
                           </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button
-                            onClick={() => handleEditProduct(product)}
-                            className="text-primary-600 hover:text-primary-900 mr-4"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProduct(product.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                        <span className="text-white/80 text-sm">{product.rating}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-white/70 text-sm">Stock: {product.stock}</span>
+                      <span className="text-white/70 text-sm">{product.reviews} reviews</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2 pt-2">
+                      <button
+                        onClick={() => handleEditProduct(product)}
+                        className="flex items-center justify-center w-8 h-8 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg transition-colors"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProduct(product.id)}
+                        className="flex items-center justify-center w-8 h-8 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -467,66 +510,251 @@ export default function AdminPanel() {
         {/* Users Tab */}
         {activeTab === 'users' && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900">Users Management</h2>
-            
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            {/* Users Header */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-white">User Management</h2>
+                <p className="text-white/70 mt-1">Manage registered users and their permissions</p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="bg-green-500/20 text-green-300 px-4 py-2 rounded-xl text-sm font-medium backdrop-blur-sm">
+                  {users.filter(u => !u.isBanned).length} Active
+                </span>
+                <span className="bg-red-500/20 text-red-300 px-4 py-2 rounded-xl text-sm font-medium backdrop-blur-sm">
+                  {users.filter(u => u.isBanned).length} Banned
+                </span>
+              </div>
+            </div>
+
+            {/* Users List */}
+            <div className="bg-gradient-to-br from-white/10 to-white/5 border border-white/10 rounded-2xl backdrop-blur-sm overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="w-full">
+                  <thead className="bg-white/5 border-b border-white/10">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="text-left py-4 px-6 text-white/80 font-semibold">User</th>
+                      <th className="text-left py-4 px-6 text-white/80 font-semibold">Email</th>
+                      <th className="text-left py-4 px-6 text-white/80 font-semibold">Status</th>
+                      <th className="text-left py-4 px-6 text-white/80 font-semibold">Joined</th>
+                      <th className="text-left py-4 px-6 text-white/80 font-semibold">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {users.map((user) => (
-                      <tr key={user.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                              <span className="text-primary-600 font-medium text-sm">
-                                {user.name.charAt(0).toUpperCase()}
+                  <tbody>
+                    {users.map((userData, index) => (
+                      <tr key={userData.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                        <td className="py-4 px-6">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center">
+                              <span className="text-white font-semibold text-sm">
+                                {userData.name.charAt(0).toUpperCase()}
                               </span>
                             </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                              {user.isAdmin && (
-                                <div className="text-xs text-blue-600">Admin</div>
-                              )}
+                            <div>
+                              <p className="text-white font-medium">{userData.name}</p>
+                              <p className="text-white/60 text-sm">
+                                {userData.isAdmin ? 'Administrator' : 'Customer'}
+                              </p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.email}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {new Date(user.createdAt).toLocaleDateString()}
+                        <td className="py-4 px-6">
+                          <span className="text-white/80">{userData.email}</span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            user.isBanned ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                        <td className="py-4 px-6">
+                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            userData.isBanned 
+                              ? 'bg-red-500/20 text-red-300' 
+                              : 'bg-green-500/20 text-green-300'
                           }`}>
-                            {user.isBanned ? 'Banned' : 'Active'}
+                            {userData.isBanned ? 'Banned' : 'Active'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          {!user.isAdmin && (
-                            <button
-                              onClick={() => handleToggleBan(user.id)}
-                              className={`flex items-center ${
-                                user.isBanned ? 'text-green-600 hover:text-green-900' : 'text-red-600 hover:text-red-900'
-                              }`}
-                            >
-                              {user.isBanned ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                              <span className="ml-1">{user.isBanned ? 'Unban' : 'Ban'}</span>
-                            </button>
-                          )}
+                        <td className="py-4 px-6">
+                          <span className="text-white/80">
+                            {new Date(userData.createdAt).toLocaleDateString()}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6">
+                          <button
+                            onClick={() => handleToggleBan(userData.id)}
+                            disabled={userData.isAdmin}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium ${
+                              userData.isAdmin
+                                ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed'
+                                : userData.isBanned
+                                  ? 'bg-green-500/20 text-green-300 hover:bg-green-500/30'
+                                  : 'bg-red-500/20 text-red-300 hover:bg-red-500/30'
+                            }`}
+                          >
+                            {userData.isBanned ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                            <span>{userData.isBanned ? 'Unban' : 'Ban'}</span>
+                          </button>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add/Edit Product Modal */}
+        {(isAddingProduct || editingProduct) && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <h3 className="text-2xl font-bold text-white mb-6">
+                {editingProduct ? 'Edit Product' : 'Add New Product'}
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-white/80 text-sm font-medium mb-2">Product Name</label>
+                  <input
+                    type="text"
+                    value={newProduct.name}
+                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Enter product name"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-white/80 text-sm font-medium mb-2">Category</label>
+                  <select
+                    value={newProduct.category}
+                    onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    {categories.slice(1).map(category => (
+                      <option key={category} value={category} className="bg-slate-800">
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-white/80 text-sm font-medium mb-2">Price ($)</label>
+                  <input
+                    type="number"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-white/80 text-sm font-medium mb-2">Original Price ($)</label>
+                  <input
+                    type="number"
+                    value={newProduct.originalPrice}
+                    onChange={(e) => setNewProduct({ ...newProduct, originalPrice: e.target.value })}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-white/80 text-sm font-medium mb-2">Stock</label>
+                  <input
+                    type="number"
+                    value={newProduct.stock}
+                    onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-white/80 text-sm font-medium mb-2">Rating</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="5"
+                    value={newProduct.rating}
+                    onChange={(e) => setNewProduct({ ...newProduct, rating: e.target.value })}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+              </div>
+              
+              <div className="mt-6">
+                <label className="block text-white/80 text-sm font-medium mb-2">Description</label>
+                <textarea
+                  value={newProduct.description}
+                  onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                  rows={4}
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Enter product description"
+                />
+              </div>
+              
+              <div className="mt-6">
+                <label className="block text-white/80 text-sm font-medium mb-2">Image URL</label>
+                <input
+                  type="url"
+                  value={newProduct.image}
+                  onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              
+              <div className="mt-6">
+                <label className="block text-white/80 text-sm font-medium mb-2">Tags (comma separated)</label>
+                <input
+                  type="text"
+                  value={newProduct.tags}
+                  onChange={(e) => setNewProduct({ ...newProduct, tags: e.target.value })}
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="gaming, rgb, high-performance"
+                />
+              </div>
+              
+              <div className="mt-6">
+                <label className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    checked={newProduct.featured}
+                    onChange={(e) => setNewProduct({ ...newProduct, featured: e.target.checked })}
+                    className="w-5 h-5 rounded border-white/20 bg-white/10 text-purple-500 focus:ring-purple-500"
+                  />
+                  <span className="text-white/80">Featured Product</span>
+                </label>
+              </div>
+              
+              <div className="flex justify-end space-x-4 mt-8">
+                <button
+                  onClick={() => {
+                    setIsAddingProduct(false);
+                    setEditingProduct(null);
+                    setNewProduct({
+                      name: '',
+                      description: '',
+                      price: '',
+                      originalPrice: '',
+                      image: '',
+                      category: 'Graphics Cards',
+                      stock: '',
+                      rating: '4.5',
+                      reviews: '0',
+                      featured: false,
+                      tags: ''
+                    });
+                  }}
+                  className="px-6 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={editingProduct ? handleUpdateProduct : handleAddProduct}
+                  className="px-6 py-3 bg-gradient-primary text-white rounded-xl hover:opacity-90 transition-opacity"
+                >
+                  {editingProduct ? 'Update Product' : 'Add Product'}
+                </button>
               </div>
             </div>
           </div>
