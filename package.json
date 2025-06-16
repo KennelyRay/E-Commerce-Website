@@ -1,14 +1,18 @@
 {
-  "name": "ecommerce-website",
+  "name": "vertixhub-ecommerce",
   "version": "1.0.0",
-  "description": "A modern e-commerce website built with Next.js",
+  "description": "VertixHub - Premium PC Hardware E-commerce Store built with Next.js",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "export": "next build && next export"
+    "export": "next build",
+    "deploy": "npm run build && powershell -Command \"New-Item -Path 'out/.nojekyll' -ItemType File -Force\"",
+    "deploy:unix": "npm run build && touch out/.nojekyll",
+    "serve": "npx serve out",
+    "clean": "powershell -Command \"Remove-Item -Path '.next', 'out' -Recurse -Force -ErrorAction SilentlyContinue\""
   },
   "dependencies": {
     "next": "14.0.4",

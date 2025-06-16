@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Sitemap location (update with your actual domain)
+# Sitemap: https://your-domain.com/sitemap.xml
+
+# Disallow admin and internal pages
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /out/
+
+# Allow important pages
+Allow: /
+Allow: /products
+Allow: /categories
+Allow: /about
+Allow: /contact 

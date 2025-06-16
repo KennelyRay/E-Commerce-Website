@@ -1,10 +1,9 @@
-name: Deploy to GitHub Pages
+name: Deploy VertixHub to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -31,13 +30,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build project
-        run: npm run build
+      - name: Build and Export
+        run: npm run deploy:unix
         env:
           NODE_ENV: production
 
-      - name: Export static files
-        run: npm run export
+      - name: Add .nojekyll file
+        run: touch out/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -47,7 +46,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
