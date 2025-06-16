@@ -1,6 +1,7 @@
 import React from 'react';
 import productsData from '@/data/products.json';
 import ProductPageClient from './ProductPageClient';
+import { Product } from '@/types';
 
 interface ProductPageProps {
   params: {
@@ -10,7 +11,7 @@ interface ProductPageProps {
 
 // Generate static params for all products
 export async function generateStaticParams() {
-  return productsData.products.map((product) => ({
+  return (productsData.products as unknown as Product[]).map((product) => ({
     id: product.id,
   }));
 }

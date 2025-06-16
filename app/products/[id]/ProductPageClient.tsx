@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Star, ShoppingCart, ArrowLeft, Plus, Minus } from 'lucide-react';
+import { Star, ShoppingCart, ArrowLeft, Plus, Minus, Shield, Truck, RefreshCw, Award } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import productsData from '@/data/products.json';
 import { Product } from '@/types';
@@ -13,6 +13,7 @@ interface ProductPageClientProps {
 
 export default function ProductPageClient({ product }: ProductPageClientProps) {
   const [quantity, setQuantity] = useState(1);
+  const [activeTab, setActiveTab] = useState('overview');
   const { addToCart } = useCart();
 
   if (!product) {
@@ -53,9 +54,11 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
     addToCart(product, quantity);
   };
 
-  const relatedProducts = productsData.products
+  const relatedProducts = (productsData.products as unknown as Product[])
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
+
+  const specifications = product.specifications || {};
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -90,6 +93,26 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                   </div>
                 )}
               </div>
+
+              {/* Trust Badges */}
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Shield className="w-5 h-5 text-green-600" />
+                  <span>2-Year Warranty</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Truck className="w-5 h-5 text-blue-600" />
+                  <span>Free Shipping</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <RefreshCw className="w-5 h-5 text-purple-600" />
+                  <span>30-Day Returns</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Award className="w-5 h-5 text-yellow-600" />
+                  <span>Expert Support</span>
+                </div>
+              </div>
             </div>
 
             {/* Product Details */}
@@ -109,6 +132,10 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                   {renderStars(product.rating)}
                 </div>
                 <span className="text-gray-600">({product.reviews} reviews)</span>
+                <span className="text-gray-400">|</span>
+                <span className="text-green-600 font-medium">
+                  {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                </span>
               </div>
 
               <div className="flex items-center space-x-4 mb-6">
@@ -122,9 +149,24 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                 )}
               </div>
 
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-600 mb-8 leading-relaxed">
                 {product.description}
               </p>
+
+              {/* Key Features */}
+              {Object.keys(specifications).length > 0 && (
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Features</h3>
+                  <div className="grid grid-cols-1 gap-2">
+                    {Object.entries(specifications).slice(0, 4).map(([key, value]) => (
+                      <div key={key} className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">{key}:</span>
+                        <span className="font-medium text-gray-900">{value as string}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Quantity Selector */}
               <div className="flex items-center space-x-4 mb-8">
@@ -152,11 +194,11 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
               <button
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
-                className="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-primary text-white py-4 px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-lg"
               >
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="w-6 h-6" />
                 <span>
-                  {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                  {product.stock === 0 ? 'Out of Stock' : `Add ${quantity} to Cart`}
                 </span>
               </button>
 
@@ -167,9 +209,9 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                   {product.tags.map((tag, index) => (
                     <span
                       key={index}
-                      className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm"
+                      className="bg-gradient-primary text-white px-3 py-1 rounded-full text-sm font-medium"
                     >
-                      {tag}
+                      #{tag}
                     </span>
                   ))}
                 </div>
@@ -177,6 +219,117 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
             </div>
           </div>
         </div>
+
+        {/* Detailed Information Tabs */}
+        {Object.keys(specifications).length > 0 && (
+          <div className="mt-8 bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8 px-8">
+                {[
+                  { id: 'overview', name: 'Overview' },
+                  { id: 'specifications', name: 'Specifications' },
+                  { id: 'reviews', name: 'Reviews' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                      activeTab === tab.id
+                        ? 'border-primary-500 text-primary-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    {tab.name}
+                  </button>
+                ))}
+              </nav>
+            </div>
+
+            <div className="p-8">
+              {activeTab === 'overview' && (
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Product Overview</h3>
+                  <p className="text-gray-600 leading-relaxed mb-6">
+                    {product.description}
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2">What's Included</h4>
+                      <ul className="text-gray-600 space-y-1">
+                        <li>• {product.name}</li>
+                        <li>• Installation Guide</li>
+                        <li>• Warranty Documentation</li>
+                        <li>• Customer Support Access</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2">Compatibility</h4>
+                      <p className="text-gray-600">
+                        Compatible with modern systems. Check specifications for detailed requirements.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'specifications' && (
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-6">Technical Specifications</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                    {Object.entries(specifications).map(([key, value]) => (
+                      <div key={key} className="flex justify-between py-3 border-b border-gray-100">
+                        <span className="font-medium text-gray-900">{key}:</span>
+                        <span className="text-gray-600 text-right">{value as string}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'reviews' && (
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-6">Customer Reviews</h3>
+                  <div className="flex items-center space-x-4 mb-8">
+                    <div className="flex items-center space-x-1">
+                      {renderStars(product.rating)}
+                    </div>
+                    <span className="text-2xl font-bold text-gray-900">{product.rating}</span>
+                    <span className="text-gray-600">({product.reviews} reviews)</span>
+                  </div>
+                  
+                  {/* Sample Reviews */}
+                  <div className="space-y-6">
+                    <div className="border-b border-gray-200 pb-6">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className="flex items-center space-x-1">
+                          {renderStars(5)}
+                        </div>
+                        <span className="font-medium text-gray-900">Excellent Product!</span>
+                      </div>
+                      <p className="text-gray-600">
+                        Great performance and build quality. Exactly what I needed for my gaming setup.
+                      </p>
+                      <p className="text-sm text-gray-500 mt-2">- Verified Buyer</p>
+                    </div>
+                    
+                    <div className="border-b border-gray-200 pb-6">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className="flex items-center space-x-1">
+                          {renderStars(4)}
+                        </div>
+                        <span className="font-medium text-gray-900">Good Value</span>
+                      </div>
+                      <p className="text-gray-600">
+                        Solid performance for the price. Installation was straightforward.
+                      </p>
+                      <p className="text-sm text-gray-500 mt-2">- Verified Buyer</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (

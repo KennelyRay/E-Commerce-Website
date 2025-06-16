@@ -12,7 +12,7 @@ export default function AdminPanel() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [products, setProducts] = useState<Product[]>(productsData.products);
+  const [products, setProducts] = useState<Product[]>(productsData.products as unknown as Product[]);
   const [users, setUsers] = useState<User[]>([]);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);

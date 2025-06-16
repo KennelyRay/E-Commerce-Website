@@ -11,6 +11,7 @@ export interface Product {
   reviews: number;
   featured?: boolean;
   tags: string[];
+  specifications?: Record<string, any>;
 }
 
 export interface CartItem {

@@ -36,7 +36,7 @@ export default function HomePage() {
     return null; // Will redirect to login
   }
 
-  const products: Product[] = productsData.products;
+  const products: Product[] = productsData.products as unknown as Product[];
   const featuredProducts = products.filter(product => product.featured);
   const latestProducts = products.slice(0, 4);
 

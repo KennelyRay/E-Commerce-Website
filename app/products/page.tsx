@@ -22,7 +22,7 @@ export default function ProductsPage() {
     }
   }, [user, isLoading, router]);
 
-  const products: Product[] = productsData.products;
+  const products: Product[] = productsData.products as unknown as Product[];
   const categories = [
     'All',
     'Graphics Cards', 
@@ -96,14 +96,14 @@ export default function ProductsPage() {
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               />
             </div>
 
             {/* Filter Toggle (Mobile) */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg"
+              className="lg:hidden flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
             >
               <Filter className="w-5 h-5" />
               <span>Filters</span>
@@ -115,10 +115,12 @@ export default function ProductsPage() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 bg-white"
               >
                 {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
+                  <option key={category} value={category} className="text-gray-900">
+                    {category}
+                  </option>
                 ))}
               </select>
 
@@ -126,12 +128,12 @@ export default function ProductsPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 bg-white"
               >
-                <option value="name">Sort by Name</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="rating">Highest Rated</option>
+                <option value="name" className="text-gray-900">Sort by Name</option>
+                <option value="price-low" className="text-gray-900">Price: Low to High</option>
+                <option value="price-high" className="text-gray-900">Price: High to Low</option>
+                <option value="rating" className="text-gray-900">Highest Rated</option>
               </select>
             </div>
           </div>
