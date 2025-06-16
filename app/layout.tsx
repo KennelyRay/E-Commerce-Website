@@ -1,3 +1,5 @@
+'use client';
+
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -6,13 +8,38 @@ import { Footer } from '@/components/Footer'
 import { CartProvider } from '@/context/CartContext'
 import { AuthProvider } from '@/context/AuthContext'
 import { Toaster } from 'react-hot-toast'
+import { usePathname } from 'next/navigation'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  title: 'VertixHub - Premium PC Hardware Store',
-  description: 'Your ultimate destination for high-performance PC components and hardware',
-  keywords: 'PC hardware, graphics cards, processors, motherboards, RAM, PSU, gaming',
+// Move metadata to a separate component since we're now using 'use client'
+function ClientLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const isLoginPage = pathname === '/'
+  
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <div className="min-h-screen flex flex-col">
+          {!isLoginPage && <Navbar />}
+          <main className="flex-1">
+            {children}
+          </main>
+          {!isLoginPage && <Footer />}
+        </div>
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+          }}
+        />
+      </CartProvider>
+    </AuthProvider>
+  )
 }
 
 export default function RootLayout({
@@ -22,28 +49,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <title>VertixHub - Premium PC Hardware Store</title>
+        <meta name="description" content="Your ultimate destination for high-performance PC components and hardware" />
+        <meta name="keywords" content="PC hardware, graphics cards, processors, motherboards, RAM, PSU, gaming" />
+      </head>
       <body className={inter.className}>
-        <AuthProvider>
-          <CartProvider>
-            <div className="min-h-screen flex flex-col">
-              <Navbar />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Footer />
-            </div>
-            <Toaster 
-              position="top-right"
-              toastOptions={{
-                duration: 3000,
-                style: {
-                  background: '#363636',
-                  color: '#fff',
-                },
-              }}
-            />
-          </CartProvider>
-        </AuthProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   )
