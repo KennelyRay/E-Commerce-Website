@@ -20,13 +20,13 @@ export default function NotFound() {
         </div>
         
         <div className="space-y-4">
-          <Link
-            href="/home"
-            className="w-full bg-gradient-primary text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center justify-center space-x-2"
-          >
-            <Home className="w-5 h-5" />
-            <span>Go to Homepage</span>
-          </Link>
+                        <Link
+                href="/home"
+                className="w-full bg-gradient-primary text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center justify-center space-x-2"
+              >
+                <Home className="w-5 h-5" />
+                <span>Go to Home</span>
+              </Link>
           
           <Link
             href="/products"

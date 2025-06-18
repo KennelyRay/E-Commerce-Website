@@ -551,7 +551,8 @@ export default function AdminPanel() {
                             </div>
                             <div>
                               <p className="text-white font-medium">{userData.name}</p>
-                              <p className="text-white/60 text-sm">
+                              <p className="text-white/60 text-sm">@{userData.username}</p>
+                              <p className="text-white/60 text-xs">
                                 {userData.isAdmin ? 'Administrator' : 'Customer'}
                               </p>
                             </div>

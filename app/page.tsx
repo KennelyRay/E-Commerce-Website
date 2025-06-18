@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -41,7 +42,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     if (isLogin) {
-      const success = await login(formData.email, formData.password);
+      const success = await login(formData.username, formData.password);
       if (success) {
         // Redirect will be handled by the useEffect above
       }
@@ -51,7 +52,7 @@ export default function LoginPage() {
         setIsLoading(false);
         return;
       }
-      const success = await register(formData.name, formData.email, formData.password);
+      const success = await register(formData.name, formData.username, formData.email, formData.password);
       if (success) {
         // Redirect will be handled by the useEffect above
       }
@@ -140,20 +141,38 @@ export default function LoginPage() {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                {isLogin ? 'Email or Username' : 'Email Address'}
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                Username
               </label>
               <input
-                type={isLogin ? 'text' : 'email'}
-                name="email"
-                id="email"
-                value={formData.email}
+                type="text"
+                name="username"
+                id="username"
+                value={formData.username}
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
-                placeholder={isLogin ? 'Email or Admin' : 'Enter your email address'}
+                placeholder={isLogin ? 'Enter your username or "Admin"' : 'Choose a username'}
               />
             </div>
+
+            {!isLogin && (
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required={!isLogin}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
+                  placeholder="Enter your email address"
+                />
+              </div>
+            )}
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">

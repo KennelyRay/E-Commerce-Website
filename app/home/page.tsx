@@ -72,21 +72,21 @@ export default function HomePage() {
       name: 'Alex Thompson',
       role: 'Gaming Enthusiast',
       content: 'VertixHub helped me build my dream gaming rig. The RTX 4090 I got from them runs everything at max settings!',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+      avatar: 'https://image.pollinations.ai/prompt/young-male-gamer-enthusiast-portrait-realistic-professional?width=100&height=100',
       rating: 5
     },
     {
       name: 'Sarah Chen',
       role: 'Content Creator',
       content: 'Amazing service and authentic products. My workstation build handles 4K video editing like a breeze.',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b4e2?w=100&h=100&fit=crop&crop=face',
+      avatar: 'https://image.pollinations.ai/prompt/young-female-content-creator-portrait-realistic-professional?width=100&height=100',
       rating: 5
     },
     {
       name: 'Mike Rodriguez',
       role: 'Esports Pro',
       content: 'Professional grade components at competitive prices. The support team really knows their stuff!',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+      avatar: 'https://image.pollinations.ai/prompt/young-male-esports-professional-portrait-realistic?width=100&height=100',
       rating: 5
     }
   ];

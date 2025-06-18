@@ -159,10 +159,12 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Features</h3>
                   <div className="grid grid-cols-1 gap-2">
                     {Object.entries(specifications).slice(0, 4).map(([key, value]) => (
-                      <div key={key} className="flex justify-between py-2 border-b border-gray-100">
-                        <span className="text-gray-600">{key}:</span>
-                        <span className="font-medium text-gray-900">{value as string}</span>
-                      </div>
+                      value && (
+                        <div key={key} className="flex justify-between py-2 border-b border-gray-100">
+                          <span className="text-gray-600">{key}:</span>
+                          <span className="font-medium text-gray-900">{value}</span>
+                        </div>
+                      )
                     ))}
                   </div>
                 </div>
@@ -277,10 +279,12 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                   <h3 className="text-xl font-semibold text-gray-900 mb-6">Technical Specifications</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                     {Object.entries(specifications).map(([key, value]) => (
-                      <div key={key} className="flex justify-between py-3 border-b border-gray-100">
-                        <span className="font-medium text-gray-900">{key}:</span>
-                        <span className="text-gray-600 text-right">{value as string}</span>
-                      </div>
+                      value && (
+                        <div key={key} className="flex justify-between py-3 border-b border-gray-100">
+                          <span className="font-medium text-gray-900">{key}:</span>
+                          <span className="text-gray-600 text-right">{value}</span>
+                        </div>
+                      )
                     ))}
                   </div>
                 </div>

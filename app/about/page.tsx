@@ -30,19 +30,19 @@ const team = [
   {
     name: 'Alex Chen',
     role: 'Founder & CEO',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face',
+    image: 'https://image.pollinations.ai/prompt/professional-asian-male-ceo-founder-tech-company-portrait-realistic?width=300&height=300',
     description: 'PC enthusiast with 15+ years in hardware industry'
   },
   {
     name: 'Sarah Johnson',
     role: 'Technical Director',
-    image: 'https://images.unsplash.com/photo-1494790108755-2616b612b4e2?w=300&h=300&fit=crop&crop=face',
+    image: 'https://image.pollinations.ai/prompt/professional-female-technical-director-engineer-portrait-realistic?width=300&height=300',
     description: 'Expert in PC building and hardware optimization'
   },
   {
     name: 'Marcus Rivera',
     role: 'Customer Experience Lead',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face',
+    image: 'https://image.pollinations.ai/prompt/professional-male-customer-service-manager-portrait-realistic?width=300&height=300',
     description: 'Dedicated to providing exceptional customer service'
   }
 ];
@@ -88,7 +88,7 @@ export default function AboutPage() {
             <div className="animate-slide-right">
               <div className="relative">
                 <img
-                  src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&h=400&fit=crop"
+                  src="https://image.pollinations.ai/prompt/pc-building-workstation-components-assembly-professional-realistic?width=600&height=400"
                   alt="PC Building"
                   className="rounded-2xl shadow-2xl"
                 />

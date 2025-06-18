@@ -113,7 +113,7 @@ export default function CheckoutPage() {
                 Continue Shopping
               </Link>
               <Link
-                href="/"
+                href="/home"
                 className="block text-gray-600 hover:text-gray-900"
               >
                 Return to Home

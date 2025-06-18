@@ -72,7 +72,7 @@ export const Hero: React.FC = () => {
               {/* Main PC Setup Image */}
               <div className="relative z-10">
                 <img
-                  src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=700&h=500&fit=crop"
+                  src="https://image.pollinations.ai/prompt/high-end-gaming-pc-setup-rgb-lighting-modern-desk-4k-realistic-detailed?width=700&height=500"
                   alt="High-end Gaming PC Setup"
                   className="rounded-2xl shadow-3xl transform hover:scale-105 transition-transform duration-700"
                 />

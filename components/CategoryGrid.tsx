@@ -6,37 +6,37 @@ import Link from 'next/link';
 const categories = [
   {
     name: 'Graphics Cards',
-    image: 'https://images.unsplash.com/photo-1591238831416-e7e36a3c9a4c?w=300&h=200&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/modern-rtx-graphics-card-rgb-lighting-gaming-setup-4k-realistic?width=300&height=200',
     href: '/products?category=Graphics+Cards',
     description: 'High-performance GPUs for gaming'
   },
   {
     name: 'Processors',
-    image: 'https://images.unsplash.com/photo-1555617981-dac3880eac6e?w=300&h=200&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/modern-cpu-processor-chip-intel-amd-technology-closeup-4k?width=300&height=200',
     href: '/products?category=Processors',
     description: 'Powerful CPUs for every build'
   },
   {
     name: 'Memory (RAM)',
-    image: 'https://images.unsplash.com/photo-1562976540-8b489c2da2a9?w=300&h=200&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/ddr5-ram-memory-modules-rgb-lighting-gaming-performance-4k?width=300&height=200',
     href: '/products?category=Memory+(RAM)',
     description: 'Fast DDR4 & DDR5 memory kits'
   },
   {
     name: 'Motherboards',
-    image: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=300&h=200&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/gaming-motherboard-circuit-board-rgb-connectors-modern-tech-4k?width=300&height=200',
     href: '/products?category=Motherboards',
     description: 'Premium gaming motherboards'
   },
   {
     name: 'Storage',
-    image: 'https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=300&h=200&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/nvme-ssd-drive-m2-storage-modern-technology-4k-realistic?width=300&height=200',
     href: '/products?category=Storage',
     description: 'SSDs and NVMe drives'
   },
   {
     name: 'Power Supplies',
-    image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/modular-power-supply-psu-80plus-cables-modern-design-4k?width=300&height=200',
     href: '/products?category=Power+Supplies',
     description: 'Reliable and efficient PSUs'
   }

@@ -10,7 +10,7 @@ const categories = [
     name: 'Graphics Cards',
     description: 'High-performance GPUs for gaming, rendering, and AI workloads',
     icon: Monitor,
-    image: 'https://images.unsplash.com/photo-1591238831416-e7e36a3c9a4c?w=600&h=400&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/modern-rtx-graphics-card-rgb-lighting-gaming-setup-4k-realistic-detailed?width=600&height=400',
     count: 25,
     color: 'from-green-500 to-emerald-600'
   },
@@ -19,7 +19,7 @@ const categories = [
     name: 'Processors',
     description: 'Intel and AMD CPUs for every performance requirement',
     icon: Cpu,
-    image: 'https://images.unsplash.com/photo-1555617981-dac3880eac6e?w=600&h=400&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/modern-cpu-processor-chip-intel-amd-technology-closeup-4k-detailed?width=600&height=400',
     count: 18,
     color: 'from-blue-500 to-indigo-600'
   },
@@ -28,7 +28,7 @@ const categories = [
     name: 'Motherboards',
     description: 'Premium motherboards with latest chipsets and features',
     icon: CircuitBoard,
-    image: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=600&h=400&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/gaming-motherboard-circuit-board-rgb-connectors-modern-tech-4k-detailed?width=600&height=400',
     count: 22,
     color: 'from-purple-500 to-pink-600'
   },
@@ -37,7 +37,7 @@ const categories = [
     name: 'Memory (RAM)',
     description: 'High-speed DDR4 and DDR5 memory modules with RGB lighting',
     icon: Zap,
-    image: 'https://images.unsplash.com/photo-1562976540-8b489c2da2a9?w=600&h=400&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/ddr5-ram-memory-modules-rgb-lighting-gaming-performance-4k-detailed?width=600&height=400',
     count: 15,
     color: 'from-red-500 to-rose-600'
   },
@@ -46,7 +46,7 @@ const categories = [
     name: 'Storage',
     description: 'NVMe SSDs, SATA drives, and high-capacity storage solutions',
     icon: HardDrive,
-    image: 'https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=600&h=400&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/nvme-ssd-drive-m2-storage-modern-technology-4k-realistic-detailed?width=600&height=400',
     count: 30,
     color: 'from-yellow-500 to-orange-600'
   },
@@ -55,7 +55,7 @@ const categories = [
     name: 'Power Supplies',
     description: 'Efficient and reliable PSUs with 80+ certifications',
     icon: Zap,
-    image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&h=400&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/modular-power-supply-psu-80plus-cables-modern-design-4k-detailed?width=600&height=400',
     count: 12,
     color: 'from-teal-500 to-cyan-600'
   },
@@ -64,7 +64,7 @@ const categories = [
     name: 'Cases',
     description: 'Premium PC cases with excellent airflow and RGB lighting',
     icon: Box,
-    image: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&h=400&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/gaming-pc-case-rgb-lighting-tempered-glass-modern-design-4k-detailed?width=600&height=400',
     count: 20,
     color: 'from-indigo-500 to-purple-600'
   },
@@ -73,7 +73,7 @@ const categories = [
     name: 'Cooling',
     description: 'Air and liquid cooling solutions for optimal temperatures',
     icon: Fan,
-    image: 'https://images.unsplash.com/photo-1591238831416-e7e36a3c9a4c?w=600&h=400&fit=crop',
+    image: 'https://image.pollinations.ai/prompt/liquid-cooling-system-aio-cooler-rgb-fans-modern-pc-4k-detailed?width=600&height=400',
     count: 16,
     color: 'from-cyan-500 to-blue-600'
   }

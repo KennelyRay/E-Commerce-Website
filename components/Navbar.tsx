@@ -14,7 +14,7 @@ export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
 
   const navigation = [
-    { name: 'Home', href: user ? '/home' : '/' },
+    { name: 'Home', href: '/home' },
     { name: 'Products', href: '/products' },
     { name: 'Categories', href: '/categories' },
     { name: 'About', href: '/about' },
@@ -31,7 +31,7 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href={user ? "/home" : "/"} className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">V</span>
             </div>

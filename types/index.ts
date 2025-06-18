@@ -11,7 +11,7 @@ export interface Product {
   reviews: number;
   featured?: boolean;
   tags: string[];
-  specifications?: Record<string, any>;
+  specifications?: Record<string, string | undefined>;
 }
 
 export interface CartItem {
@@ -33,8 +33,9 @@ export interface CartContextType {
 export interface User {
   id: string;
   name: string;
+  username: string;
   email: string;
-  address?: Address;
+  password: string;
   isAdmin: boolean;
   isBanned: boolean;
   createdAt: string;
