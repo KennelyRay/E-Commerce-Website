@@ -11,6 +11,7 @@
     "lint": "next lint",
     "export": "next build",
     "deploy": "npm run build:github && powershell -Command \"New-Item -Path 'out/.nojekyll' -ItemType File -Force\"",
+    "deploy:github": "node deploy-github.js",
     "deploy:unix": "NODE_ENV=production npm run build && touch out/.nojekyll",
     "serve": "npx serve out",
     "clean": "powershell -Command \"Remove-Item -Path '.next', 'out' -Recurse -Force -ErrorAction SilentlyContinue\""
