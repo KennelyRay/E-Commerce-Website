@@ -370,7 +370,7 @@ export default function PCBuilderPage() {
                           </p>
                           <div className="flex items-center justify-between">
                             <span className="text-lg font-bold text-green-600">
-                              ${selectedComponent.price.toFixed(2)}
+                              ₱{selectedComponent.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                             </span>
                             <button
                               onClick={(e) => {
@@ -405,7 +405,7 @@ export default function PCBuilderPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-purple-100">Total Cost</p>
-                    <p className="text-3xl font-bold">${calculateTotal().toFixed(2)}</p>
+                    <p className="text-3xl font-bold">₱{calculateTotal().toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
                   </div>
                   <Calculator className="w-8 h-8 text-purple-200" />
                 </div>
@@ -524,7 +524,7 @@ export default function PCBuilderPage() {
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-bold text-primary-600">
-                      ${product.price.toFixed(2)}
+                      ₱{product.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                     </span>
                     <div className="flex items-center space-x-1">
                       <span className="text-sm text-yellow-500">★</span>

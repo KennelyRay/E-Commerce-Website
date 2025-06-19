@@ -420,7 +420,7 @@ export default function AdminPanel() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <StatCard
                 title="Total Revenue"
-                value={`$${totalRevenue.toLocaleString()}`}
+                value={`₱${totalRevenue.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
                 change={12.5}
                 icon={DollarSign}
                 color="bg-green-500/20"
@@ -615,10 +615,10 @@ export default function AdminPanel() {
                     
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-white font-bold text-lg">${product.price}</span>
+                        <span className="text-white font-bold text-lg">₱{product.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
                         {product.originalPrice && (
                           <span className="text-white/50 text-sm line-through ml-2">
-                            ${product.originalPrice}
+                            ₱{product.originalPrice.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                           </span>
                         )}
                       </div>

@@ -69,11 +69,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <span className="text-xl font-bold text-gray-900">
-                ${product.price.toFixed(2)}
+                ₱{product.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
               </span>
               {product.originalPrice && (
                 <span className="text-sm text-gray-500 line-through">
-                  ${product.originalPrice.toFixed(2)}
+                  ₱{product.originalPrice.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                 </span>
               )}
             </div>

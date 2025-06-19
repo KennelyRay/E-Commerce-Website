@@ -92,11 +92,11 @@ export default function CartPage() {
                       </p>
                       <div className="flex items-center space-x-4 mt-3">
                         <span className="text-xl font-bold text-gray-900">
-                          ${item.product.price.toFixed(2)}
+                          ₱{item.product.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                         </span>
                         {item.product.originalPrice && (
                           <span className="text-sm text-gray-500 line-through">
-                            ${item.product.originalPrice.toFixed(2)}
+                            ₱{item.product.originalPrice.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                           </span>
                         )}
                       </div>
@@ -133,7 +133,7 @@ export default function CartPage() {
                   {/* Item Total */}
                   <div className="mt-4 flex justify-end">
                     <span className="text-lg font-semibold">
-                      Subtotal: ${(item.product.price * item.quantity).toFixed(2)}
+                      Subtotal: ₱{(item.product.price * item.quantity).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                     </span>
                   </div>
                 </div>
@@ -149,34 +149,34 @@ export default function CartPage() {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Items ({getTotalItems()})</span>
-                  <span className="font-semibold">${getTotalPrice().toFixed(2)}</span>
+                  <span className="font-semibold">₱{getTotalPrice().toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Shipping</span>
                   <span className="font-semibold">
-                    {getTotalPrice() > 50 ? 'FREE' : '$9.99'}
+                    {getTotalPrice() > 2500 ? 'FREE' : '₱150.00'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Tax</span>
+                  <span className="text-gray-600">VAT (12%)</span>
                   <span className="font-semibold">
-                    ${(getTotalPrice() * 0.08).toFixed(2)}
+                    ₱{(getTotalPrice() * 0.12).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="border-t pt-3">
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
                     <span>
-                      ${(getTotalPrice() + (getTotalPrice() > 50 ? 0 : 9.99) + (getTotalPrice() * 0.08)).toFixed(2)}
+                      ₱{(getTotalPrice() + (getTotalPrice() > 2500 ? 0 : 150) + (getTotalPrice() * 0.12)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {getTotalPrice() < 50 && (
+              {getTotalPrice() < 2500 && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
                   <p className="text-sm text-blue-800">
-                    Add ${(50 - getTotalPrice()).toFixed(2)} more for free shipping!
+                    Add ₱{(2500 - getTotalPrice()).toLocaleString('en-PH', { minimumFractionDigits: 2 })} more for free shipping!
                   </p>
                 </div>
               )}
