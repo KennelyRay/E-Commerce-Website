@@ -135,6 +135,21 @@ export const DatabaseAdmin: React.FC<DatabaseAdminProps> = ({ onDataChange }) =>
           </div>
         </div>
 
+        {/* Load from API */}
+        <div className="flex items-center justify-between p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
+          <div>
+            <h4 className="text-white font-medium">Load from APIs</h4>
+            <p className="text-blue-300 text-sm">Load fresh PC parts data from external APIs</p>
+          </div>
+          <button
+            onClick={() => db.loadProductsFromAPI().then(() => onDataChange?.())}
+            className="flex items-center space-x-2 bg-blue-500/20 text-blue-300 px-4 py-2 rounded-lg hover:bg-blue-500/30 transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            <span>Load API Data</span>
+          </button>
+        </div>
+
         {/* Reset Database */}
         <div className="flex items-center justify-between p-4 bg-red-500/10 rounded-xl border border-red-500/20">
           <div>

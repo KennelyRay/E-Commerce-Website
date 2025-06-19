@@ -303,6 +303,21 @@ export default function AdminPanel() {
     }
   };
 
+  const loadProductsFromAPI = async () => {
+    if (confirm('This will load fresh products from external APIs. This may take a few moments. Continue?')) {
+      try {
+        toast.success('Loading products from APIs... Please wait.');
+        await db.loadProductsFromAPI();
+        const updatedProducts = await db.getAllProducts();
+        setProducts(updatedProducts);
+        toast.success('Products loaded from APIs successfully!');
+      } catch (error) {
+        console.error('Failed to load products from API:', error);
+        toast.error('Failed to load products from APIs');
+      }
+    }
+  };
+
   const totalRevenue = products.reduce((sum, product) => sum + (product.price * (100 - product.stock)), 0);
   const lowStockProducts = products.filter(p => p.stock < 10);
   const totalOrders = 847; // Mock data
@@ -538,6 +553,13 @@ export default function AdminPanel() {
                 <button className="flex items-center space-x-2 bg-white/10 text-white px-4 py-3 rounded-xl hover:bg-white/20 transition-colors backdrop-blur-sm">
                   <Download className="w-5 h-5" />
                   <span>Export</span>
+                </button>
+                <button
+                  onClick={loadProductsFromAPI}
+                  className="flex items-center space-x-2 bg-blue-500/20 text-blue-300 px-4 py-3 rounded-xl hover:bg-blue-500/30 transition-colors backdrop-blur-sm"
+                >
+                  <RefreshCw className="w-5 h-5" />
+                  <span>Load from API</span>
                 </button>
                 <button
                   onClick={resetToDefaultProducts}

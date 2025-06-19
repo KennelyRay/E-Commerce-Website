@@ -29,7 +29,16 @@ export default function ProductsPage() {
       try {
         await ensureDbInitialized();
         const dbProducts = await db.getAllProducts();
-        setProducts(dbProducts);
+        
+        // If no products in database, try loading from APIs
+        if (dbProducts.length === 0) {
+          console.log('No products found in database, trying to load from APIs...');
+          await db.loadProductsFromAPI();
+          const apiProducts = await db.getAllProducts();
+          setProducts(apiProducts);
+        } else {
+          setProducts(dbProducts);
+        }
       } catch (error) {
         console.error('Failed to load products:', error);
         // Fallback to JSON data if database fails

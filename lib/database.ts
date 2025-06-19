@@ -1,5 +1,6 @@
 import initSqlJs, { Database } from 'sql.js';
 import { Product, User } from '@/types';
+import { fetchAllPCPartsData } from './pc-parts-api';
 
 class DatabaseManager {
   private db: Database | null = null;
@@ -137,6 +138,46 @@ class DatabaseManager {
       isBanned: false,
       createdAt: new Date().toISOString()
     });
+  }
+
+  // Method to load products from external APIs
+  async loadProductsFromAPI(): Promise<void> {
+    try {
+      console.log('Loading products from external APIs...');
+      const apiProducts = await fetchAllPCPartsData();
+      
+      if (apiProducts.length > 0) {
+        // Clear existing products first (optional)
+        // this.db?.run('DELETE FROM products');
+        
+        // Insert API products
+        for (const product of apiProducts) {
+          await this.insertProduct(product);
+        }
+        
+        console.log(`Successfully loaded ${apiProducts.length} products from APIs`);
+      } else {
+        console.log('No products retrieved from APIs');
+      }
+    } catch (error) {
+      console.error('Failed to load products from API:', error);
+    }
+  }
+
+  // Method to refresh products with latest API data
+  async refreshProductsFromAPI(): Promise<void> {
+    try {
+      // Clear existing products
+      if (this.db) {
+        this.db.run('DELETE FROM products');
+        this.saveDatabase();
+      }
+      
+      // Load fresh data from APIs
+      await this.loadProductsFromAPI();
+    } catch (error) {
+      console.error('Failed to refresh products from API:', error);
+    }
   }
 
   private saveDatabase(): void {
