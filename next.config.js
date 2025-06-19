@@ -6,8 +6,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  assetPrefix: '',
-  basePath: '',
+  
+  // GitHub Pages configuration
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/E-Commerce-Website' : '',
+  basePath: process.env.NODE_ENV === 'production' ? '/E-Commerce-Website' : '',
   
   distDir: 'out',
   

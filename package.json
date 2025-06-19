@@ -6,11 +6,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:github": "set NODE_ENV=production&& next build",
     "start": "next start",
     "lint": "next lint",
     "export": "next build",
-    "deploy": "npm run build && powershell -Command \"New-Item -Path 'out/.nojekyll' -ItemType File -Force\"",
-    "deploy:unix": "npm run build && touch out/.nojekyll",
+    "deploy": "npm run build:github && powershell -Command \"New-Item -Path 'out/.nojekyll' -ItemType File -Force\"",
+    "deploy:unix": "NODE_ENV=production npm run build && touch out/.nojekyll",
     "serve": "npx serve out",
     "clean": "powershell -Command \"Remove-Item -Path '.next', 'out' -Recurse -Force -ErrorAction SilentlyContinue\""
   },
