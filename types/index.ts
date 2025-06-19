@@ -4,7 +4,8 @@ export interface Product {
   description: string;
   price: number;
   originalPrice?: number;
-  image: string;
+  image: string; // Main image for backwards compatibility
+  images?: string[]; // Additional images for gallery
   category: string;
   stock: number;
   rating: number;

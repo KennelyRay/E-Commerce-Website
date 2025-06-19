@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -10,16 +10,34 @@ import { CategoryGrid } from '@/components/CategoryGrid';
 import { Clock, CheckCircle, HeadphonesIcon, Truck, Shield, Award, Zap, Star } from 'lucide-react';
 import productsData from '@/data/products.json';
 import { Product } from '@/types';
+import { db, ensureDbInitialized } from '@/lib/database';
 
 export default function HomePage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.push('/');
     }
   }, [user, isLoading, router]);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        await ensureDbInitialized();
+        const dbProducts = await db.getAllProducts();
+        setProducts(dbProducts);
+      } catch (error) {
+        console.error('Failed to load products:', error);
+        // Fallback to JSON data if database fails
+        setProducts(productsData.products as unknown as Product[]);
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   if (isLoading) {
     return (
@@ -36,7 +54,6 @@ export default function HomePage() {
     return null; // Will redirect to login
   }
 
-  const products: Product[] = productsData.products as unknown as Product[];
   const featuredProducts = products.filter(product => product.featured);
   const latestProducts = products.slice(0, 4);
 

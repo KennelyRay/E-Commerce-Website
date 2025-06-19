@@ -6,6 +6,7 @@ import { Star, ShoppingCart, ArrowLeft, Plus, Minus, Shield, Truck, RefreshCw, A
 import { useCart } from '@/context/CartContext';
 import productsData from '@/data/products.json';
 import { Product } from '@/types';
+import { db, ensureDbInitialized } from '@/lib/database';
 
 interface ProductPageClientProps {
   product: Product | undefined;
@@ -14,7 +15,25 @@ interface ProductPageClientProps {
 export default function ProductPageClient({ product }: ProductPageClientProps) {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('overview');
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [products, setProducts] = useState<Product[]>([]);
   const { addToCart } = useCart();
+
+  React.useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        await ensureDbInitialized();
+        const dbProducts = await db.getAllProducts();
+        setProducts(dbProducts);
+      } catch (error) {
+        console.error('Failed to load products:', error);
+        // Fallback to JSON data if database fails
+        setProducts(productsData.products as unknown as Product[]);
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   if (!product) {
     return (
@@ -54,11 +73,15 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
     addToCart(product, quantity);
   };
 
-  const relatedProducts = (productsData.products as unknown as Product[])
+  const relatedProducts = products
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 
   const specifications = product.specifications || {};
+  
+  // Get all product images
+  const allImages = product.images && product.images.length > 0 ? product.images : [product.image];
+  const currentImage = allImages[selectedImageIndex] || product.image;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -74,11 +97,12 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
 
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
-            {/* Product Image */}
+            {/* Product Image Gallery */}
             <div>
-              <div className="relative">
+              {/* Main Image */}
+              <div className="relative mb-4">
                 <img
-                  src={product.image}
+                  src={currentImage}
                   alt={product.name}
                   className="w-full h-96 object-cover rounded-lg"
                 />
@@ -92,10 +116,61 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                     Only {product.stock} left
                   </div>
                 )}
+                
+                {/* Image Navigation Arrows */}
+                {allImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setSelectedImageIndex(selectedImageIndex > 0 ? selectedImageIndex - 1 : allImages.length - 1)}
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => setSelectedImageIndex(selectedImageIndex < allImages.length - 1 ? selectedImageIndex + 1 : 0)}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                    >
+                      <ArrowLeft className="w-5 h-5 rotate-180" />
+                    </button>
+                  </>
+                )}
+                
+                {/* Image Counter */}
+                {allImages.length > 1 && (
+                  <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-lg text-sm">
+                    {selectedImageIndex + 1} / {allImages.length}
+                  </div>
+                )}
               </div>
 
+              {/* Thumbnail Gallery */}
+              {allImages.length > 1 && (
+                <div className="grid grid-cols-4 gap-2 mb-6">
+                  {allImages.map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImageIndex(index)}
+                      className={`relative rounded-lg overflow-hidden border-2 transition-colors ${
+                        index === selectedImageIndex
+                          ? 'border-primary-500'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <img
+                        src={image}
+                        alt={`${product.name} view ${index + 1}`}
+                        className="w-full h-20 object-cover"
+                      />
+                      {index === selectedImageIndex && (
+                        <div className="absolute inset-0 bg-primary-500/20"></div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+
               {/* Trust Badges */}
-              <div className="grid grid-cols-2 gap-4 mt-6">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Shield className="w-5 h-5 text-green-600" />
                   <span>2-Year Warranty</span>

@@ -15,11 +15,13 @@
     "clean": "powershell -Command \"Remove-Item -Path '.next', 'out' -Recurse -Force -ErrorAction SilentlyContinue\""
   },
   "dependencies": {
+    "@types/sql.js": "^1.4.9",
+    "lucide-react": "^0.294.0",
     "next": "14.0.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "lucide-react": "^0.294.0",
-    "react-hot-toast": "^2.4.1"
+    "react-hot-toast": "^2.4.1",
+    "sql.js": "^1.13.0"
   },
   "devDependencies": {
     "@types/node": "20.10.4",
@@ -32,4 +34,4 @@
     "tailwindcss": "3.3.6",
     "typescript": "5.3.3"
   }
-} 
+}

@@ -6,11 +6,13 @@ import { useAuth } from '@/context/AuthContext';
 import { 
   Plus, Edit, Trash2, Users, Package, DollarSign, TrendingUp, Eye, EyeOff, 
   BarChart3, ShoppingCart, AlertTriangle, Search, Filter, Download,
-  Calendar, ArrowUp, ArrowDown, Star, Zap, Shield, Activity
+  Calendar, ArrowUp, ArrowDown, Star, Zap, Shield, Activity, RefreshCw
 } from 'lucide-react';
 import { Product, User } from '@/types';
 import productsData from '@/data/products.json';
 import toast from 'react-hot-toast';
+import { db, ensureDbInitialized } from '@/lib/database';
+import { DatabaseAdmin } from '@/components/DatabaseAdmin';
 
 export default function AdminPanel() {
   const { user, isLoading } = useAuth();
@@ -29,6 +31,7 @@ export default function AdminPanel() {
     price: '',
     originalPrice: '',
     image: '',
+    images: [''], // Array for multiple images
     category: 'Graphics Cards',
     stock: '',
     rating: '4.5',
@@ -44,9 +47,24 @@ export default function AdminPanel() {
   }, [user, isLoading, router]);
 
   useEffect(() => {
-    // Load users from localStorage
-    const savedUsers = JSON.parse(localStorage.getItem('vertixhub_users') || '[]');
-    setUsers(savedUsers);
+    const loadData = async () => {
+      try {
+        await ensureDbInitialized();
+        
+        // Load users from database
+        const dbUsers = await db.getAllUsers();
+        setUsers(dbUsers);
+
+        // Load products from database
+        const dbProducts = await db.getAllProducts();
+        setProducts(dbProducts);
+      } catch (error) {
+        console.error('Failed to load data:', error);
+        toast.error('Failed to load data from database');
+      }
+    };
+
+    loadData();
   }, []);
 
   if (isLoading) {
@@ -76,53 +94,74 @@ export default function AdminPanel() {
     'Cooling'
   ];
 
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     if (!newProduct.name || !newProduct.price || !newProduct.stock) {
       toast.error('Please fill in all required fields');
       return;
     }
 
-    const product: Product = {
-      id: Date.now().toString(),
-      name: newProduct.name,
-      description: newProduct.description,
-      price: parseFloat(newProduct.price),
-      originalPrice: newProduct.originalPrice ? parseFloat(newProduct.originalPrice) : undefined,
-      image: newProduct.image || 'https://images.unsplash.com/photo-1591238831416-e7e36a3c9a4c?w=500&h=500&fit=crop',
-      category: newProduct.category,
-      stock: parseInt(newProduct.stock),
-      rating: parseFloat(newProduct.rating),
-      reviews: parseInt(newProduct.reviews),
-      featured: newProduct.featured,
-      tags: newProduct.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
-    };
+    try {
+      const validImages = newProduct.images.filter(img => img.trim() !== '');
+      const mainImage = validImages[0] || newProduct.image || 'https://images.unsplash.com/photo-1591238831416-e7e36a3c9a4c?w=500&h=500&fit=crop';
 
-    setProducts([...products, product]);
-    setNewProduct({
-      name: '',
-      description: '',
-      price: '',
-      originalPrice: '',
-      image: '',
-      category: 'Graphics Cards',
-      stock: '',
-      rating: '4.5',
-      reviews: '0',
-      featured: false,
-      tags: ''
-    });
-    setIsAddingProduct(false);
-    toast.success('Product added successfully!');
+      const product: Product = {
+        id: Date.now().toString(),
+        name: newProduct.name,
+        description: newProduct.description,
+        price: parseFloat(newProduct.price),
+        originalPrice: newProduct.originalPrice ? parseFloat(newProduct.originalPrice) : undefined,
+        image: mainImage,
+        images: validImages.length > 1 ? validImages : undefined,
+        category: newProduct.category,
+        stock: parseInt(newProduct.stock),
+        rating: parseFloat(newProduct.rating),
+        reviews: parseInt(newProduct.reviews),
+        featured: newProduct.featured,
+        tags: newProduct.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
+      };
+
+      await db.insertProduct(product);
+      const updatedProducts = await db.getAllProducts();
+      setProducts(updatedProducts);
+      
+      setNewProduct({
+        name: '',
+        description: '',
+        price: '',
+        originalPrice: '',
+        image: '',
+        images: [''],
+        category: 'Graphics Cards',
+        stock: '',
+        rating: '4.5',
+        reviews: '0',
+        featured: false,
+        tags: ''
+      });
+      setIsAddingProduct(false);
+      toast.success('Product added successfully!');
+    } catch (error) {
+      console.error('Failed to add product:', error);
+      toast.error('Failed to add product');
+    }
   };
 
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
+    const allImages = product.images && product.images.length > 0 ? product.images : [product.image];
+    const imageArray = [...allImages];
+    // Ensure we have at least one empty slot for adding new images
+    if (imageArray[imageArray.length - 1] !== '') {
+      imageArray.push('');
+    }
+    
     setNewProduct({
       name: product.name,
       description: product.description,
       price: product.price.toString(),
       originalPrice: product.originalPrice?.toString() || '',
       image: product.image,
+      images: imageArray,
       category: product.category,
       stock: product.stock.toString(),
       rating: product.rating.toString(),
@@ -132,58 +171,136 @@ export default function AdminPanel() {
     });
   };
 
-  const handleUpdateProduct = () => {
+  const handleUpdateProduct = async () => {
     if (!editingProduct) return;
 
-    const updatedProduct: Product = {
-      ...editingProduct,
-      name: newProduct.name,
-      description: newProduct.description,
-      price: parseFloat(newProduct.price),
-      originalPrice: newProduct.originalPrice ? parseFloat(newProduct.originalPrice) : undefined,
-      image: newProduct.image,
-      category: newProduct.category,
-      stock: parseInt(newProduct.stock),
-      rating: parseFloat(newProduct.rating),
-      reviews: parseInt(newProduct.reviews),
-      featured: newProduct.featured,
-      tags: newProduct.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
-    };
+    try {
+      const validImages = newProduct.images.filter(img => img.trim() !== '');
+      const mainImage = validImages[0] || newProduct.image || editingProduct.image;
 
-    setProducts(products.map(p => p.id === editingProduct.id ? updatedProduct : p));
-    setEditingProduct(null);
-    setNewProduct({
-      name: '',
-      description: '',
-      price: '',
-      originalPrice: '',
-      image: '',
-      category: 'Graphics Cards',
-      stock: '',
-      rating: '4.5',
-      reviews: '0',
-      featured: false,
-      tags: ''
-    });
-    toast.success('Product updated successfully!');
-  };
+      const updatedProduct: Product = {
+        ...editingProduct,
+        name: newProduct.name,
+        description: newProduct.description,
+        price: parseFloat(newProduct.price),
+        originalPrice: newProduct.originalPrice ? parseFloat(newProduct.originalPrice) : undefined,
+        image: mainImage,
+        images: validImages.length > 1 ? validImages : undefined,
+        category: newProduct.category,
+        stock: parseInt(newProduct.stock),
+        rating: parseFloat(newProduct.rating),
+        reviews: parseInt(newProduct.reviews),
+        featured: newProduct.featured,
+        tags: newProduct.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
+      };
 
-  const handleDeleteProduct = (id: string) => {
-    if (confirm('Are you sure you want to delete this product?')) {
-      setProducts(products.filter(p => p.id !== id));
-      toast.success('Product deleted successfully!');
+      await db.updateProduct(updatedProduct);
+      const updatedProducts = await db.getAllProducts();
+      setProducts(updatedProducts);
+      
+      setEditingProduct(null);
+      setNewProduct({
+        name: '',
+        description: '',
+        price: '',
+        originalPrice: '',
+        image: '',
+        images: [''],
+        category: 'Graphics Cards',
+        stock: '',
+        rating: '4.5',
+        reviews: '0',
+        featured: false,
+        tags: ''
+      });
+      toast.success('Product updated successfully!');
+    } catch (error) {
+      console.error('Failed to update product:', error);
+      toast.error('Failed to update product');
     }
   };
 
-  const handleToggleBan = (userId: string) => {
-    const updatedUsers = users.map(u => 
-      u.id === userId ? { ...u, isBanned: !u.isBanned } : u
-    );
-    setUsers(updatedUsers);
-    localStorage.setItem('vertixhub_users', JSON.stringify(updatedUsers));
+  const handleDeleteProduct = async (id: string) => {
+    if (confirm('Are you sure you want to delete this product?')) {
+      try {
+        await db.deleteProduct(id);
+        const updatedProducts = await db.getAllProducts();
+        setProducts(updatedProducts);
+        toast.success('Product deleted successfully!');
+      } catch (error) {
+        console.error('Failed to delete product:', error);
+        toast.error('Failed to delete product');
+      }
+    }
+  };
+
+  const handleToggleBan = async (userId: string) => {
+    try {
+      const targetUser = users.find(u => u.id === userId);
+      if (!targetUser) return;
+
+      const updatedUser = { ...targetUser, isBanned: !targetUser.isBanned };
+      await db.updateUser(updatedUser);
+      
+      const updatedUsers = await db.getAllUsers();
+      setUsers(updatedUsers);
+      
+      toast.success(`User ${targetUser.isBanned ? 'unbanned' : 'banned'} successfully!`);
+    } catch (error) {
+      console.error('Failed to update user:', error);
+      toast.error('Failed to update user');
+    }
+  };
+
+  // Helper functions for managing multiple images
+  const addImageField = () => {
+    setNewProduct({
+      ...newProduct,
+      images: [...newProduct.images, '']
+    });
+  };
+
+  const removeImageField = (index: number) => {
+    const newImages = newProduct.images.filter((_, i) => i !== index);
+    // Ensure we always have at least one empty field
+    if (newImages.length === 0 || newImages[newImages.length - 1] !== '') {
+      newImages.push('');
+    }
+    setNewProduct({
+      ...newProduct,
+      images: newImages
+    });
+  };
+
+  const updateImageField = (index: number, value: string) => {
+    const newImages = [...newProduct.images];
+    newImages[index] = value;
     
-    const targetUser = users.find(u => u.id === userId);
-    toast.success(`User ${targetUser?.isBanned ? 'unbanned' : 'banned'} successfully!`);
+    // If the last field is filled and it's not empty, add a new empty field
+    if (index === newImages.length - 1 && value.trim() !== '') {
+      newImages.push('');
+    }
+    
+    setNewProduct({
+      ...newProduct,
+      images: newImages
+    });
+  };
+
+  const resetToDefaultProducts = async () => {
+    if (confirm('Are you sure you want to reset all products to default? This will delete all your custom products.')) {
+      try {
+        await db.resetDatabase();
+        const updatedProducts = await db.getAllProducts();
+        const updatedUsers = await db.getAllUsers();
+        setProducts(updatedProducts);
+        setUsers(updatedUsers);
+        toast.success('Database reset to default successfully!');
+      } catch (error) {
+        console.error('Failed to reset database:', error);
+        toast.error('Failed to reset database');
+      }
+    }
   };
 
   const totalRevenue = products.reduce((sum, product) => sum + (product.price * (100 - product.stock)), 0);
@@ -263,6 +380,7 @@ export default function AdminPanel() {
               { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
               { id: 'products', name: 'Products', icon: Package },
               { id: 'users', name: 'Users', icon: Users },
+              { id: 'database', name: 'Database', icon: Shield },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -420,6 +538,13 @@ export default function AdminPanel() {
                 <button className="flex items-center space-x-2 bg-white/10 text-white px-4 py-3 rounded-xl hover:bg-white/20 transition-colors backdrop-blur-sm">
                   <Download className="w-5 h-5" />
                   <span>Export</span>
+                </button>
+                <button
+                  onClick={resetToDefaultProducts}
+                  className="flex items-center space-x-2 bg-red-500/20 text-red-300 px-4 py-3 rounded-xl hover:bg-red-500/30 transition-colors backdrop-blur-sm"
+                >
+                  <RefreshCw className="w-5 h-5" />
+                  <span>Reset</span>
                 </button>
                 <button
                   onClick={() => setIsAddingProduct(true)}
@@ -600,6 +725,29 @@ export default function AdminPanel() {
           </div>
         )}
 
+        {/* Database Tab */}
+        {activeTab === 'database' && (
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-4">Database Management</h2>
+              <p className="text-white/70 mb-8">Manage your SQLite database with backup, restore, and reset capabilities</p>
+            </div>
+
+            <DatabaseAdmin 
+              onDataChange={async () => {
+                try {
+                  const updatedProducts = await db.getAllProducts();
+                  const updatedUsers = await db.getAllUsers();
+                  setProducts(updatedProducts);
+                  setUsers(updatedUsers);
+                } catch (error) {
+                  console.error('Failed to refresh data:', error);
+                }
+              }}
+            />
+          </div>
+        )}
+
         {/* Add/Edit Product Modal */}
         {(isAddingProduct || editingProduct) && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -694,14 +842,54 @@ export default function AdminPanel() {
               </div>
               
               <div className="mt-6">
-                <label className="block text-white/80 text-sm font-medium mb-2">Image URL</label>
-                <input
-                  type="url"
-                  value={newProduct.image}
-                  onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  placeholder="https://example.com/image.jpg"
-                />
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-white/80 text-sm font-medium">Product Images</label>
+                  <button
+                    type="button"
+                    onClick={addImageField}
+                    className="text-purple-400 hover:text-purple-300 text-sm flex items-center space-x-1"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Image</span>
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {newProduct.images.map((imageUrl, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <div className="flex-1">
+                        <input
+                          type="url"
+                          value={imageUrl}
+                          onChange={(e) => updateImageField(index, e.target.value)}
+                          className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          placeholder={index === 0 ? "https://example.com/main-image.jpg (Main Image)" : "https://example.com/additional-image.jpg"}
+                        />
+                      </div>
+                      {imageUrl && (
+                        <img
+                          src={imageUrl}
+                          alt={`Preview ${index + 1}`}
+                          className="w-12 h-12 object-cover rounded-lg border border-white/20"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      )}
+                      {newProduct.images.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeImageField(index)}
+                          className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-white/60 text-xs mt-2">
+                  First image will be used as the main product image. Add multiple images for product gallery.
+                </p>
               </div>
               
               <div className="mt-6">
@@ -738,6 +926,7 @@ export default function AdminPanel() {
                       price: '',
                       originalPrice: '',
                       image: '',
+                      images: [''],
                       category: 'Graphics Cards',
                       stock: '',
                       rating: '4.5',
