@@ -10,7 +10,7 @@ const categories = [
     name: 'Graphics Cards',
     description: 'High-performance GPUs for gaming, rendering, and AI workloads',
     icon: Monitor,
-    image: 'https://image.pollinations.ai/prompt/modern-rtx-graphics-card-rgb-lighting-gaming-setup-4k-realistic-detailed?width=600&height=400',
+    image: 'https://c1.neweggimages.com/productimage/nb1280/14-930-136-01.jpg',
     count: 25,
     color: 'from-green-500 to-emerald-600'
   },
@@ -19,34 +19,34 @@ const categories = [
     name: 'Processors',
     description: 'Intel and AMD CPUs for every performance requirement',
     icon: Cpu,
-    image: 'https://image.pollinations.ai/prompt/modern-cpu-processor-chip-intel-amd-technology-closeup-4k-detailed?width=600&height=400',
+    image: 'https://c1.neweggimages.com/productimage/nb1280/19-113-877-01.png',
     count: 18,
     color: 'from-blue-500 to-indigo-600'
-  },
-  {
-    id: 'motherboards',
-    name: 'Motherboards',
-    description: 'Premium motherboards with latest chipsets and features',
-    icon: CircuitBoard,
-    image: 'https://image.pollinations.ai/prompt/gaming-motherboard-circuit-board-rgb-connectors-modern-tech-4k-detailed?width=600&height=400',
-    count: 22,
-    color: 'from-purple-500 to-pink-600'
   },
   {
     id: 'memory-ram',
     name: 'Memory (RAM)',
     description: 'High-speed DDR4 and DDR5 memory modules with RGB lighting',
     icon: Zap,
-    image: 'https://image.pollinations.ai/prompt/ddr5-ram-memory-modules-rgb-lighting-gaming-performance-4k-detailed?width=600&height=400',
+    image: 'https://c1.neweggimages.com/productimage/nb1280/20-236-828-V01.jpg',
     count: 15,
     color: 'from-red-500 to-rose-600'
+  },
+  {
+    id: 'motherboards',
+    name: 'Motherboards',
+    description: 'Premium motherboards with latest chipsets and features',
+    icon: CircuitBoard,
+    image: 'https://c1.neweggimages.com/productimage/nb1280/13-145-517-03.jpg',
+    count: 22,
+    color: 'from-purple-500 to-pink-600'
   },
   {
     id: 'storage',
     name: 'Storage',
     description: 'NVMe SSDs, SATA drives, and high-capacity storage solutions',
     icon: HardDrive,
-    image: 'https://image.pollinations.ai/prompt/nvme-ssd-drive-m2-storage-modern-technology-4k-realistic-detailed?width=600&height=400',
+    image: 'https://c1.neweggimages.com/ProductImageCompressAll1280/20-140-054-02.png',
     count: 30,
     color: 'from-yellow-500 to-orange-600'
   },
@@ -55,27 +55,27 @@ const categories = [
     name: 'Power Supplies',
     description: 'Efficient and reliable PSUs with 80+ certifications',
     icon: Zap,
-    image: 'https://image.pollinations.ai/prompt/modular-power-supply-psu-80plus-cables-modern-design-4k-detailed?width=600&height=400',
+    image: 'https://c1.neweggimages.com/ProductImageCompressAll1280/17-139-320-07.jpg',
     count: 12,
     color: 'from-teal-500 to-cyan-600'
   },
   {
-    id: 'cases',
-    name: 'Cases',
-    description: 'Premium PC cases with excellent airflow and RGB lighting',
-    icon: Box,
-    image: 'https://image.pollinations.ai/prompt/gaming-pc-case-rgb-lighting-tempered-glass-modern-design-4k-detailed?width=600&height=400',
-    count: 20,
-    color: 'from-indigo-500 to-purple-600'
+    id: 'peripherals',
+    name: 'Peripherals',
+    description: 'Gaming keyboards, mice & accessories for ultimate performance',
+    icon: Gamepad2,
+    image: 'https://c1.neweggimages.com/productimage/nb1280/26-197-658-01.png',
+    count: 35,
+    color: 'from-orange-500 to-red-600'
   },
   {
-    id: 'cooling',
-    name: 'Cooling',
-    description: 'Air and liquid cooling solutions for optimal temperatures',
-    icon: Fan,
-    image: 'https://image.pollinations.ai/prompt/liquid-cooling-system-aio-cooler-rgb-fans-modern-pc-4k-detailed?width=600&height=400',
-    count: 16,
-    color: 'from-cyan-500 to-blue-600'
+    id: 'monitors',
+    name: 'Monitors',
+    description: 'High-refresh gaming monitors with vibrant displays',
+    icon: Monitor,
+    image: 'https://c1.neweggimages.com/productimage/nb1280/24-281-243-19.png',
+    count: 28,
+    color: 'from-indigo-500 to-purple-600'
   }
 ];
 

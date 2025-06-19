@@ -1,10 +1,47 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronRight, Star, Award, Shield } from 'lucide-react';
+import { ChevronRight, Star, Award, Shield, ChevronLeft } from 'lucide-react';
+
+const carouselImages = [
+  'https://promotions.newegg.com/samsung/25-0299/1150x320.jpg',
+  'https://promotions.newegg.com/nvidia/25-0452/1150x320.jpg',
+  'https://promotions.newegg.com/samsung/25-0580/1150x320.jpg',
+  'https://promotions.newegg.com/server/25-0542/1150x320.jpg',
+  'https://promotions.newegg.com/ASRock/24-1088/banner/1920x660_sm.jpg'
+];
 
 export const Hero: React.FC = () => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Auto-cycle through images
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        (prevIndex + 1) % carouselImages.length
+      );
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      (prevIndex + 1) % carouselImages.length
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? carouselImages.length - 1 : prevIndex - 1
+    );
+  };
+
+  const goToImage = (index: number) => {
+    setCurrentImageIndex(index);
+  };
+
   return (
     <div className="relative bg-gradient-to-br from-purple-900 via-violet-800 to-pink-800 text-white overflow-hidden">
       {/* Animated Background Pattern */}
@@ -49,48 +86,89 @@ export const Hero: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/products"
-                className="group bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 text-center flex items-center justify-center shadow-2xl hover:shadow-3xl transform hover:-translate-y-1"
+                className="bg-white text-primary-600 hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-lg flex items-center space-x-2"
               >
-                Shop Components
-                <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                <span>Shop Now</span>
+                <ChevronRight className="w-5 h-5" />
               </Link>
               <Link
-                href="/categories"
-                className="group border-2 border-white/30 backdrop-blur-sm bg-white/10 text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-purple-600 transition-all duration-300 text-center flex items-center justify-center"
+                href="/pc-builder"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-lg flex items-center space-x-2"
               >
-                Browse Categories
-                <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                <span>Build Your PC</span>
+                <ChevronRight className="w-5 h-5" />
               </Link>
             </div>
           </div>
           
           <div className="animate-slide-right">
             <div className="relative">
-              {/* Main PC Setup Image */}
-              <div className="relative z-10">
-                <img
-                  src="https://image.pollinations.ai/prompt/high-end-gaming-pc-setup-rgb-lighting-modern-desk-4k-realistic-detailed?width=700&height=500"
-                  alt="High-end Gaming PC Setup"
-                  className="rounded-2xl shadow-3xl transform hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-purple-900/30 to-transparent rounded-2xl"></div>
+              {/* Carousel Container */}
+              <div className="relative z-10 rounded-2xl overflow-hidden shadow-3xl">
+                <div className="relative h-80 lg:h-96">
+                  {/* Carousel Images */}
+                  {carouselImages.map((image, index) => (
+                    <div
+                      key={index}
+                      className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                        index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                      }`}
+                    >
+                      <img
+                        src={image}
+                        alt={`PC Hardware Promotion ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-purple-900/30 to-transparent"></div>
+                    </div>
+                  ))}
+                  
+                  {/* Navigation Arrows */}
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-all duration-300 backdrop-blur-sm"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-all duration-300 backdrop-blur-sm"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                  
+                  {/* Carousel Indicators */}
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
+                    {carouselImages.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => goToImage(index)}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                          index === currentImageIndex 
+                            ? 'bg-white' 
+                            : 'bg-white/50 hover:bg-white/75'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
               
               {/* Floating Cards */}
-              <div className="absolute -top-6 -left-6 bg-white/95 backdrop-blur-sm text-purple-800 px-6 py-4 rounded-xl font-bold shadow-2xl animate-float">
+              <div className="absolute -top-6 -left-6 z-30 bg-white/95 backdrop-blur-sm text-purple-800 px-6 py-4 rounded-xl font-bold shadow-2xl animate-float">
                 <div className="text-2xl font-bold">50%</div>
                 <div className="text-sm">OFF RTX Series</div>
               </div>
               
-              <div className="absolute -bottom-6 -right-6 bg-gradient-to-r from-green-400 to-emerald-500 text-white px-6 py-4 rounded-xl font-bold shadow-2xl animate-float-delay">
+              <div className="absolute -bottom-6 -right-6 z-30 bg-gradient-to-r from-green-400 to-emerald-500 text-white px-6 py-4 rounded-xl font-bold shadow-2xl animate-float-delay">
                 <div className="text-sm">✓ Free Shipping</div>
                 <div className="text-sm">✓ 24h Support</div>
               </div>
               
-              <div className="absolute top-1/2 -right-8 bg-yellow-400 text-purple-900 px-4 py-3 rounded-full font-bold shadow-xl animate-pulse">
+              <div className="absolute top-1/2 -right-8 z-30 bg-yellow-400 text-purple-900 px-4 py-3 rounded-full font-bold shadow-xl animate-pulse">
                 <div className="text-xs">NEW</div>
                 <div className="text-sm">RTX 4090</div>
               </div>

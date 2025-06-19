@@ -8,7 +8,7 @@ const contactInfo = [
   {
     icon: Phone,
     title: 'Phone Support',
-    content: '+1 (555) 123-4567',
+    content: '+63 998 427 6714',
     description: 'Mon-Fri 9AM-7PM PST',
     color: 'from-blue-500 to-indigo-600'
   },
@@ -29,8 +29,8 @@ const contactInfo = [
   {
     icon: MapPin,
     title: 'Main Office',
-    content: '123 Tech Valley Drive',
-    description: 'San Francisco, CA 94105',
+    content: '#5943 Purok 2 Irisan',
+    description: 'Baguio City, Philippines',
     color: 'from-red-500 to-rose-600'
   }
 ];

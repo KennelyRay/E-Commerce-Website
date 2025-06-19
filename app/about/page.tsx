@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Shield, Award, Users, Clock, Cpu, Heart, Globe, Truck } from 'lucide-react';
+import { Shield, Award, Users, Clock, Cpu, Heart, Globe, Truck, User } from 'lucide-react';
 
 const features = [
   {
@@ -28,22 +28,52 @@ const features = [
 
 const team = [
   {
-    name: 'Alex Chen',
+    name: 'Josh Rabino',
     role: 'Founder & CEO',
-    image: 'https://image.pollinations.ai/prompt/professional-asian-male-ceo-founder-tech-company-portrait-realistic?width=300&height=300',
-    description: 'PC enthusiast with 15+ years in hardware industry'
+    description: 'Visionary leader driving innovation in PC hardware industry',
+    gender: 'male'
   },
   {
-    name: 'Sarah Johnson',
-    role: 'Technical Director',
-    image: 'https://image.pollinations.ai/prompt/professional-female-technical-director-engineer-portrait-realistic?width=300&height=300',
-    description: 'Expert in PC building and hardware optimization'
+    name: 'Roland Gumabay Morzo Ampalo',
+    role: 'Chief Operating Officer',
+    description: 'Expert in operations management and business strategy',
+    gender: 'male'
   },
   {
-    name: 'Marcus Rivera',
-    role: 'Customer Experience Lead',
-    image: 'https://image.pollinations.ai/prompt/professional-male-customer-service-manager-portrait-realistic?width=300&height=300',
-    description: 'Dedicated to providing exceptional customer service'
+    name: 'Patrick Herbolario',
+    role: 'Technical/Network Director',
+    description: 'Leading technical infrastructure and network solutions',
+    gender: 'male'
+  },
+  {
+    name: 'Jan Michael Villanueva',
+    role: 'Chief of Cybersecurity',
+    description: 'Protecting our systems and customer data with expertise',
+    gender: 'male'
+  },
+  {
+    name: 'Jermin Odcheo',
+    role: 'Head Hardware Engineer/Builder',
+    description: 'Master PC builder and hardware optimization specialist',
+    gender: 'male'
+  },
+  {
+    name: 'Lan Emilano',
+    role: 'Hardware Engineer/Builder',
+    description: 'Expert in PC assembly and hardware compatibility',
+    gender: 'male'
+  },
+  {
+    name: 'Trisha Antonio',
+    role: 'Lead Marketing/CS Director',
+    description: 'Driving customer success and marketing excellence',
+    gender: 'female'
+  },
+  {
+    name: 'Daniel Chuyat',
+    role: 'Head of Security',
+    description: 'Ensuring comprehensive security across all operations',
+    gender: 'male'
   }
 ];
 
@@ -88,7 +118,7 @@ export default function AboutPage() {
             <div className="animate-slide-right">
               <div className="relative">
                 <img
-                  src="https://image.pollinations.ai/prompt/pc-building-workstation-components-assembly-professional-realistic?width=600&height=400"
+                  src="https://imgs.search.brave.com/Ktbqk9txGX7JwXhVNns46-NRiNXUZMz0CxgURnJoP4E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/eGlkYXguY29tL21v/ZHVsZXMvcGFnZXMv/dmlld3MvdGVtcGxh/dGVzL2Zyb250L3hp/ZGF4L2ltZy9wb3J0/Zm9saW8vcGMxMi53/ZWJw"
                   alt="PC Building"
                   className="rounded-2xl shadow-2xl"
                 />
@@ -140,7 +170,7 @@ export default function AboutPage() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {team.map((member, index) => (
               <div
                 key={member.name}
@@ -148,12 +178,13 @@ export default function AboutPage() {
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 <div className="relative mb-6">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-24 h-24 rounded-full mx-auto object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-primary rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                  <div className={`w-24 h-24 rounded-full mx-auto flex items-center justify-center group-hover:scale-110 transition-transform duration-300 ${
+                    member.gender === 'female' 
+                      ? 'bg-gradient-to-br from-pink-400 to-purple-500' 
+                      : 'bg-gradient-to-br from-blue-400 to-indigo-500'
+                  }`}>
+                    <User className="w-12 h-12 text-white" />
+                  </div>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{member.name}</h3>
                 <p className="text-primary-600 font-medium mb-3">{member.role}</p>

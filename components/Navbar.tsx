@@ -16,6 +16,7 @@ export const Navbar: React.FC = () => {
   const navigation = [
     { name: 'Home', href: '/home' },
     { name: 'Products', href: '/products' },
+    { name: 'PC Builder', href: '/pc-builder' },
     { name: 'Categories', href: '/categories' },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },

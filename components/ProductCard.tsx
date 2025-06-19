@@ -41,12 +41,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             className="w-full h-64 object-cover"
           />
           {product.originalPrice && (
-            <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-medium">
+            <div className="absolute top-2 left-2 z-10 bg-red-500 text-white px-2 py-1 rounded text-sm font-medium">
               {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
             </div>
           )}
           {product.stock < 10 && (
-            <div className="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded text-sm font-medium">
+            <div className="absolute top-2 right-2 z-10 bg-orange-500 text-white px-2 py-1 rounded text-sm font-medium">
               Low Stock
             </div>
           )}

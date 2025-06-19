@@ -123,13 +123,8 @@ class DatabaseManager {
   }
 
   private async seedInitialData(): Promise<void> {
-    // Import initial products data
-    const productsData = await import('@/data/products.json');
-    const products = productsData.products as unknown as Product[];
-
-    for (const product of products) {
-      await this.insertProduct(product);
-    }
+    // Only create admin user - no pre-loaded products
+    // Users can add their own products through the admin panel
 
     // Create admin user
     await this.insertUser({

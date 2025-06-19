@@ -6,39 +6,51 @@ import Link from 'next/link';
 const categories = [
   {
     name: 'Graphics Cards',
-    image: 'https://image.pollinations.ai/prompt/modern-rtx-graphics-card-rgb-lighting-gaming-setup-4k-realistic?width=300&height=200',
+    image: 'https://c1.neweggimages.com/productimage/nb1280/14-930-136-01.jpg',
     href: '/products?category=Graphics+Cards',
     description: 'High-performance GPUs for gaming'
   },
   {
     name: 'Processors',
-    image: 'https://image.pollinations.ai/prompt/modern-cpu-processor-chip-intel-amd-technology-closeup-4k?width=300&height=200',
+    image: 'https://c1.neweggimages.com/productimage/nb1280/19-113-877-01.png',
     href: '/products?category=Processors',
     description: 'Powerful CPUs for every build'
   },
   {
     name: 'Memory (RAM)',
-    image: 'https://image.pollinations.ai/prompt/ddr5-ram-memory-modules-rgb-lighting-gaming-performance-4k?width=300&height=200',
+    image: 'https://c1.neweggimages.com/productimage/nb1280/20-236-828-V01.jpg',
     href: '/products?category=Memory+(RAM)',
     description: 'Fast DDR4 & DDR5 memory kits'
   },
   {
     name: 'Motherboards',
-    image: 'https://image.pollinations.ai/prompt/gaming-motherboard-circuit-board-rgb-connectors-modern-tech-4k?width=300&height=200',
+    image: 'https://c1.neweggimages.com/productimage/nb1280/13-145-517-03.jpg',
     href: '/products?category=Motherboards',
     description: 'Premium gaming motherboards'
   },
   {
     name: 'Storage',
-    image: 'https://image.pollinations.ai/prompt/nvme-ssd-drive-m2-storage-modern-technology-4k-realistic?width=300&height=200',
+    image: 'https://c1.neweggimages.com/ProductImageCompressAll1280/20-140-054-02.png',
     href: '/products?category=Storage',
     description: 'SSDs and NVMe drives'
   },
   {
     name: 'Power Supplies',
-    image: 'https://image.pollinations.ai/prompt/modular-power-supply-psu-80plus-cables-modern-design-4k?width=300&height=200',
+    image: 'https://c1.neweggimages.com/ProductImageCompressAll1280/17-139-320-07.jpg',
     href: '/products?category=Power+Supplies',
     description: 'Reliable and efficient PSUs'
+  },
+  {
+    name: 'Peripherals',
+    image: 'https://c1.neweggimages.com/productimage/nb1280/26-197-658-01.png',
+    href: '/products?category=Peripherals',
+    description: 'Gaming keyboards, mice & accessories'
+  },
+  {
+    name: 'Monitors',
+    image: 'https://c1.neweggimages.com/productimage/nb1280/24-281-243-19.png',
+    href: '/products?category=Monitors',
+    description: 'High-refresh gaming monitors'
   }
 ];
 
