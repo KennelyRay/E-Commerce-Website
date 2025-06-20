@@ -7,7 +7,6 @@ import { ProductCard } from '@/components/ProductCard';
 import { Filter, Search } from 'lucide-react';
 import productsData from '@/data/products.json';
 import { Product } from '@/types';
-import { db, ensureDbInitialized } from '@/lib/database';
 
 export default function ProductsPage() {
   const { user, isLoading } = useAuth();
@@ -16,7 +15,7 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('name');
   const [showFilters, setShowFilters] = useState(false);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products] = useState<Product[]>(productsData.products as unknown as Product[]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -24,30 +23,6 @@ export default function ProductsPage() {
     }
   }, [user, isLoading, router]);
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        await ensureDbInitialized();
-        const dbProducts = await db.getAllProducts();
-        
-        // If no products in database, try loading from APIs
-        if (dbProducts.length === 0) {
-          console.log('No products found in database, trying to load from APIs...');
-          await db.loadProductsFromAPI();
-          const apiProducts = await db.getAllProducts();
-          setProducts(apiProducts);
-        } else {
-          setProducts(dbProducts);
-        }
-      } catch (error) {
-        console.error('Failed to load products:', error);
-        // Fallback to JSON data if database fails
-        setProducts(productsData.products as unknown as Product[]);
-      }
-    };
-
-    loadProducts();
-  }, []);
   const categories = [
     'All',
     'Graphics Cards', 

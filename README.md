@@ -1,232 +1,192 @@
-# VertixHub - Premium PC Hardware E-commerce Store
+# VertixHub - PC Hardware E-Commerce Store
 
-A modern, fully responsive e-commerce website built with Next.js 14, TypeScript, and Tailwind CSS. Specialized in PC hardware components with a beautiful purple/pink gradient theme.
+A premium PC hardware e-commerce website built with Next.js, featuring a complete shopping experience for PC enthusiasts and builders.
 
-## 🚀 Live Demo & Deployment
+## 🚀 Features
 
-### Quick Deployment Options
+### Core E-Commerce Features
+- **Product Catalog**: Browse extensive collection of PC components
+- **Advanced Search & Filtering**: Find products by category, price, rating
+- **Shopping Cart**: Add, remove, and modify cart items
+- **User Authentication**: Register, login, and manage user accounts
+- **Admin Panel**: Comprehensive admin dashboard for user management
+- **PC Builder Tool**: Interactive component selector for building custom PCs
 
-1. **GitHub Pages (Free)** ⭐ Recommended
+### Technical Features
+- **Static Site Generation**: Optimized for GitHub Pages hosting
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **TypeScript**: Type-safe development
+- **Modern UI**: Clean, professional design with gradient themes
+- **Fast Performance**: Optimized for speed and SEO
+
+## 🛠️ Technology Stack
+
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Icons**: Lucide React
+- **Notifications**: React Hot Toast
+- **Deployment**: GitHub Pages (Static Export)
+- **Data Storage**: Static JSON + localStorage for user data
+
+## 📦 Installation
+
+1. **Clone the repository**
    ```bash
-   # Push to GitHub repository
-   # Enable GitHub Actions in Settings → Pages
-   # Automatic deployment on every push
+   git clone https://github.com/your-username/E-Commerce-Website.git
+   cd E-Commerce-Website
    ```
 
-2. **Local Testing**
+2. **Install dependencies**
    ```bash
-   npm install          # Install dependencies
-   npm run dev         # Development server
-   npm run deploy      # Build for production (Windows)
-   npm run deploy:unix # Build for production (Mac/Linux)
-   npm run serve       # Preview production build
+   npm install
    ```
 
-3. **One-Click Hosting**
-   - [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
-   - [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start)
+3. **Run development server**
+   ```bash
+   npm run dev
+   ```
 
-## ✨ Features
+4. **Open in browser**
+   ```
+   http://localhost:3000
+   ```
 
-### 🛍️ E-commerce Functionality
-- **Product Catalog** - Browse premium PC components
-- **Smart Search** - Filter by category, price, and features
-- **Shopping Cart** - Add, remove, and modify quantities
-- **Checkout Process** - Complete order flow
-- **User Accounts** - Registration and login system
-- **Admin Panel** - Product and user management
+## 🏗️ Build & Deploy
 
-### 🎨 Modern Design
-- **Responsive Design** - Mobile-first approach
-- **Purple/Pink Gradient Theme** - Beautiful modern aesthetic
-- **Smooth Animations** - Engaging user interactions
-- **Professional UI** - Clean and intuitive interface
-
-### ⚡ Performance & SEO
-- **Static Site Generation** - Lightning-fast loading
-- **Image Optimization** - Optimized for web delivery
-- **SEO Optimized** - Meta tags and structured data
-- **PWA Ready** - Progressive web app capabilities
-
-## 🛠️ Tech Stack
-
-- **Framework:** Next.js 14 with App Router
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS
-- **Icons:** Lucide React
-- **Notifications:** React Hot Toast
-- **Hosting:** Static export compatible with any host
-
-## 📦 PC Hardware Categories
-
-- **Graphics Cards** - NVIDIA RTX, AMD Radeon series
-- **Processors** - Intel Core, AMD Ryzen CPUs
-- **Motherboards** - Gaming and workstation boards
-- **Memory (RAM)** - DDR4/DDR5 with RGB lighting
-- **Storage** - NVMe SSDs, SATA drives
-- **Power Supplies** - 80+ certified PSUs
-- **Cases** - Mid-tower, full-tower cases
-- **Cooling** - Air and liquid cooling solutions
-
-## 🔐 Authentication System
-
-### User Features
-- Account registration and login
-- Profile management
-- Order history (localStorage based)
-- Shopping cart persistence
-
-### Admin Features
-- **Username:** Admin
-- **Password:** 12345
-- Product management (add, edit, delete)
-- User management and moderation
-- Sales analytics and inventory tracking
-
-## 💾 Data Storage
-
-Currently uses **localStorage** for data persistence, making it compatible with static hosting platforms like GitHub Pages. All user data, products, and shopping cart contents are stored locally in the browser.
-
-### To Use a Database:
-For production with real data persistence, consider:
-- **MongoDB Atlas** + **Next.js API Routes**
-- **Supabase** for PostgreSQL
-- **Firebase Firestore**
-- **PlanetScale** for MySQL
-
-## 📱 Pages & Routes
-
-- `/` - Login/Registration landing page
-- `/home` - Main homepage (authenticated)
-- `/products` - Product catalog with filtering
-- `/products/[id]` - Individual product pages
-- `/categories` - Browse by hardware category
-- `/cart` - Shopping cart management
-- `/checkout` - Order completion
-- `/account` - User profile and settings
-- `/admin` - Admin dashboard and management
-- `/about` - Company information
-- `/contact` - Contact form and support
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+ installed
-- Git for version control
-
-### Installation
+### Development
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/vertixhub-ecommerce.git
-
-# Navigate to project directory
-cd vertixhub-ecommerce
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Open http://localhost:3000
+npm run dev       # Start development server
+npm run build     # Build for production
+npm run start     # Start production server
 ```
 
-### Build for Production
+### GitHub Pages Deployment
 ```bash
-# Windows
-npm run deploy
-
-# Mac/Linux/CI
-npm run deploy:unix
-
-# Preview production build
-npm run serve
+npm run deploy    # Build and prepare for GitHub Pages
 ```
 
-## 🌐 Hosting Configuration
+The site will be available at: `https://your-username.github.io/E-Commerce-Website`
 
-### Static Export Optimized
-- ✅ Next.js static export enabled
-- ✅ Image optimization disabled for static hosting
-- ✅ Trailing slash handling
-- ✅ No server-side functionality required
+## 📁 Project Structure
 
-### Files Generated
-- Static HTML, CSS, and JavaScript files
-- Pre-rendered product pages
-- SEO-friendly URLs
-- `.nojekyll` file for GitHub Pages
-
-### Hosting Platforms Tested
-- ✅ GitHub Pages
-- ✅ Vercel
-- ✅ Netlify
-- ✅ Firebase Hosting
-- ✅ AWS S3 + CloudFront
-
-## 📋 Available Scripts
-
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run deploy       # Build and prepare for deployment (Windows)
-npm run deploy:unix  # Build and prepare for deployment (Unix)
-npm run serve        # Preview production build
-npm run lint         # Run ESLint
-npm run clean        # Clean build artifacts
+```
+├── app/                    # Next.js 14 App Router
+│   ├── (auth)/            # Authentication pages
+│   ├── admin/             # Admin panel
+│   ├── products/          # Product pages
+│   ├── cart/              # Shopping cart
+│   ├── checkout/          # Checkout process
+│   └── pc-builder/        # PC building tool
+├── components/            # Reusable UI components
+├── context/               # React Context providers
+├── data/                  # Static product data (JSON)
+├── types/                 # TypeScript type definitions
+├── public/                # Static assets
+└── lib/                   # Utility functions
 ```
 
-## 🎯 Key Features Implemented
+## 🎨 Brand Identity
 
-### Frontend Features
-- [x] Responsive design with mobile-first approach
-- [x] Purple/pink gradient theme throughout
-- [x] Smooth animations and transitions
-- [x] Product filtering and search
-- [x] Shopping cart with persistence
-- [x] User authentication system
-- [x] Admin panel with management features
+- **Name**: VertixHub
+- **Theme**: Purple/Pink gradient design
+- **Focus**: Premium PC hardware components
+- **Target**: Gaming enthusiasts and PC builders
 
-### Backend Features (localStorage)
-- [x] User registration and login
-- [x] Product data management
-- [x] Shopping cart persistence
-- [x] Admin authentication
-- [x] User ban/unban functionality
+## 🔐 Admin Access
 
-### Performance Features
-- [x] Static site generation
-- [x] Optimized bundle size
-- [x] Image optimization
-- [x] Code splitting
-- [x] SEO optimization
+**Default Admin Credentials:**
+- Username: `Admin`
+- Password: `12345`
 
-## 🔧 Configuration Files
+Admin features include:
+- User management (ban/unban)
+- Product catalog viewing
+- Sales statistics
+- Low stock alerts
 
-- `next.config.js` - Next.js configuration for static export
-- `tailwind.config.js` - Custom purple/pink theme colors
-- `package.json` - Dependencies and build scripts
-- `.github/workflows/deploy.yml` - Automated deployment
-- `public/.nojekyll` - GitHub Pages configuration
+## 📱 Key Pages
 
-## 📞 Support & Documentation
+- **Landing Page**: Login/Register with VertixHub branding
+- **Home**: Hero section with featured products and categories
+- **Products**: Complete catalog with search and filtering
+- **PC Builder**: Interactive tool for building custom PCs
+- **Admin Panel**: Comprehensive dashboard for store management
+- **Account**: User profile and settings
 
-- **Deployment Guide:** See `DEPLOYMENT.md` for detailed hosting instructions
-- **Issue Tracking:** Use GitHub Issues for bug reports
-- **Feature Requests:** Open a GitHub Discussion
+## 🎯 Product Categories
+
+- Graphics Cards (GPUs)
+- Processors (CPUs)
+- Motherboards
+- Memory (RAM)
+- Storage (SSDs/HDDs)
+- Power Supplies (PSUs)
+- PC Cases
+- Cooling Solutions
+- Peripherals
+- Monitors
+
+## 🚀 Performance Features
+
+- **Static Generation**: All pages pre-built for fast loading
+- **Image Optimization**: Responsive images with lazy loading
+- **Code Splitting**: Automatic code splitting for faster page loads
+- **SEO Optimized**: Meta tags and structured data
+- **Mobile Responsive**: Perfect experience on all devices
+
+## 🛡️ Data Management
+
+- **Products**: Static JSON data for consistent product catalog
+- **Users**: localStorage for user accounts and authentication
+- **Cart**: localStorage for shopping cart persistence
+- **Orders**: localStorage for order history
+
+## 🔧 Customization
+
+### Adding Products
+Edit `data/products.json` to add or modify products:
+
+```json
+{
+  "id": "unique-id",
+  "name": "Product Name",
+  "description": "Product description",
+  "price": 999.99,
+  "originalPrice": 1199.99,
+  "image": "https://example.com/image.jpg",
+  "category": "Graphics Cards",
+  "stock": 50,
+  "rating": 4.5,
+  "reviews": 123,
+  "featured": true,
+  "tags": ["gaming", "rgb", "high-performance"]
+}
+```
+
+### Styling
+Customize the theme in `tailwind.config.js`:
+- Primary colors
+- Gradient backgrounds
+- Component styles
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test the build process
-5. Submit a pull request
+4. Submit a pull request
 
-## 📄 License
+## 📞 Support
 
-This project is open source and available under the [MIT License](LICENSE).
+For support and questions:
+- Email: support@vertixhub.com
+- GitHub Issues: [Create an issue](https://github.com/your-username/E-Commerce-Website/issues)
 
 ---
 
-**VertixHub** - Built with ❤️ for PC enthusiasts worldwide.
+**VertixHub** - Build Your Dream PC 🚀

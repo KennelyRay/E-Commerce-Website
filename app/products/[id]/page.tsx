@@ -9,15 +9,16 @@ interface ProductPageProps {
   };
 }
 
-// Generate static params for all products
+// Generate static params for all products in JSON file
 export async function generateStaticParams() {
-  return (productsData.products as unknown as Product[]).map((product) => ({
+  const products = productsData.products as unknown as Product[];
+  return products.map((product) => ({
     id: product.id,
   }));
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
-  const product = productsData.products.find(p => p.id === params.id);
+  const product = (productsData.products as unknown as Product[]).find(p => p.id === params.id);
   
   return <ProductPageClient product={product} />;
 } 

@@ -6,7 +6,6 @@ import { Star, ShoppingCart, ArrowLeft, Plus, Minus, Shield, Truck, RefreshCw, A
 import { useCart } from '@/context/CartContext';
 import productsData from '@/data/products.json';
 import { Product } from '@/types';
-import { db, ensureDbInitialized } from '@/lib/database';
 
 interface ProductPageClientProps {
   product: Product | undefined;
@@ -16,24 +15,10 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [products, setProducts] = useState<Product[]>([]);
   const { addToCart } = useCart();
 
-  React.useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        await ensureDbInitialized();
-        const dbProducts = await db.getAllProducts();
-        setProducts(dbProducts);
-      } catch (error) {
-        console.error('Failed to load products:', error);
-        // Fallback to JSON data if database fails
-        setProducts(productsData.products as unknown as Product[]);
-      }
-    };
-
-    loadProducts();
-  }, []);
+  // Get all products from static JSON for related products
+  const allProducts = productsData.products as unknown as Product[];
 
   if (!product) {
     return (
@@ -74,7 +59,7 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
     addToCart(product, quantity);
   };
 
-  const relatedProducts = products
+  const relatedProducts = allProducts
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 

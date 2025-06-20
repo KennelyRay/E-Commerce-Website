@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { Product } from '@/types';
-import { db, ensureDbInitialized } from '@/lib/database';
+import productsData from '@/data/products.json';
 import { 
   Cpu, 
   Monitor, 
@@ -123,7 +123,7 @@ export default function PCBuilderPage() {
   const { user, isLoading } = useAuth();
   const { addToCart } = useCart();
   const router = useRouter();
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products] = useState<Product[]>(productsData.products as unknown as Product[]);
   const [build, setBuild] = useState<PCBuild>({});
   const [selectedCategory, setSelectedCategory] = useState<keyof PCBuild>('cpu');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -133,30 +133,6 @@ export default function PCBuilderPage() {
       router.push('/');
     }
   }, [user, isLoading, router]);
-
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        await ensureDbInitialized();
-        const dbProducts = await db.getAllProducts();
-        
-        // If no products in database, try loading from APIs
-        if (dbProducts.length === 0) {
-          console.log('No products found in database, trying to load from APIs...');
-          await db.loadProductsFromAPI();
-          const apiProducts = await db.getAllProducts();
-          setProducts(apiProducts);
-        } else {
-          setProducts(dbProducts);
-        }
-      } catch (error) {
-        console.error('Failed to load products:', error);
-        toast.error('Failed to load products');
-      }
-    };
-
-    loadProducts();
-  }, []);
 
   if (isLoading) {
     return (

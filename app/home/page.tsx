@@ -10,34 +10,17 @@ import { CategoryGrid } from '@/components/CategoryGrid';
 import { Clock, CheckCircle, HeadphonesIcon, Truck, Shield, Award, Zap, Star } from 'lucide-react';
 import productsData from '@/data/products.json';
 import { Product } from '@/types';
-import { db, ensureDbInitialized } from '@/lib/database';
 
 export default function HomePage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products] = useState<Product[]>(productsData.products as unknown as Product[]);
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.push('/');
     }
   }, [user, isLoading, router]);
-
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        await ensureDbInitialized();
-        const dbProducts = await db.getAllProducts();
-        setProducts(dbProducts);
-      } catch (error) {
-        console.error('Failed to load products:', error);
-        // Fallback to JSON data if database fails
-        setProducts(productsData.products as unknown as Product[]);
-      }
-    };
-
-    loadProducts();
-  }, []);
 
   if (isLoading) {
     return (

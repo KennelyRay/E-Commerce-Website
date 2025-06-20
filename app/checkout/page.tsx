@@ -20,6 +20,61 @@ interface FormErrors {
   cvv?: string;
 }
 
+// InputField component moved outside to prevent remounting
+const InputField = ({ 
+  name, 
+  type = 'text', 
+  placeholder, 
+  icon: Icon, 
+  value, 
+  onChange, 
+  error 
+}: {
+  name: string;
+  type?: string;
+  placeholder: string;
+  icon: any;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+}) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Prevent form submission when Enter is pressed in input fields
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
+
+  return (
+    <div>
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Icon className={`h-5 w-5 ${error ? 'text-red-400' : 'text-gray-400'}`} />
+        </div>
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 transition-colors ${
+            error
+              ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
+              : 'border-gray-200 focus:border-purple-500 focus:ring-purple-200'
+          }`}
+        />
+      </div>
+      {error && (
+        <div className="flex items-center mt-2 text-red-600 text-sm">
+          <AlertCircle className="w-4 h-4 mr-1" />
+          {error}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function CheckoutPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
@@ -273,50 +328,6 @@ export default function CheckoutPage() {
   const shipping = subtotal > 2500 ? 0 : 150; // Free shipping over ₱2,500
   const tax = subtotal * 0.12; // 12% VAT in Philippines
   const total = subtotal + shipping + tax;
-
-  const InputField = ({ 
-    name, 
-    type = 'text', 
-    placeholder, 
-    icon: Icon, 
-    value, 
-    onChange, 
-    error 
-  }: {
-    name: string;
-    type?: string;
-    placeholder: string;
-    icon: any;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    error?: string;
-  }) => (
-    <div>
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Icon className={`h-5 w-5 ${error ? 'text-red-400' : 'text-gray-400'}`} />
-        </div>
-        <input
-          type={type}
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 transition-colors ${
-            error
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-              : 'border-gray-200 focus:border-purple-500 focus:ring-purple-200'
-          }`}
-        />
-      </div>
-      {error && (
-        <div className="flex items-center mt-2 text-red-600 text-sm">
-          <AlertCircle className="w-4 h-4 mr-1" />
-          {error}
-        </div>
-      )}
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">

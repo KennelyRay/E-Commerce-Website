@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types';
 import toast from 'react-hot-toast';
-import { db, ensureDbInitialized } from '@/lib/database';
 
 interface AuthContextType {
   user: User | null;
@@ -20,18 +19,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const initializeAuth = async () => {
+    const initializeAuth = () => {
       try {
-        // Initialize database first
-        await ensureDbInitialized();
-
         // Check for existing user session
         const savedUser = localStorage.getItem('vertixhub_current_user');
         if (savedUser) {
           try {
             const userData = JSON.parse(savedUser);
-            // Verify user still exists in database
-            const dbUser = await db.getUserByUsername(userData.username);
+            // Check if user still exists in the users list and isn't banned
+            const users = JSON.parse(localStorage.getItem('vertixhub_users') || '[]');
+            const dbUser = users.find((u: User) => u.username === userData.username);
             if (dbUser && !dbUser.isBanned) {
               setUser(dbUser);
             } else {
@@ -43,6 +40,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.removeItem('vertixhub_current_user');
           }
         }
+
+        // Ensure admin user exists
+        ensureAdminExists();
       } catch (error) {
         console.error('Failed to initialize authentication:', error);
         toast.error('Failed to initialize application. Please refresh the page.');
@@ -54,23 +54,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initializeAuth();
   }, []);
 
+  const ensureAdminExists = () => {
+    const users = JSON.parse(localStorage.getItem('vertixhub_users') || '[]');
+    const adminExists = users.find((u: User) => u.username === 'Admin');
+    
+    if (!adminExists) {
+      const adminUser: User = {
+        id: 'admin-1',
+        name: 'Administrator',
+        username: 'Admin',
+        email: 'admin@vertixhub.com',
+        password: '12345',
+        isAdmin: true,
+        isBanned: false,
+        createdAt: new Date().toISOString()
+      };
+      
+      users.push(adminUser);
+      localStorage.setItem('vertixhub_users', JSON.stringify(users));
+    }
+  };
+
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      await ensureDbInitialized();
-
-      // Admin login
-      if (username === 'Admin' && password === '12345') {
-        const adminUser = await db.getUserByUsername('Admin');
-        if (adminUser) {
-          setUser(adminUser);
-          localStorage.setItem('vertixhub_current_user', JSON.stringify(adminUser));
-          toast.success('Welcome back, Administrator!');
-          return true;
-        }
-      }
-
-      // Regular user login
-      const foundUser = await db.getUserByUsername(username);
+      const users = JSON.parse(localStorage.getItem('vertixhub_users') || '[]');
+      const foundUser = users.find((u: User) => u.username === username);
 
       if (foundUser && foundUser.password === password) {
         if (foundUser.isBanned) {
@@ -79,7 +87,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         setUser(foundUser);
         localStorage.setItem('vertixhub_current_user', JSON.stringify(foundUser));
-        toast.success(`Welcome back, ${foundUser.name}!`);
+        
+        if (foundUser.isAdmin) {
+          toast.success('Welcome back, Administrator!');
+        } else {
+          toast.success(`Welcome back, ${foundUser.name}!`);
+        }
         return true;
       } else {
         toast.error('Invalid username or password');
@@ -94,17 +107,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (name: string, username: string, email: string, password: string): Promise<boolean> => {
     try {
-      await ensureDbInitialized();
+      const users = JSON.parse(localStorage.getItem('vertixhub_users') || '[]');
       
       // Check if username already exists
-      const existingUserByUsername = await db.getUserByUsername(username);
+      const existingUserByUsername = users.find((u: User) => u.username === username);
       if (existingUserByUsername) {
         toast.error('Username already exists. Please choose a different username.');
         return false;
       }
 
       // Check if email already exists
-      const existingUserByEmail = await db.getUserByEmail(email);
+      const existingUserByEmail = users.find((u: User) => u.email === email);
       if (existingUserByEmail) {
         toast.error('Email already exists. Please use a different email.');
         return false;
@@ -121,7 +134,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         createdAt: new Date().toISOString()
       };
 
-      await db.insertUser(newUser);
+      users.push(newUser);
+      localStorage.setItem('vertixhub_users', JSON.stringify(users));
       
       setUser(newUser);
       localStorage.setItem('vertixhub_current_user', JSON.stringify(newUser));
