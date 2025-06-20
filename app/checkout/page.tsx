@@ -82,6 +82,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [paymentMethod, setPaymentMethod] = useState('credit-card');
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -166,38 +167,41 @@ export default function CheckoutPage() {
       newErrors.zipCode = 'ZIP code must be 4 digits';
     }
 
-    // Card number validation (basic 16-digit validation)
-    const cardRegex = /^\d{16}$/;
-    if (!formData.cardNumber) {
-      newErrors.cardNumber = 'Card number is required';
-    } else if (!cardRegex.test(formData.cardNumber.replace(/\s/g, ''))) {
-      newErrors.cardNumber = 'Card number must be 16 digits';
-    }
-
-    // Expiry date validation (MM/YY format)
-    const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
-    if (!formData.expiryDate) {
-      newErrors.expiryDate = 'Expiry date is required';
-    } else if (!expiryRegex.test(formData.expiryDate)) {
-      newErrors.expiryDate = 'Use MM/YY format';
-    } else {
-      // Check if card is expired
-      const [month, year] = formData.expiryDate.split('/');
-      const currentDate = new Date();
-      const currentYear = currentDate.getFullYear() % 100;
-      const currentMonth = currentDate.getMonth() + 1;
-      
-      if (parseInt(year) < currentYear || (parseInt(year) === currentYear && parseInt(month) < currentMonth)) {
-        newErrors.expiryDate = 'Card has expired';
+    // Card validation only for credit card payment method
+    if (paymentMethod === 'credit-card') {
+      // Card number validation (basic 16-digit validation)
+      const cardRegex = /^\d{16}$/;
+      if (!formData.cardNumber) {
+        newErrors.cardNumber = 'Card number is required';
+      } else if (!cardRegex.test(formData.cardNumber.replace(/\s/g, ''))) {
+        newErrors.cardNumber = 'Card number must be 16 digits';
       }
-    }
 
-    // CVV validation
-    const cvvRegex = /^\d{3,4}$/;
-    if (!formData.cvv) {
-      newErrors.cvv = 'CVV is required';
-    } else if (!cvvRegex.test(formData.cvv)) {
-      newErrors.cvv = 'CVV must be 3-4 digits';
+      // Expiry date validation (MM/YY format)
+      const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+      if (!formData.expiryDate) {
+        newErrors.expiryDate = 'Expiry date is required';
+      } else if (!expiryRegex.test(formData.expiryDate)) {
+        newErrors.expiryDate = 'Use MM/YY format';
+      } else {
+        // Check if card is expired
+        const [month, year] = formData.expiryDate.split('/');
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear() % 100;
+        const currentMonth = currentDate.getMonth() + 1;
+        
+        if (parseInt(year) < currentYear || (parseInt(year) === currentYear && parseInt(month) < currentMonth)) {
+          newErrors.expiryDate = 'Card has expired';
+        }
+      }
+
+      // CVV validation
+      const cvvRegex = /^\d{3,4}$/;
+      if (!formData.cvv) {
+        newErrors.cvv = 'CVV is required';
+      } else if (!cvvRegex.test(formData.cvv)) {
+        newErrors.cvv = 'CVV must be 3-4 digits';
+      }
     }
 
     setErrors(newErrors);
@@ -431,38 +435,206 @@ export default function CheckoutPage() {
               <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                 <div className="flex items-center mb-6">
                   <CreditCard className="w-6 h-6 text-purple-600 mr-3" />
-                  <h2 className="text-xl font-semibold text-gray-900">Payment Information</h2>
+                  <h2 className="text-xl font-semibold text-gray-900">Payment Method</h2>
                 </div>
                 
+                {/* Payment Method Selection */}
                 <div className="mb-6">
-                  <InputField
-                    name="cardNumber"
-                    placeholder="1234 5678 9012 3456"
-                    icon={CreditCard}
-                    value={formData.cardNumber}
-                    onChange={handleInputChange}
-                    error={errors.cardNumber}
-                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Credit Card */}
+                    <div
+                      className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
+                        paymentMethod === 'credit-card'
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => setPaymentMethod('credit-card')}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <CreditCard className="w-6 h-6 text-blue-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">Credit/Debit Card</h3>
+                          <p className="text-sm text-gray-600">Visa, Mastercard, JCB</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* GCash */}
+                    <div
+                      className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
+                        paymentMethod === 'gcash'
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => setPaymentMethod('gcash')}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                          G₱
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">GCash</h3>
+                          <p className="text-sm text-gray-600">Mobile wallet</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Maya */}
+                    <div
+                      className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
+                        paymentMethod === 'maya'
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => setPaymentMethod('maya')}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                          M
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">Maya</h3>
+                          <p className="text-sm text-gray-600">Digital wallet</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* PayPal */}
+                    <div
+                      className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
+                        paymentMethod === 'paypal'
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => setPaymentMethod('paypal')}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                          PP
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">PayPal</h3>
+                          <p className="text-sm text-gray-600">Global payments</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="grid grid-cols-2 gap-6">
-                  <InputField
-                    name="expiryDate"
-                    placeholder="MM/YY"
-                    icon={Calendar}
-                    value={formData.expiryDate}
-                    onChange={handleInputChange}
-                    error={errors.expiryDate}
-                  />
-                  <InputField
-                    name="cvv"
-                    placeholder="CVV"
-                    icon={Lock}
-                    value={formData.cvv}
-                    onChange={handleInputChange}
-                    error={errors.cvv}
-                  />
-                </div>
+
+                {/* Credit Card Form */}
+                {paymentMethod === 'credit-card' && (
+                  <div className="space-y-6">
+                    <div>
+                      <InputField
+                        name="cardNumber"
+                        placeholder="1234 5678 9012 3456"
+                        icon={CreditCard}
+                        value={formData.cardNumber}
+                        onChange={handleInputChange}
+                        error={errors.cardNumber}
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-6">
+                      <InputField
+                        name="expiryDate"
+                        placeholder="MM/YY"
+                        icon={Calendar}
+                        value={formData.expiryDate}
+                        onChange={handleInputChange}
+                        error={errors.expiryDate}
+                      />
+                      <InputField
+                        name="cvv"
+                        placeholder="CVV"
+                        icon={Lock}
+                        value={formData.cvv}
+                        onChange={handleInputChange}
+                        error={errors.cvv}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* GCash Form */}
+                {paymentMethod === 'gcash' && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold mr-3">
+                        G₱
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">GCash Payment</h3>
+                        <p className="text-sm text-gray-600">You'll be redirected to GCash to complete payment</p>
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-lg p-4">
+                      <p className="text-sm text-gray-700 mb-2">
+                        <strong>Instructions:</strong>
+                      </p>
+                      <ol className="text-sm text-gray-600 space-y-1">
+                        <li>1. You'll be redirected to GCash app/website</li>
+                        <li>2. Log in with your GCash credentials</li>
+                        <li>3. Verify the payment amount and confirm</li>
+                        <li>4. Return to complete your order</li>
+                      </ol>
+                    </div>
+                  </div>
+                )}
+
+                {/* Maya Form */}
+                {paymentMethod === 'maya' && (
+                  <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold mr-3">
+                        M
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">Maya Payment</h3>
+                        <p className="text-sm text-gray-600">You'll be redirected to Maya to complete payment</p>
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-lg p-4">
+                      <p className="text-sm text-gray-700 mb-2">
+                        <strong>Instructions:</strong>
+                      </p>
+                      <ol className="text-sm text-gray-600 space-y-1">
+                        <li>1. You'll be redirected to Maya app/website</li>
+                        <li>2. Enter your Maya PIN or use biometrics</li>
+                        <li>3. Confirm the payment details</li>
+                        <li>4. Complete payment to finish your order</li>
+                      </ol>
+                    </div>
+                  </div>
+                )}
+
+                {/* PayPal Form */}
+                {paymentMethod === 'paypal' && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold mr-3">
+                        PP
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">PayPal Payment</h3>
+                        <p className="text-sm text-gray-600">You'll be redirected to PayPal to complete payment</p>
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-lg p-4">
+                      <p className="text-sm text-gray-700 mb-2">
+                        <strong>Benefits:</strong>
+                      </p>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        <li>• Buyer protection guaranteed</li>
+                        <li>• Pay with PayPal balance, bank, or card</li>
+                        <li>• Secure international payments</li>
+                        <li>• No need to share card details</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
                 
                 <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
                   <div className="flex items-center">
@@ -483,12 +655,22 @@ export default function CheckoutPage() {
                 {isProcessing ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Processing Payment...</span>
+                    <span>
+                      {paymentMethod === 'credit-card' && 'Processing Payment...'}
+                      {paymentMethod === 'gcash' && 'Connecting to GCash...'}
+                      {paymentMethod === 'maya' && 'Connecting to Maya...'}
+                      {paymentMethod === 'paypal' && 'Connecting to PayPal...'}
+                    </span>
                   </>
                 ) : (
                   <>
                     <Lock className="w-5 h-5" />
-                    <span>Complete Order - ₱{total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
+                    <span>
+                      {paymentMethod === 'credit-card' && `Complete Order - ₱${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
+                      {paymentMethod === 'gcash' && `Pay with GCash - ₱${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
+                      {paymentMethod === 'maya' && `Pay with Maya - ₱${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
+                      {paymentMethod === 'paypal' && `Pay with PayPal - ₱${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
+                    </span>
                   </>
                 )}
               </button>
