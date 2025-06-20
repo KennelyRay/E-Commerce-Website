@@ -47,6 +47,7 @@ export default function CartPage() {
             </p>
             <Link
               href="/products"
+              prefetch={false}
               className="bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
             >
               Start Shopping
@@ -183,6 +184,7 @@ export default function CartPage() {
 
               <Link
                 href="/checkout"
+                prefetch={false}
                 className="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center"
               >
                 Proceed to Checkout
@@ -190,6 +192,7 @@ export default function CartPage() {
 
               <Link
                 href="/products"
+                prefetch={false}
                 className="w-full mt-3 border border-gray-300 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center"
               >
                 Continue Shopping

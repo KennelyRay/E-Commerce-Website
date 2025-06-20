@@ -140,6 +140,7 @@ export default function HomePage() {
             </div>
             <Link 
               href="/products" 
+              prefetch={false}
               className="group bg-gradient-primary text-white px-8 py-4 rounded-xl font-semibold hover:opacity-90 transition-all duration-300 flex items-center"
             >
               View All Products
@@ -277,6 +278,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
               <Link
                 href="/products"
+                prefetch={false}
                 className="group bg-gradient-primary px-10 py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-all duration-300 flex items-center justify-center"
               >
                 Start Building
@@ -284,6 +286,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/contact"
+                prefetch={false}
                 className="group border-2 border-white/30 backdrop-blur-sm bg-white/10 px-10 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-gray-900 transition-all duration-300 flex items-center justify-center"
               >
                 Get Expert Help

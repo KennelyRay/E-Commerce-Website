@@ -33,7 +33,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <Link href={`/products/${product.id}`}>
+      <Link href={`/products/${product.id}`} prefetch={false}>
         <div className="relative">
           <img
             src={product.image}

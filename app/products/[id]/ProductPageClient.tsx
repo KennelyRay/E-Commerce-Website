@@ -46,6 +46,7 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
             </p>
             <Link
               href="/products"
+              prefetch={false}
               className="bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
             >
               Back to Products
@@ -89,6 +90,7 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
         {/* Back Button */}
         <Link
           href="/products"
+          prefetch={false}
           className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -419,6 +421,7 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                 <Link
                   key={relatedProduct.id}
                   href={`/products/${relatedProduct.id}`}
+                  prefetch={false}
                   className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
                 >
                   <img

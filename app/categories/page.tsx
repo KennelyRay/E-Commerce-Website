@@ -103,6 +103,7 @@ export default function CategoriesPage() {
               <Link
                 key={category.id}
                 href={`/products?category=${encodeURIComponent(category.name)}`}
+                prefetch={false}
                 className="group"
               >
                 <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden animate-slide-up"

@@ -216,10 +216,11 @@ export default function CheckoutPage() {
             <p className="text-gray-600 mb-8">
               Add some items to your cart before checking out.
             </p>
-            <Link
-              href="/products"
-              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
-            >
+                          <Link
+                href="/products"
+                prefetch={false}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
+              >
               Start Shopping
             </Link>
           </div>
@@ -249,12 +250,14 @@ export default function CheckoutPage() {
             <div className="space-y-4">
               <Link
                 href="/products"
+                prefetch={false}
                 className="block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
               >
                 Continue Shopping
               </Link>
               <Link
                 href="/home"
+                prefetch={false}
                 className="block text-gray-600 hover:text-gray-900 transition-colors"
               >
                 Return to Home
@@ -322,6 +325,7 @@ export default function CheckoutPage() {
         <div className="mb-8">
           <Link
             href="/cart"
+            prefetch={false}
             className="inline-flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors mb-6"
           >
             <ArrowLeft className="w-5 h-5" />

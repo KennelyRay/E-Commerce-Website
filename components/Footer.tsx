@@ -38,22 +38,22 @@ export const Footer: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/products" className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/products" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
                   All Products
                 </Link>
               </li>
               <li>
-                <Link href="/categories" className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/categories" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
                   Categories
                 </Link>
               </li>
               <li>
-                <Link href="/deals" className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/deals" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
                   Special Deals
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/about" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
                   About Us
                 </Link>
               </li>
@@ -65,22 +65,22 @@ export const Footer: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Customer Service</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/contact" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="/shipping" className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/shipping" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
                   Shipping Info
                 </Link>
               </li>
               <li>
-                <Link href="/returns" className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/returns" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
                   Returns & Exchanges
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/faq" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
                   FAQ
                 </Link>
               </li>
@@ -110,10 +110,10 @@ export const Footer: React.FC = () => {
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-gray-400">
             © 2024 VertixHub. All rights reserved. | 
-            <Link href="/privacy" className="hover:text-white transition-colors ml-1">
+            <Link href="/privacy" prefetch={false} className="hover:text-white transition-colors ml-1">
               Privacy Policy
             </Link> | 
-            <Link href="/terms" className="hover:text-white transition-colors ml-1">
+            <Link href="/terms" prefetch={false} className="hover:text-white transition-colors ml-1">
               Terms of Service
             </Link>
           </p>
