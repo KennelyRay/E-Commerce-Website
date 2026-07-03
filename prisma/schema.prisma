@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id             String   @id
+  name           String
+  description    String
+  price          Float
+  originalPrice  Float?
+  image          String
+  images         Json?
+  category       String
+  stock          Int
+  rating         Float
+  reviews        Int
+  featured       Boolean  @default(false)
+  tags           Json
+  specifications Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  orderItems     OrderItem[]
+}
+
+model User {
+  id         String   @id
+  name       String
+  username   String   @unique
+  email      String   @unique
+  password   String
+  isAdmin    Boolean  @default(false)
+  isBanned   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  orders     Order[]
+}
+
+model Order {
+  id                String      @id
+  orderNumber       String      @unique
+  userId            String
+  subtotal          Float
+  shipping          Float
+  tax               Float
+  total             Float
+  paymentMethod     String
+  status            String
+  createdAt         DateTime    @default(now())
+  estimatedDelivery DateTime
+  shippingAddress   Json
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items             OrderItem[]
+
+  @@index([userId, createdAt])
+}
+
+model OrderItem {
+  id              String  @id
+  orderId         String
+  productId       String?
+  quantity        Int
+  unitPrice       Float
+  productSnapshot Json
+  order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product         Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([productId])
+}
