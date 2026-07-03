@@ -5,7 +5,22 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { ShoppingBag, ArrowLeft, CreditCard, Lock, CheckCircle, AlertCircle, MapPin, Mail, User, Calendar } from 'lucide-react';
+import {
+  ShoppingBag,
+  ArrowLeft,
+  CreditCard,
+  Lock,
+  CheckCircle,
+  AlertCircle,
+  MapPin,
+  Mail,
+  User,
+  Calendar,
+  ShieldCheck,
+  Sparkles,
+  Truck,
+  Wallet,
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import { CheckoutFormData, Order, PaymentMethod } from '@/types';
 import { placeOrder } from '@/lib/shop';
@@ -22,15 +37,14 @@ interface FormErrors {
   cvv?: string;
 }
 
-// InputField component moved outside to prevent remounting
-const InputField = ({ 
-  name, 
-  type = 'text', 
-  placeholder, 
-  icon: Icon, 
-  value, 
-  onChange, 
-  error 
+const InputField = ({
+  name,
+  type = 'text',
+  placeholder,
+  icon: Icon,
+  value,
+  onChange,
+  error,
 }: {
   name: string;
   type?: string;
@@ -41,7 +55,6 @@ const InputField = ({
   error?: string;
 }) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Prevent form submission when Enter is pressed in input fields
     if (e.key === 'Enter') {
       e.preventDefault();
     }
@@ -50,7 +63,7 @@ const InputField = ({
   return (
     <div>
       <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
           <Icon className={`h-5 w-5 ${error ? 'text-red-400' : 'text-gray-400'}`} />
         </div>
         <input
@@ -60,7 +73,7 @@ const InputField = ({
           onChange={onChange}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 transition-colors ${
+          className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 transition-colors bg-white ${
             error
               ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
               : 'border-gray-200 focus:border-purple-500 focus:ring-purple-200'
@@ -76,6 +89,70 @@ const InputField = ({
     </div>
   );
 };
+
+const SectionCard = ({
+  icon: Icon,
+  title,
+  subtitle,
+  children,
+}: {
+  icon: any;
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+}) => (
+  <div className="bg-white rounded-[1.75rem] shadow-sm p-6 lg:p-8 border border-gray-100">
+    <div className="flex items-start gap-4 mb-6">
+      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-lg">
+        <Icon className="w-5 h-5" />
+      </div>
+      <div>
+        <h2 className="text-xl lg:text-2xl font-black text-gray-900">{title}</h2>
+        {subtitle ? <p className="text-sm text-gray-500 mt-1">{subtitle}</p> : null}
+      </div>
+    </div>
+    {children}
+  </div>
+);
+
+const PaymentOption = ({
+  active,
+  title,
+  description,
+  accent,
+  badge,
+  onClick,
+}: {
+  active: boolean;
+  title: string;
+  description: string;
+  accent: React.ReactNode;
+  badge?: string;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`w-full rounded-2xl border-2 p-4 text-left transition-all ${
+      active ? 'border-purple-500 bg-purple-50 shadow-lg' : 'border-gray-200 hover:border-gray-300 bg-white'
+    }`}
+  >
+    <div className="flex items-start justify-between gap-3">
+      <div className="flex items-center gap-3">
+        {accent}
+        <div>
+          <h3 className="font-bold text-gray-900">{title}</h3>
+          <p className="text-sm text-gray-600">{description}</p>
+        </div>
+      </div>
+      {badge ? (
+        <span className={`rounded-full px-3 py-1 text-xs font-bold ${active ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600'}`}>
+          {badge}
+        </span>
+      ) : null}
+    </div>
+  </button>
+);
 
 export default function CheckoutPage() {
   const { user, isLoading } = useAuth();
@@ -104,7 +181,6 @@ export default function CheckoutPage() {
     cvv: ''
   });
 
-  // Update email when user loads
   useEffect(() => {
     if (user?.email && !formData.email) {
       setFormData(prev => ({ ...prev, email: user.email }));
@@ -129,7 +205,6 @@ export default function CheckoutPage() {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email) {
       newErrors.email = 'Email is required';
@@ -137,7 +212,6 @@ export default function CheckoutPage() {
       newErrors.email = 'Please enter a valid email address';
     }
 
-    // Name validation
     if (!formData.firstName.trim()) {
       newErrors.firstName = 'First name is required';
     } else if (formData.firstName.trim().length < 2) {
@@ -150,7 +224,6 @@ export default function CheckoutPage() {
       newErrors.lastName = 'Last name must be at least 2 characters';
     }
 
-    // Address validation
     if (!formData.address.trim()) {
       newErrors.address = 'Address is required';
     } else if (formData.address.trim().length < 10) {
@@ -161,7 +234,6 @@ export default function CheckoutPage() {
       newErrors.city = 'City is required';
     }
 
-    // ZIP code validation (Philippine postal codes are 4 digits)
     const zipRegex = /^\d{4}$/;
     if (!formData.zipCode) {
       newErrors.zipCode = 'ZIP code is required';
@@ -169,9 +241,7 @@ export default function CheckoutPage() {
       newErrors.zipCode = 'ZIP code must be 4 digits';
     }
 
-    // Card validation only for credit card payment method
     if (paymentMethod === 'credit-card') {
-      // Card number validation (basic 16-digit validation)
       const cardRegex = /^\d{16}$/;
       if (!formData.cardNumber) {
         newErrors.cardNumber = 'Card number is required';
@@ -179,14 +249,12 @@ export default function CheckoutPage() {
         newErrors.cardNumber = 'Card number must be 16 digits';
       }
 
-      // Expiry date validation (MM/YY format)
       const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
       if (!formData.expiryDate) {
         newErrors.expiryDate = 'Expiry date is required';
       } else if (!expiryRegex.test(formData.expiryDate)) {
         newErrors.expiryDate = 'Use MM/YY format';
       } else {
-        // Check if card is expired
         const [month, year] = formData.expiryDate.split('/');
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear() % 100;
@@ -197,7 +265,6 @@ export default function CheckoutPage() {
         }
       }
 
-      // CVV validation
       const cvvRegex = /^\d{3,4}$/;
       if (!formData.cvv) {
         newErrors.cvv = 'CVV is required';
@@ -212,13 +279,11 @@ export default function CheckoutPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    // Format card number with spaces
+
     if (name === 'cardNumber') {
       const formatted = value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
       setFormData(prev => ({ ...prev, [name]: formatted }));
-    } 
-    // Format expiry date
+    }
     else if (name === 'expiryDate') {
       let formatted = value.replace(/\D/g, '');
       if (formatted.length >= 2) {
@@ -226,12 +291,10 @@ export default function CheckoutPage() {
       }
       setFormData(prev => ({ ...prev, [name]: formatted }));
     }
-    // Format CVV (numbers only)
     else if (name === 'cvv') {
       const formatted = value.replace(/\D/g, '').substring(0, 4);
       setFormData(prev => ({ ...prev, [name]: formatted }));
     }
-    // Format ZIP code (numbers only, 4 digits)
     else if (name === 'zipCode') {
       const formatted = value.replace(/\D/g, '').substring(0, 4);
       setFormData(prev => ({ ...prev, [name]: formatted }));
@@ -240,7 +303,6 @@ export default function CheckoutPage() {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
 
-    // Clear error when user starts typing
     if (errors[name as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
@@ -372,12 +434,20 @@ export default function CheckoutPage() {
   const shipping = subtotal > 2500 ? 0 : 150;
   const tax = subtotal * 0.12;
   const total = subtotal + shipping + tax;
+  const freeShippingGap = Math.max(0, 2500 - subtotal);
+  const paymentButtonLabel =
+    paymentMethod === 'credit-card'
+      ? 'Complete Order'
+      : paymentMethod === 'gcash'
+        ? 'Pay with GCash'
+        : paymentMethod === 'maya'
+          ? 'Pay with Maya'
+          : 'Pay with PayPal';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="mb-10">
           <Link
             href="/cart"
             prefetch={false}
@@ -386,23 +456,43 @@ export default function CheckoutPage() {
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Cart</span>
           </Link>
-          
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Checkout</h1>
-            <p className="text-gray-600">Complete your order securely</p>
+          <div className="rounded-[2rem] bg-gradient-to-r from-slate-900 via-purple-900 to-fuchsia-900 text-white p-8 lg:p-10 shadow-2xl overflow-hidden relative">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_30%)] pointer-events-none"></div>
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-bold mb-6">
+                <Sparkles className="w-4 h-4 text-yellow-300" />
+                Secure checkout
+              </div>
+              <h1 className="text-4xl lg:text-5xl font-black mb-3">Checkout</h1>
+              <p className="text-white/80 text-lg max-w-2xl">
+                Finalize your order with protected payment options, delivery details, and a clear order summary.
+              </p>
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="rounded-2xl bg-white/10 border border-white/10 p-4">
+                  <p className="text-sm text-white/65 mb-1">Items in order</p>
+                  <p className="text-2xl font-black">{getTotalItems()}</p>
+                </div>
+                <div className="rounded-2xl bg-white/10 border border-white/10 p-4">
+                  <p className="text-sm text-white/65 mb-1">Payment protection</p>
+                  <p className="text-2xl font-black">256-bit SSL</p>
+                </div>
+                <div className="rounded-2xl bg-white/10 border border-white/10 p-4">
+                  <p className="text-sm text-white/65 mb-1">Delivery estimate</p>
+                  <p className="text-2xl font-black">3-5 days</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Checkout Form */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Contact Information */}
-              <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center mb-6">
-                  <Mail className="w-6 h-6 text-purple-600 mr-3" />
-                  <h2 className="text-xl font-semibold text-gray-900">Contact Information</h2>
-                </div>
+              <SectionCard
+                icon={Mail}
+                title="Contact Information"
+                subtitle="Use an active email so you receive order updates and payment confirmations."
+              >
                 <InputField
                   name="email"
                   type="email"
@@ -412,15 +502,13 @@ export default function CheckoutPage() {
                   onChange={handleInputChange}
                   error={errors.email}
                 />
-              </div>
+              </SectionCard>
 
-              {/* Shipping Address */}
-              <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center mb-6">
-                  <MapPin className="w-6 h-6 text-purple-600 mr-3" />
-                  <h2 className="text-xl font-semibold text-gray-900">Shipping Address</h2>
-                </div>
-                
+              <SectionCard
+                icon={MapPin}
+                title="Shipping Address"
+                subtitle="We currently ship across the Philippines with secure packaging and tracking support."
+              >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                   <InputField
                     name="firstName"
@@ -439,7 +527,7 @@ export default function CheckoutPage() {
                     error={errors.lastName}
                   />
                 </div>
-                
+
                 <div className="mb-6">
                   <InputField
                     name="address"
@@ -450,7 +538,7 @@ export default function CheckoutPage() {
                     error={errors.address}
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <InputField
                     name="city"
@@ -469,103 +557,66 @@ export default function CheckoutPage() {
                     error={errors.zipCode}
                   />
                 </div>
-              </div>
+              </SectionCard>
 
-              {/* Payment Information */}
-              <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center mb-6">
-                  <CreditCard className="w-6 h-6 text-purple-600 mr-3" />
-                  <h2 className="text-xl font-semibold text-gray-900">Payment Method</h2>
-                </div>
-                
-                {/* Payment Method Selection */}
+              <SectionCard
+                icon={CreditCard}
+                title="Payment Method"
+                subtitle="Choose the checkout method that works best for you."
+              >
                 <div className="mb-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Credit Card */}
-                    <div
-                      className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
-                        paymentMethod === 'credit-card'
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                    <PaymentOption
+                      active={paymentMethod === 'credit-card'}
+                      title="Credit/Debit Card"
+                      description="Visa, Mastercard, JCB"
+                      badge="Fastest"
                       onClick={() => setPaymentMethod('credit-card')}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      accent={
+                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                           <CreditCard className="w-6 h-6 text-blue-600" />
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">Credit/Debit Card</h3>
-                          <p className="text-sm text-gray-600">Visa, Mastercard, JCB</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* GCash */}
-                    <div
-                      className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
-                        paymentMethod === 'gcash'
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      }
+                    />
+                    <PaymentOption
+                      active={paymentMethod === 'gcash'}
+                      title="GCash"
+                      description="Mobile wallet"
+                      badge="Popular"
                       onClick={() => setPaymentMethod('gcash')}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                      accent={
+                        <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-sm">
                           G₱
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">GCash</h3>
-                          <p className="text-sm text-gray-600">Mobile wallet</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Maya */}
-                    <div
-                      className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
-                        paymentMethod === 'maya'
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      }
+                    />
+                    <PaymentOption
+                      active={paymentMethod === 'maya'}
+                      title="Maya"
+                      description="Digital wallet"
                       onClick={() => setPaymentMethod('maya')}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                      accent={
+                        <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center text-white font-bold text-sm">
                           M
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">Maya</h3>
-                          <p className="text-sm text-gray-600">Digital wallet</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* PayPal */}
-                    <div
-                      className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
-                        paymentMethod === 'paypal'
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      }
+                    />
+                    <PaymentOption
+                      active={paymentMethod === 'paypal'}
+                      title="PayPal"
+                      description="Global payments"
                       onClick={() => setPaymentMethod('paypal')}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                      accent={
+                        <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white font-bold text-sm">
                           PP
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">PayPal</h3>
-                          <p className="text-sm text-gray-600">Global payments</p>
-                        </div>
-                      </div>
-                    </div>
+                      }
+                    />
                   </div>
                 </div>
 
-                {/* Credit Card Form */}
                 {paymentMethod === 'credit-card' && (
-                  <div className="space-y-6">
+                  <div className="space-y-6 rounded-[1.5rem] bg-slate-50 p-5 border border-slate-100">
                     <div>
                       <InputField
                         name="cardNumber"
@@ -576,7 +627,7 @@ export default function CheckoutPage() {
                         error={errors.cardNumber}
                       />
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-6">
                       <InputField
                         name="expiryDate"
@@ -598,9 +649,8 @@ export default function CheckoutPage() {
                   </div>
                 )}
 
-                {/* GCash Form */}
                 {paymentMethod === 'gcash' && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-[1.5rem] p-6">
                     <div className="flex items-center mb-4">
                       <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold mr-3">
                         G₱
@@ -624,9 +674,8 @@ export default function CheckoutPage() {
                   </div>
                 )}
 
-                {/* Maya Form */}
                 {paymentMethod === 'maya' && (
-                  <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                  <div className="bg-green-50 border border-green-200 rounded-[1.5rem] p-6">
                     <div className="flex items-center mb-4">
                       <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold mr-3">
                         M
@@ -650,9 +699,8 @@ export default function CheckoutPage() {
                   </div>
                 )}
 
-                {/* PayPal Form */}
                 {paymentMethod === 'paypal' && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-[1.5rem] p-6">
                     <div className="flex items-center mb-4">
                       <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold mr-3">
                         PP
@@ -675,8 +723,8 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                 )}
-                
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-2xl">
                   <div className="flex items-center">
                     <Lock className="w-5 h-5 text-blue-600 mr-2" />
                     <p className="text-sm text-blue-800">
@@ -684,13 +732,12 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </SectionCard>
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isProcessing || items.length === 0}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600 text-white py-5 px-6 rounded-2xl font-bold text-lg hover:opacity-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg"
               >
                 {isProcessing ? (
                   <>
@@ -705,60 +752,61 @@ export default function CheckoutPage() {
                 ) : (
                   <>
                     <Lock className="w-5 h-5" />
-                    <span>
-                      {paymentMethod === 'credit-card' && `Complete Order - ₱${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
-                      {paymentMethod === 'gcash' && `Pay with GCash - ₱${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
-                      {paymentMethod === 'maya' && `Pay with Maya - ₱${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
-                      {paymentMethod === 'paypal' && `Pay with PayPal - ₱${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
-                    </span>
+                    <span>{paymentButtonLabel} - ₱{total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
                   </>
                 )}
               </button>
             </form>
           </div>
 
-          {/* Order Summary */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 h-fit border border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
-            
-            {/* Items */}
-            <div className="space-y-4 mb-6">
-              {items.map((item) => (
-                <div key={item.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                  <img
-                    src={item.product.image}
-                    alt={item.product.name}
-                    className="w-12 h-12 object-cover rounded-lg"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-medium text-gray-900 truncate">{item.product.name}</h3>
-                    <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+          <div className="lg:sticky lg:top-8 space-y-6 h-fit">
+            <div className="rounded-[2rem] bg-gradient-to-br from-slate-900 via-purple-900 to-fuchsia-900 text-white p-6 lg:p-8 shadow-2xl">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-black">Order Summary</h2>
+                  <p className="text-white/70 text-sm">Review your items before payment</p>
+                </div>
+                <div className="rounded-2xl bg-white/10 px-4 py-3">
+                  <p className="text-xs uppercase tracking-[0.16em] text-white/55 mb-1">Total</p>
+                  <p className="text-2xl font-black">₱{total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                {items.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3 rounded-2xl bg-white/10 border border-white/10 p-3">
+                    <img
+                      src={item.product.image}
+                      alt={item.product.name}
+                      className="w-14 h-14 object-cover rounded-xl"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-semibold text-white truncate">{item.product.name}</h3>
+                      <p className="text-sm text-white/65">Qty: {item.quantity}</p>
+                    </div>
+                    <span className="text-sm font-bold text-white">
+                      ₱{(item.product.price * item.quantity).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                    </span>
                   </div>
-                  <span className="text-sm font-semibold text-gray-900">
-                    ₱{(item.product.price * item.quantity).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                ))}
+              </div>
+
+              <div className="space-y-3 border-t border-white/10 pt-5 text-sm">
+                <div className="flex justify-between text-white/75">
+                  <span>Subtotal ({getTotalItems()} items)</span>
+                  <span>₱{subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
+                </div>
+                <div className="flex justify-between text-white/75">
+                  <span>Shipping</span>
+                  <span className={shipping === 0 ? 'text-emerald-300 font-semibold' : ''}>
+                    {shipping === 0 ? 'FREE' : `₱${shipping.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
                   </span>
                 </div>
-              ))}
-            </div>
-
-            {/* Totals */}
-            <div className="space-y-3 mb-6 border-t border-gray-200 pt-4">
-              <div className="flex justify-between text-gray-600">
-                <span>Subtotal ({getTotalItems()} items)</span>
-                <span>₱{subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
-              </div>
-              <div className="flex justify-between text-gray-600">
-                <span>Shipping</span>
-                <span className={shipping === 0 ? 'text-green-600 font-medium' : ''}>
-                  {shipping === 0 ? 'FREE' : `₱${shipping.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
-                </span>
-              </div>
-              <div className="flex justify-between text-gray-600">
-                <span>VAT (12%)</span>
-                <span>₱{tax.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
-              </div>
-              <div className="border-t border-gray-200 pt-3">
-                <div className="flex justify-between text-xl font-bold text-gray-900">
+                <div className="flex justify-between text-white/75">
+                  <span>VAT (12%)</span>
+                  <span>₱{tax.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
+                </div>
+                <div className="border-t border-white/10 pt-3 flex justify-between text-xl font-black">
                   <span>Total</span>
                   <span>₱{total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
                 </div>
@@ -766,26 +814,34 @@ export default function CheckoutPage() {
             </div>
 
             {subtotal < 2500 && (
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-                <p className="text-sm text-blue-800">
-                  💡 Add ₱{(2500 - subtotal).toLocaleString('en-PH', { minimumFractionDigits: 2 })} more for free shipping!
-                </p>
+              <div className="rounded-[1.5rem] bg-blue-50 border border-blue-200 p-5">
+                <div className="flex items-start gap-3">
+                  <Truck className="w-5 h-5 text-blue-600 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-blue-900">Unlock free shipping</p>
+                    <p className="text-sm text-blue-800 mt-1">
+                      Add ₱{freeShippingGap.toLocaleString('en-PH', { minimumFractionDigits: 2 })} more to qualify for free delivery.
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
 
-            {/* Trust Badges */}
-            <div className="space-y-2 text-xs text-gray-500">
-              <div className="flex items-center">
-                <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                <span>30-day money-back guarantee</span>
-              </div>
-              <div className="flex items-center">
-                <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                <span>2-year manufacturer warranty</span>
-              </div>
-              <div className="flex items-center">
-                <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                <span>Secure payment processing</span>
+            <div className="rounded-[1.5rem] bg-white border border-gray-100 p-6 shadow-sm">
+              <h3 className="text-lg font-black text-gray-900 mb-4">Why customers feel safe here</h3>
+              <div className="space-y-3 text-sm text-gray-600">
+                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
+                  <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                  <span>30-day money-back guarantee</span>
+                </div>
+                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <span>2-year manufacturer warranty</span>
+                </div>
+                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
+                  <Wallet className="w-5 h-5 text-purple-600" />
+                  <span>Secure payment processing and order protection</span>
+                </div>
               </div>
             </div>
           </div>
