@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { Modal } from '@/components/Modal';
 import { 
   Monitor, Cpu, HardDrive, User, Lock, Mail, Sparkles, Crown, 
   Star, Shield, Award, Rocket, Heart, Package, Eye, EyeOff,
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordMismatchOpen, setPasswordMismatchOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -54,7 +56,7 @@ export default function LoginPage() {
       }
     } else {
       if (formData.password !== formData.confirmPassword) {
-        alert('Passwords do not match');
+        setPasswordMismatchOpen(true);
         setIsLoading(false);
         return;
       }
@@ -444,6 +446,15 @@ export default function LoginPage() {
           animation: slide-in-right 0.8s ease-out;
         }
       `}</style>
+
+      <Modal
+        isOpen={passwordMismatchOpen}
+        title="Passwords Do Not Match"
+        description="Please make sure your password and confirmation password are identical before creating your account."
+        confirmText="Got It"
+        onConfirm={() => setPasswordMismatchOpen(false)}
+        onClose={() => setPasswordMismatchOpen(false)}
+      />
     </div>
   );
 } 
