@@ -42,30 +42,52 @@ export interface User {
   createdAt: string;
 }
 
+export type PaymentMethod = 'credit-card' | 'gcash' | 'maya' | 'paypal';
+
 export interface Address {
-  street: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  address: string;
   city: string;
-  state: string;
   zipCode: string;
   country: string;
 }
 
 export interface Order {
   id: string;
+  orderNumber: string;
   userId: string;
   items: CartItem[];
+  subtotal: number;
+  shipping: number;
+  tax: number;
   total: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered';
+  paymentMethod: PaymentMethod;
+  status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered';
   createdAt: string;
+  estimatedDelivery: string;
   shippingAddress: Address;
 }
 
 export interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (name: string, email: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<boolean>;
+  register: (name: string, username: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
+}
+
+export interface CheckoutFormData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  address: string;
+  city: string;
+  zipCode: string;
+  cardNumber: string;
+  expiryDate: string;
+  cvv: string;
 }
 
 export interface AdminStats {

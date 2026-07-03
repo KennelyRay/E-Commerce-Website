@@ -10,16 +10,24 @@ import {
   Sparkles, Heart, Award, Target, Rocket, CheckCircle, TrendingDown,
   Database, Settings, Bell, ChevronDown, ArrowRight, Monitor, Cpu
 } from 'lucide-react';
-import { Product, User } from '@/types';
-import productsData from '@/data/products.json';
+import { Order, Product, User } from '@/types';
 import toast from 'react-hot-toast';
+import {
+  emitStorefrontUpdate,
+  getCatalogProducts,
+  getOrders,
+  getUsers,
+  saveUsers,
+  updateCatalogProduct,
+} from '@/lib/shop';
 
 export default function AdminPanel() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [products] = useState<Product[]>(productsData.products as unknown as Product[]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
@@ -30,17 +38,18 @@ export default function AdminPanel() {
   }, [user, isLoading, router]);
 
   useEffect(() => {
-    // Load users from localStorage
-    const storedUsers = localStorage.getItem('vertixhub_users');
-    if (storedUsers) {
-      try {
-        const parsedUsers = JSON.parse(storedUsers);
-        setUsers(parsedUsers);
-      } catch (error) {
-        console.error('Failed to parse users from localStorage:', error);
-        setUsers([]);
-      }
-    }
+    const loadAdminData = () => {
+      setProducts(getCatalogProducts());
+      setUsers(getUsers());
+      setOrders(getOrders());
+    };
+
+    loadAdminData();
+    window.addEventListener('vertixhub:storefront-updated', loadAdminData);
+
+    return () => {
+      window.removeEventListener('vertixhub:storefront-updated', loadAdminData);
+    };
   }, []);
 
   if (isLoading) {
@@ -81,19 +90,38 @@ export default function AdminPanel() {
   ];
 
   const handleToggleBan = (userId: string) => {
-    const updatedUsers = users.map(u => 
+    const updatedUsers = users.map((u) =>
       u.id === userId ? { ...u, isBanned: !u.isBanned } : u
     );
     setUsers(updatedUsers);
-    localStorage.setItem('vertixhub_users', JSON.stringify(updatedUsers));
-    
-    const targetUser = users.find(u => u.id === userId);
+    saveUsers(updatedUsers);
+
+    const targetUser = users.find((u) => u.id === userId);
     toast.success(`User ${targetUser?.isBanned ? 'unbanned' : 'banned'} successfully!`);
   };
 
-  const totalRevenue = products.reduce((sum, product) => sum + (product.price * (100 - product.stock)), 0);
-  const lowStockProducts = products.filter(p => p.stock < 10);
-  const totalOrders = 847;
+  const handleAdjustStock = (productId: string, nextStock: number) => {
+    const updatedProduct = updateCatalogProduct(productId, { stock: Math.max(0, nextStock) });
+    if (updatedProduct) {
+      setProducts(getCatalogProducts());
+      toast.success(`${updatedProduct.name} stock updated.`);
+    }
+  };
+
+  const handleToggleFeatured = (productId: string) => {
+    const product = products.find((entry) => entry.id === productId);
+    if (!product) {
+      return;
+    }
+
+    updateCatalogProduct(productId, { featured: !product.featured });
+    setProducts(getCatalogProducts());
+    toast.success(`${product.name} ${product.featured ? 'removed from' : 'added to'} featured list.`);
+  };
+
+  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+  const lowStockProducts = products.filter((p) => p.stock < 10);
+  const totalOrders = orders.length;
   const avgRating = products.reduce((sum, p) => sum + p.rating, 0) / products.length;
 
   // Filter products for display
@@ -102,6 +130,8 @@ export default function AdminPanel() {
     const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const recentOrders = orders.slice(0, 4);
 
   const StatCard = ({ title, value, change, icon: Icon, color, bgColor, description }: any) => (
     <div className={`${bgColor} border border-white/10 rounded-3xl p-8 hover:scale-105 transition-all duration-500 shadow-2xl backdrop-blur-sm group cursor-pointer`}>
@@ -316,7 +346,14 @@ export default function AdminPanel() {
                       </div>
                     </div>
                   ))}
-                  <button className="w-full mt-4 bg-gradient-to-r from-red-500 to-orange-500 text-white py-3 px-6 rounded-2xl font-bold hover:scale-105 transition-all duration-300 flex items-center justify-center group">
+                  <button
+                    onClick={() => {
+                      lowStockProducts.forEach((product) =>
+                        handleAdjustStock(product.id, Math.max(product.stock, 10)),
+                      );
+                    }}
+                    className="w-full mt-4 bg-gradient-to-r from-red-500 to-orange-500 text-white py-3 px-6 rounded-2xl font-bold hover:scale-105 transition-all duration-300 flex items-center justify-center group"
+                  >
                     <Package className="w-5 h-5 mr-2" />
                     Restock Items
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
@@ -336,23 +373,30 @@ export default function AdminPanel() {
                   </div>
                 </div>
                 <div className="space-y-4">
-                  {[
-                    { action: 'New order placed', detail: 'RTX 4090 Gaming X Trio', time: '5 minutes ago', icon: ShoppingCart },
-                    { action: 'User registered', detail: 'Gaming enthusiast joined', time: '12 minutes ago', icon: Users },
-                    { action: 'Product updated', detail: 'Intel i9-13900K pricing', time: '1 hour ago', icon: Package },
-                    { action: 'Review submitted', detail: '5-star rating received', time: '2 hours ago', icon: Star }
-                  ].map((activity, index) => (
-                    <div key={index} className="flex items-center space-x-4 p-4 bg-white/5 rounded-2xl">
+                  {recentOrders.map((order) => (
+                    <div key={order.id} className="flex items-center space-x-4 p-4 bg-white/5 rounded-2xl">
                       <div className="p-2 bg-blue-500/20 rounded-xl">
-                        <activity.icon className="w-5 h-5 text-blue-400" />
+                        <ShoppingCart className="w-5 h-5 text-blue-400" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-white font-bold text-sm">{activity.action}</p>
-                        <p className="text-white/60 text-xs">{activity.detail}</p>
+                        <p className="text-white font-bold text-sm">New order placed</p>
+                        <p className="text-white/60 text-xs">
+                          {order.orderNumber} • {order.items.length} item(s)
+                        </p>
                       </div>
-                      <p className="text-white/40 text-xs">{activity.time}</p>
+                      <p className="text-white/40 text-xs">
+                        {new Date(order.createdAt).toLocaleDateString('en-PH', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </p>
                     </div>
                   ))}
+                  {recentOrders.length === 0 && (
+                    <div className="p-4 bg-white/5 rounded-2xl text-white/60 text-sm">
+                      No order activity yet.
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -472,14 +516,35 @@ export default function AdminPanel() {
                     </div>
                   </div>
 
-                  <div className="flex space-x-3">
-                    <button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-2xl font-bold hover:scale-105 transition-all duration-300 flex items-center justify-center group">
-                      <Edit className="w-5 h-5 mr-2" />
-                      Edit
-                    </button>
-                    <button className="bg-gradient-to-r from-red-500 to-pink-500 text-white py-3 px-4 rounded-2xl font-bold hover:scale-105 transition-all duration-300">
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <button
+                        onClick={() => handleAdjustStock(product.id, product.stock - 1)}
+                        className="flex-1 bg-white/10 text-white py-2 px-4 rounded-2xl font-bold"
+                      >
+                        -1 Stock
+                      </button>
+                      <button
+                        onClick={() => handleAdjustStock(product.id, product.stock + 1)}
+                        className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-2xl font-bold"
+                      >
+                        +1 Stock
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <button
+                        onClick={() => handleToggleFeatured(product.id)}
+                        className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-black py-2 px-4 rounded-2xl font-bold"
+                      >
+                        {product.featured ? 'Unfeature' : 'Feature'}
+                      </button>
+                      <button
+                        onClick={() => handleAdjustStock(product.id, 0)}
+                        className="flex-1 bg-gradient-to-r from-red-500 to-pink-500 text-white py-2 px-4 rounded-2xl font-bold"
+                      >
+                        Mark OOS
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -487,7 +552,10 @@ export default function AdminPanel() {
 
             {/* Add Product Button */}
             <div className="text-center mt-12">
-              <button className="inline-flex items-center space-x-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-lg hover:scale-105 transition-all duration-300 shadow-2xl shadow-green-500/25 group">
+              <button
+                onClick={() => toast('Static catalog detected. Add new products in `data/products.json` or extend the API layer.')}
+                className="inline-flex items-center space-x-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-lg hover:scale-105 transition-all duration-300 shadow-2xl shadow-green-500/25 group"
+              >
                 <Plus className="w-6 h-6" />
                 <span>Add New Legendary Product</span>
                 <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />

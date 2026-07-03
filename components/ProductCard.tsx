@@ -15,6 +15,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (product.stock <= 0) {
+      return;
+    }
     addToCart(product);
   };
 
@@ -84,10 +87,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="px-4 pb-4">
         <button
           onClick={handleAddToCart}
-          className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors duration-200 flex items-center justify-center space-x-2"
+          disabled={product.stock <= 0}
+          className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors duration-200 flex items-center justify-center space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           <ShoppingCart className="w-4 h-4" />
-          <span>Add to Cart</span>
+          <span>{product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}</span>
         </button>
       </div>
     </div>

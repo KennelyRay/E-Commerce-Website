@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { ShoppingBag, ArrowLeft, CreditCard, Lock, CheckCircle, AlertCircle, MapPin, Mail, User, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { CheckoutFormData, Order, PaymentMethod } from '@/types';
+import { placeOrder } from '@/lib/shop';
 
 interface FormErrors {
   email?: string;
@@ -80,9 +82,9 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotalPrice, getTotalItems, clearCart } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [orderComplete, setOrderComplete] = useState(false);
+  const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [paymentMethod, setPaymentMethod] = useState('credit-card');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit-card');
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -90,7 +92,7 @@ export default function CheckoutPage() {
     }
   }, [user, isLoading, router]);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CheckoutFormData>({
     email: user?.email || '',
     firstName: '',
     lastName: '',
@@ -254,16 +256,44 @@ export default function CheckoutPage() {
 
     setIsProcessing(true);
 
-    // Simulate payment processing
     setTimeout(() => {
-      setIsProcessing(false);
-      setOrderComplete(true);
-      clearCart();
-      toast.success('Order placed successfully!');
-    }, 3000);
+      try {
+        if (!user) {
+          throw new Error('You must be logged in to place an order.');
+        }
+
+        const order = placeOrder({
+          user,
+          items,
+          shippingAddress: {
+            firstName: formData.firstName.trim(),
+            lastName: formData.lastName.trim(),
+            email: formData.email.trim(),
+            address: formData.address.trim(),
+            city: formData.city.trim(),
+            zipCode: formData.zipCode.trim(),
+            country: 'Philippines',
+          },
+          paymentMethod,
+          subtotal,
+          shipping,
+          tax,
+          total,
+        });
+
+        setCompletedOrder(order);
+        clearCart();
+        toast.success('Order placed successfully!');
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to place order.';
+        toast.error(message);
+      } finally {
+        setIsProcessing(false);
+      }
+    }, 1500);
   };
 
-  if (items.length === 0 && !orderComplete) {
+  if (items.length === 0 && !completedOrder) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -288,7 +318,7 @@ export default function CheckoutPage() {
     );
   }
 
-  if (orderComplete) {
+  if (completedOrder) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -303,8 +333,18 @@ export default function CheckoutPage() {
             </p>
             <div className="bg-gray-50 rounded-xl p-6 mb-8">
               <h3 className="font-semibold text-gray-900 mb-2">Order Details</h3>
-              <p className="text-gray-600">Order #: VTX-{Date.now().toString().slice(-8)}</p>
-              <p className="text-gray-600">Estimated delivery: 3-5 business days</p>
+              <p className="text-gray-600">Order #: {completedOrder.orderNumber}</p>
+              <p className="text-gray-600">
+                Estimated delivery:{' '}
+                {new Date(completedOrder.estimatedDelivery).toLocaleDateString('en-PH', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </p>
+              <p className="text-gray-600">
+                Payment method: {completedOrder.paymentMethod.replace('-', ' ')}
+              </p>
             </div>
             <div className="space-y-4">
               <Link
@@ -315,11 +355,11 @@ export default function CheckoutPage() {
                 Continue Shopping
               </Link>
               <Link
-                href="/home"
+                href="/account"
                 prefetch={false}
                 className="block text-gray-600 hover:text-gray-900 transition-colors"
               >
-                Return to Home
+                View My Orders
               </Link>
             </div>
           </div>
@@ -329,8 +369,8 @@ export default function CheckoutPage() {
   }
 
   const subtotal = getTotalPrice();
-  const shipping = subtotal > 2500 ? 0 : 150; // Free shipping over ₱2,500
-  const tax = subtotal * 0.12; // 12% VAT in Philippines
+  const shipping = subtotal > 2500 ? 0 : 150;
+  const tax = subtotal * 0.12;
   const total = subtotal + shipping + tax;
 
   return (

@@ -1,16 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User } from '@/types';
+import { AuthContextType, User } from '@/types';
 import toast from 'react-hot-toast';
-
-interface AuthContextType {
-  user: User | null;
-  isLoading: boolean;
-  login: (username: string, password: string) => Promise<boolean>;
-  register: (name: string, username: string, email: string, password: string) => Promise<boolean>;
-  logout: () => void;
-}
+import { ensureAdminUser, getCurrentUser, getUsers, saveUsers, setCurrentUser } from '@/lib/shop';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -21,28 +14,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const initializeAuth = () => {
       try {
-        // Check for existing user session
-        const savedUser = localStorage.getItem('vertixhub_current_user');
+        const users = ensureAdminUser();
+        const savedUser = getCurrentUser();
+
         if (savedUser) {
-          try {
-            const userData = JSON.parse(savedUser);
-            // Check if user still exists in the users list and isn't banned
-            const users = JSON.parse(localStorage.getItem('vertixhub_users') || '[]');
-            const dbUser = users.find((u: User) => u.username === userData.username);
-            if (dbUser && !dbUser.isBanned) {
-              setUser(dbUser);
-            } else {
-              // User no longer exists or is banned, clear session
-              localStorage.removeItem('vertixhub_current_user');
-            }
-          } catch (error) {
-            console.error('Error parsing saved user data:', error);
-            localStorage.removeItem('vertixhub_current_user');
+          const existingUser = users.find(
+            (candidate) => candidate.username.toLowerCase() === savedUser.username.toLowerCase(),
+          );
+
+          if (existingUser && !existingUser.isBanned) {
+            setUser(existingUser);
+            setCurrentUser(existingUser);
+          } else {
+            setCurrentUser(null);
           }
         }
-
-        // Ensure admin user exists
-        ensureAdminExists();
       } catch (error) {
         console.error('Failed to initialize authentication:', error);
         toast.error('Failed to initialize application. Please refresh the page.');
@@ -54,40 +40,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initializeAuth();
   }, []);
 
-  const ensureAdminExists = () => {
-    const users = JSON.parse(localStorage.getItem('vertixhub_users') || '[]');
-    const adminExists = users.find((u: User) => u.username === 'Admin');
-    
-    if (!adminExists) {
-      const adminUser: User = {
-        id: 'admin-1',
-        name: 'Administrator',
-        username: 'Admin',
-        email: 'admin@vertixhub.com',
-        password: '12345',
-        isAdmin: true,
-        isBanned: false,
-        createdAt: new Date().toISOString()
-      };
-      
-      users.push(adminUser);
-      localStorage.setItem('vertixhub_users', JSON.stringify(users));
-    }
-  };
-
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      const users = JSON.parse(localStorage.getItem('vertixhub_users') || '[]');
-      const foundUser = users.find((u: User) => u.username === username);
+      const normalizedUsername = username.trim().toLowerCase();
+      const users = getUsers();
+      const foundUser = users.find(
+        (candidate) =>
+          candidate.username.toLowerCase() === normalizedUsername ||
+          candidate.email.toLowerCase() === normalizedUsername,
+      );
 
       if (foundUser && foundUser.password === password) {
         if (foundUser.isBanned) {
           toast.error('Your account has been banned. Please contact support.');
           return false;
         }
+
         setUser(foundUser);
-        localStorage.setItem('vertixhub_current_user', JSON.stringify(foundUser));
-        
+        setCurrentUser(foundUser);
+
         if (foundUser.isAdmin) {
           toast.success('Welcome back, Administrator!');
         } else {
@@ -107,40 +78,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (name: string, username: string, email: string, password: string): Promise<boolean> => {
     try {
-      const users = JSON.parse(localStorage.getItem('vertixhub_users') || '[]');
-      
-      // Check if username already exists
-      const existingUserByUsername = users.find((u: User) => u.username === username);
+      const trimmedName = name.trim();
+      const trimmedUsername = username.trim();
+      const normalizedEmail = email.trim().toLowerCase();
+      const users = getUsers();
+
+      if (trimmedName.length < 2) {
+        toast.error('Please enter your full name.');
+        return false;
+      }
+
+      if (trimmedUsername.length < 3) {
+        toast.error('Username must be at least 3 characters.');
+        return false;
+      }
+
+      if (password.trim().length < 6) {
+        toast.error('Password must be at least 6 characters.');
+        return false;
+      }
+
+      const existingUserByUsername = users.find(
+        (candidate) => candidate.username.toLowerCase() === trimmedUsername.toLowerCase(),
+      );
       if (existingUserByUsername) {
         toast.error('Username already exists. Please choose a different username.');
         return false;
       }
 
-      // Check if email already exists
-      const existingUserByEmail = users.find((u: User) => u.email === email);
+      const existingUserByEmail = users.find(
+        (candidate) => candidate.email.toLowerCase() === normalizedEmail,
+      );
       if (existingUserByEmail) {
         toast.error('Email already exists. Please use a different email.');
         return false;
       }
 
       const newUser: User = {
-        id: Date.now().toString(),
-        name,
-        username,
-        email,
+        id: crypto.randomUUID(),
+        name: trimmedName,
+        username: trimmedUsername,
+        email: normalizedEmail,
         password,
         isAdmin: false,
         isBanned: false,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       };
 
-      users.push(newUser);
-      localStorage.setItem('vertixhub_users', JSON.stringify(users));
-      
+      saveUsers([...users, newUser]);
       setUser(newUser);
-      localStorage.setItem('vertixhub_current_user', JSON.stringify(newUser));
-      
-      toast.success(`Welcome to VertixHub, ${name}!`);
+      setCurrentUser(newUser);
+
+      toast.success(`Welcome to VertixHub, ${trimmedName}!`);
       return true;
     } catch (error) {
       console.error('Registration error:', error);
@@ -151,7 +140,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('vertixhub_current_user');
+    setCurrentUser(null);
     toast.success('Logged out successfully');
   };
 

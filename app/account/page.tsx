@@ -1,19 +1,40 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { User, Mail, Calendar, ShoppingBag, LogOut } from 'lucide-react';
+import { User, Mail, Calendar, ShoppingBag, LogOut, Package, CreditCard } from 'lucide-react';
+import { Order } from '@/types';
+import { getOrdersByUser } from '@/lib/shop';
 
 export default function AccountPage() {
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();
+  const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.push('/');
     }
   }, [user, isLoading, router]);
+
+  useEffect(() => {
+    if (!user) {
+      setOrders([]);
+      return;
+    }
+
+    const loadOrders = () => {
+      setOrders(getOrdersByUser(user.id));
+    };
+
+    loadOrders();
+    window.addEventListener('vertixhub:storefront-updated', loadOrders);
+
+    return () => {
+      window.removeEventListener('vertixhub:storefront-updated', loadOrders);
+    };
+  }, [user]);
 
   if (isLoading) {
     return (
@@ -35,6 +56,11 @@ export default function AccountPage() {
     router.push('/');
   };
 
+  const totalSpent = useMemo(
+    () => orders.reduce((sum, order) => sum + order.total, 0),
+    [orders],
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -49,7 +75,7 @@ export default function AccountPage() {
               <div className="flex items-center space-x-4">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-2xl">
-                    {user.name.charAt(0).toUpperCase()}
+                    {(user.name || user.username).charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div>
@@ -81,6 +107,24 @@ export default function AccountPage() {
                         month: 'long',
                         day: 'numeric'
                       })}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <Package className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-500">Orders placed</p>
+                    <p className="font-medium">{orders.length}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <CreditCard className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-500">Lifetime spend</p>
+                    <p className="font-medium">
+                      ₱{totalSpent.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                 </div>
@@ -132,6 +176,65 @@ export default function AccountPage() {
               </button>
             </div>
           </div>
+        </div>
+
+        <div className="mt-8 bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Recent Orders</h2>
+              <p className="text-sm text-gray-500">Track purchases and payment summaries</p>
+            </div>
+            <span className="text-sm font-medium text-purple-600">{orders.length} total</span>
+          </div>
+
+          {orders.length === 0 ? (
+            <div className="text-center py-10 border border-dashed border-gray-200 rounded-lg">
+              <ShoppingBag className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-600 mb-4">No orders yet. Start building your cart.</p>
+              <button
+                onClick={() => router.push('/products')}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-5 py-2 rounded-lg font-medium"
+              >
+                Shop Products
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {orders.slice(0, 5).map((order) => (
+                <div
+                  key={order.id}
+                  className="border border-gray-100 rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                >
+                  <div>
+                    <p className="font-semibold text-gray-900">{order.orderNumber}</p>
+                    <p className="text-sm text-gray-500">
+                      {new Date(order.createdAt).toLocaleDateString('en-PH', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {order.items.length} item(s) • {order.paymentMethod.replace('-', ' ')}
+                    </p>
+                  </div>
+                  <div className="text-left md:text-right">
+                    <p className="font-semibold text-gray-900">
+                      ₱{order.total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                    </p>
+                    <p className="text-sm text-green-600 capitalize">{order.status}</p>
+                    <p className="text-xs text-gray-500">
+                      ETA{' '}
+                      {new Date(order.estimatedDelivery).toLocaleDateString('en-PH', {
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Welcome Message */}

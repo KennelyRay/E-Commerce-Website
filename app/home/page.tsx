@@ -90,9 +90,9 @@ export default function HomePage() {
                   <Sparkles className="w-4 h-4 ml-2 text-pink-400" />
                 </div>
                 
-                <h1 className="text-6xl lg:text-7xl xl:text-8xl font-black text-white leading-tight">
+                <h1 className="text-6xl lg:text-7xl xl:text-8xl font-black text-white leading-[1.05]">
                   <span className="block">Build</span>
-                  <span className="block bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-gradient">
+                  <span className="block pb-2 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-gradient">
                     Legends
                   </span>
                 </h1>
@@ -334,7 +334,7 @@ export default function HomePage() {
               <div key={product.id} className="group transform hover:scale-105 transition-all duration-500 hover:-translate-y-2">
                 <div className="relative">
                   <ProductCard product={product} />
-                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg blur opacity-0 group-hover:opacity-25 transition duration-500"></div>
+                  <div className="pointer-events-none absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg blur opacity-0 group-hover:opacity-25 transition duration-500"></div>
                 </div>
               </div>
             ))}
@@ -467,7 +467,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {topRatedProducts.map((product, index) => (
               <div key={product.id} className="group relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg blur opacity-0 group-hover:opacity-25 transition duration-500"></div>
+                <div className="pointer-events-none absolute -inset-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg blur opacity-0 group-hover:opacity-25 transition duration-500"></div>
                 <div className="relative transform hover:scale-105 transition-all duration-500">
                   <ProductCard product={product} />
                 </div>

@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Star, ShoppingCart, ArrowLeft, Plus, Minus, Shield, Truck, RefreshCw, Award } from 'lucide-react';
+import { ArrowLeft, Award, Minus, Plus, RefreshCw, Shield, ShoppingCart, Star, Truck } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
-import productsData from '@/data/products.json';
+import { getCatalogProductById, getCatalogProducts } from '@/lib/shop';
 import { Product } from '@/types';
 
 interface ProductPageClientProps {
@@ -15,19 +15,43 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
   const { addToCart } = useCart();
 
-  // Get all products from static JSON for related products
-  const allProducts = productsData.products as unknown as Product[];
+  useEffect(() => {
+    const loadProducts = () => {
+      setCatalogProducts(getCatalogProducts());
+    };
 
-  if (!product) {
+    loadProducts();
+    window.addEventListener('vertixhub:storefront-updated', loadProducts);
+
+    return () => {
+      window.removeEventListener('vertixhub:storefront-updated', loadProducts);
+    };
+  }, []);
+
+  const activeProduct = useMemo(
+    () => (product ? getCatalogProductById(product.id) ?? product : undefined),
+    [product, catalogProducts],
+  );
+
+  useEffect(() => {
+    if (!activeProduct) {
+      return;
+    }
+
+    setQuantity((currentQuantity) => Math.min(Math.max(1, currentQuantity), Math.max(activeProduct.stock, 1)));
+  }, [activeProduct]);
+
+  if (!activeProduct) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Product not found</h2>
             <p className="text-gray-600 mb-8">
-              The product you're looking for doesn't exist or has been removed.
+              The product you&apos;re looking for doesn&apos;t exist or has been removed.
             </p>
             <Link
               href="/products"
@@ -42,37 +66,28 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
     );
   }
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, index) => (
+  const renderStars = (rating: number) =>
+    Array.from({ length: 5 }, (_, index) => (
       <Star
         key={index}
-        className={`w-5 h-5 ${
-          index < Math.floor(rating)
-            ? 'text-yellow-400 fill-current'
-            : 'text-gray-300'
-        }`}
+        className={`w-5 h-5 ${index < Math.floor(rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
       />
     ));
-  };
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    addToCart(activeProduct, quantity);
   };
 
-  const relatedProducts = allProducts
-    .filter(p => p.category === product.category && p.id !== product.id)
+  const relatedProducts = catalogProducts
+    .filter((entry) => entry.category === activeProduct.category && entry.id !== activeProduct.id)
     .slice(0, 4);
-
-  const specifications = product.specifications || {};
-  
-  // Get all product images
-  const allImages = product.images && product.images.length > 0 ? product.images : [product.image];
-  const currentImage = allImages[selectedImageIndex] || product.image;
+  const specifications = activeProduct.specifications || {};
+  const allImages = activeProduct.images && activeProduct.images.length > 0 ? activeProduct.images : [activeProduct.image];
+  const currentImage = allImages[selectedImageIndex] || activeProduct.image;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Button */}
         <Link
           href="/products"
           prefetch={false}
@@ -84,45 +99,41 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
 
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
-            {/* Product Image Gallery */}
             <div>
-              {/* Main Image */}
               <div className="relative mb-4">
-                <img
-                  src={currentImage}
-                  alt={product.name}
-                  className="w-full h-96 object-cover rounded-lg"
-                />
-                {product.originalPrice && (
+                <img src={currentImage} alt={activeProduct.name} className="w-full h-96 object-cover rounded-lg" />
+                {activeProduct.originalPrice && (
                   <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-lg text-sm font-medium">
-                    {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                    {Math.round(((activeProduct.originalPrice - activeProduct.price) / activeProduct.originalPrice) * 100)}% OFF
                   </div>
                 )}
-                {product.stock < 10 && (
+                {activeProduct.stock < 10 && (
                   <div className="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-lg text-sm font-medium">
-                    Only {product.stock} left
+                    Only {activeProduct.stock} left
                   </div>
                 )}
-                
-                {/* Image Navigation Arrows */}
+
                 {allImages.length > 1 && (
                   <>
                     <button
-                      onClick={() => setSelectedImageIndex(selectedImageIndex > 0 ? selectedImageIndex - 1 : allImages.length - 1)}
+                      onClick={() =>
+                        setSelectedImageIndex(selectedImageIndex > 0 ? selectedImageIndex - 1 : allImages.length - 1)
+                      }
                       className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
                     >
                       <ArrowLeft className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={() => setSelectedImageIndex(selectedImageIndex < allImages.length - 1 ? selectedImageIndex + 1 : 0)}
+                      onClick={() =>
+                        setSelectedImageIndex(selectedImageIndex < allImages.length - 1 ? selectedImageIndex + 1 : 0)
+                      }
                       className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
                     >
                       <ArrowLeft className="w-5 h-5 rotate-180" />
                     </button>
                   </>
                 )}
-                
-                {/* Image Counter */}
+
                 {allImages.length > 1 && (
                   <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-lg text-sm">
                     {selectedImageIndex + 1} / {allImages.length}
@@ -130,7 +141,6 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                 )}
               </div>
 
-              {/* Thumbnail Gallery */}
               {allImages.length > 1 && (
                 <div className="grid grid-cols-4 gap-2 mb-6">
                   {allImages.map((image, index) => (
@@ -138,25 +148,16 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
                       className={`relative rounded-lg overflow-hidden border-2 transition-colors ${
-                        index === selectedImageIndex
-                          ? 'border-primary-500'
-                          : 'border-gray-200 hover:border-gray-300'
+                        index === selectedImageIndex ? 'border-primary-500' : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <img
-                        src={image}
-                        alt={`${product.name} view ${index + 1}`}
-                        className="w-full h-20 object-cover"
-                      />
-                      {index === selectedImageIndex && (
-                        <div className="absolute inset-0 bg-primary-500/20"></div>
-                      )}
+                      <img src={image} alt={`${activeProduct.name} view ${index + 1}`} className="w-full h-20 object-cover" />
+                      {index === selectedImageIndex && <div className="absolute inset-0 bg-primary-500/20"></div>}
                     </button>
                   ))}
                 </div>
               )}
 
-              {/* Trust Badges */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Shield className="w-5 h-5 text-green-600" />
@@ -177,76 +178,64 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
               </div>
             </div>
 
-            {/* Product Details */}
             <div>
               <div className="mb-4">
                 <span className="text-sm text-primary-600 font-medium uppercase tracking-wide">
-                  {product.category}
+                  {activeProduct.category}
                 </span>
               </div>
 
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                {product.name}
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">{activeProduct.name}</h1>
 
               <div className="flex items-center space-x-2 mb-6">
-                <div className="flex items-center space-x-1">
-                  {renderStars(product.rating)}
-                </div>
-                <span className="text-gray-600">({product.reviews} reviews)</span>
+                <div className="flex items-center space-x-1">{renderStars(activeProduct.rating)}</div>
+                <span className="text-gray-600">({activeProduct.reviews} reviews)</span>
                 <span className="text-gray-400">|</span>
                 <span className="text-green-600 font-medium">
-                  {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                  {activeProduct.stock > 0 ? 'In Stock' : 'Out of Stock'}
                 </span>
               </div>
 
               <div className="flex items-center space-x-4 mb-6">
                 <span className="text-3xl font-bold text-gray-900">
-                  ₱{product.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                  ₱{activeProduct.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                 </span>
-                {product.originalPrice && (
+                {activeProduct.originalPrice && (
                   <span className="text-xl text-gray-500 line-through">
-                    ₱{product.originalPrice.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                    ₱{activeProduct.originalPrice.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                   </span>
                 )}
               </div>
 
-              <p className="text-gray-600 mb-8 leading-relaxed">
-                {product.description}
-              </p>
+              <p className="text-gray-600 mb-8 leading-relaxed">{activeProduct.description}</p>
 
-              {/* Key Features */}
               {Object.keys(specifications).length > 0 && (
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Features</h3>
                   <div className="grid grid-cols-1 gap-2">
-                    {Object.entries(specifications).slice(0, 4).map(([key, value]) => (
-                      value && (
-                        <div key={key} className="flex justify-between py-2 border-b border-gray-100">
-                          <span className="text-gray-600">{key}:</span>
-                          <span className="font-medium text-gray-900">{value}</span>
-                        </div>
-                      )
-                    ))}
+                    {Object.entries(specifications)
+                      .slice(0, 4)
+                      .map(([key, value]) =>
+                        value ? (
+                          <div key={key} className="flex justify-between py-2 border-b border-gray-100">
+                            <span className="text-gray-600">{key}:</span>
+                            <span className="font-medium text-gray-900">{value}</span>
+                          </div>
+                        ) : null,
+                      )}
                   </div>
                 </div>
               )}
 
-              {/* Quantity Selector */}
               <div className="flex items-center space-x-4 mb-8">
                 <span className="text-sm font-medium text-gray-900">Quantity:</span>
                 <div className="flex items-center space-x-3">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-1 hover:bg-gray-100 rounded"
-                  >
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-1 hover:bg-gray-100 rounded">
                     <Minus className="w-4 h-4" />
                   </button>
-                  <span className="font-semibold text-lg w-8 text-center">
-                    {quantity}
-                  </span>
+                  <span className="font-semibold text-lg w-8 text-center">{quantity}</span>
                   <button
-                    onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                    onClick={() => setQuantity(Math.min(activeProduct.stock || 1, quantity + 1))}
                     className="p-1 hover:bg-gray-100 rounded"
                   >
                     <Plus className="w-4 h-4" />
@@ -254,27 +243,20 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                 </div>
               </div>
 
-              {/* Add to Cart */}
               <button
                 onClick={handleAddToCart}
-                disabled={product.stock === 0}
+                disabled={activeProduct.stock === 0}
                 className="w-full bg-gradient-primary text-white py-4 px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-lg"
               >
                 <ShoppingCart className="w-6 h-6" />
-                <span>
-                  {product.stock === 0 ? 'Out of Stock' : `Add ${quantity} to Cart`}
-                </span>
+                <span>{activeProduct.stock === 0 ? 'Out of Stock' : `Add ${quantity} to Cart`}</span>
               </button>
 
-              {/* Product Tags */}
               <div className="mt-8">
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Tags:</h3>
                 <div className="flex flex-wrap gap-2">
-                  {product.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="bg-gradient-primary text-white px-3 py-1 rounded-full text-sm font-medium"
-                    >
+                  {activeProduct.tags.map((tag, index) => (
+                    <span key={index} className="bg-gradient-primary text-white px-3 py-1 rounded-full text-sm font-medium">
                       #{tag}
                     </span>
                   ))}
@@ -284,7 +266,6 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
           </div>
         </div>
 
-        {/* Detailed Information Tabs */}
         {Object.keys(specifications).length > 0 && (
           <div className="mt-8 bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="border-b border-gray-200">
@@ -313,14 +294,12 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
               {activeTab === 'overview' && (
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">Product Overview</h3>
-                  <p className="text-gray-600 leading-relaxed mb-6">
-                    {product.description}
-                  </p>
+                  <p className="text-gray-600 leading-relaxed mb-6">{activeProduct.description}</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">What's Included</h4>
+                      <h4 className="font-semibold text-gray-900 mb-2">What&apos;s Included</h4>
                       <ul className="text-gray-600 space-y-1">
-                        <li>• {product.name}</li>
+                        <li>• {activeProduct.name}</li>
                         <li>• Installation Guide</li>
                         <li>• Warranty Documentation</li>
                         <li>• Customer Support Access</li>
@@ -340,14 +319,14 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-6">Technical Specifications</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                    {Object.entries(specifications).map(([key, value]) => (
-                      value && (
+                    {Object.entries(specifications).map(([key, value]) =>
+                      value ? (
                         <div key={key} className="flex justify-between py-3 border-b border-gray-100">
                           <span className="font-medium text-gray-900">{key}:</span>
                           <span className="text-gray-600 text-right">{value}</span>
                         </div>
-                      )
-                    ))}
+                      ) : null,
+                    )}
                   </div>
                 </div>
               )}
@@ -356,20 +335,15 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-6">Customer Reviews</h3>
                   <div className="flex items-center space-x-4 mb-8">
-                    <div className="flex items-center space-x-1">
-                      {renderStars(product.rating)}
-                    </div>
-                    <span className="text-2xl font-bold text-gray-900">{product.rating}</span>
-                    <span className="text-gray-600">({product.reviews} reviews)</span>
+                    <div className="flex items-center space-x-1">{renderStars(activeProduct.rating)}</div>
+                    <span className="text-2xl font-bold text-gray-900">{activeProduct.rating}</span>
+                    <span className="text-gray-600">({activeProduct.reviews} reviews)</span>
                   </div>
-                  
-                  {/* Sample Reviews */}
+
                   <div className="space-y-6">
                     <div className="border-b border-gray-200 pb-6">
                       <div className="flex items-center space-x-2 mb-2">
-                        <div className="flex items-center space-x-1">
-                          {renderStars(5)}
-                        </div>
+                        <div className="flex items-center space-x-1">{renderStars(5)}</div>
                         <span className="font-medium text-gray-900">Excellent Product!</span>
                       </div>
                       <p className="text-gray-600">
@@ -377,12 +351,10 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                       </p>
                       <p className="text-sm text-gray-500 mt-2">- Verified Buyer</p>
                     </div>
-                    
+
                     <div className="border-b border-gray-200 pb-6">
                       <div className="flex items-center space-x-2 mb-2">
-                        <div className="flex items-center space-x-1">
-                          {renderStars(4)}
-                        </div>
+                        <div className="flex items-center space-x-1">{renderStars(4)}</div>
                         <span className="font-medium text-gray-900">Good Value</span>
                       </div>
                       <p className="text-gray-600">
@@ -397,7 +369,6 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
           </div>
         )}
 
-        {/* Related Products */}
         {relatedProducts.length > 0 && (
           <div className="mt-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-8">Related Products</h2>
@@ -409,22 +380,16 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
                   prefetch={false}
                   className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
                 >
-                  <img
-                    src={relatedProduct.image}
-                    alt={relatedProduct.name}
-                    className="w-full h-48 object-cover"
-                  />
+                  <img src={relatedProduct.image} alt={relatedProduct.name} className="w-full h-48 object-cover" />
                   <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {relatedProduct.name}
-                    </h3>
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{relatedProduct.name}</h3>
                     <div className="flex items-center space-x-2">
                       <span className="text-lg font-bold text-gray-900">
-                        ${relatedProduct.price.toFixed(2)}
+                        ₱{relatedProduct.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                       </span>
                       {relatedProduct.originalPrice && (
                         <span className="text-sm text-gray-500 line-through">
-                          ${relatedProduct.originalPrice.toFixed(2)}
+                          ₱{relatedProduct.originalPrice.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                         </span>
                       )}
                     </div>
@@ -437,4 +402,4 @@ export default function ProductPageClient({ product }: ProductPageClientProps) {
       </div>
     </div>
   );
-} 
+}

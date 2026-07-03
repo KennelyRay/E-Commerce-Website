@@ -11,22 +11,35 @@ import {
   Settings, Cpu, Monitor, HardDrive, MousePointer, Gamepad2,
   ShoppingCart, Award, Shield
 } from 'lucide-react';
-import productsData from '@/data/products.json';
 import { Product } from '@/types';
+import { getCatalogProducts } from '@/lib/shop';
 
 export default function ProductsPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(searchParams?.get('query') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams?.get('category') || 'All');
   const [sortBy, setSortBy] = useState('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 200000]);
   const [minRating, setMinRating] = useState(0);
-  const [products] = useState<Product[]>(productsData.products as unknown as Product[]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
+
+  useEffect(() => {
+    const loadProducts = () => {
+      setProducts(getCatalogProducts());
+    };
+
+    loadProducts();
+    window.addEventListener('vertixhub:storefront-updated', loadProducts);
+
+    return () => {
+      window.removeEventListener('vertixhub:storefront-updated', loadProducts);
+    };
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -37,8 +50,12 @@ export default function ProductsPage() {
   // Update category when URL changes
   useEffect(() => {
     const category = searchParams?.get('category');
+    const query = searchParams?.get('query');
     if (category) {
       setSelectedCategory(category);
+    }
+    if (query !== null) {
+      setSearchTerm(query);
     }
   }, [searchParams]);
 
@@ -87,7 +104,7 @@ export default function ProductsPage() {
         case 'rating':
           return b.rating - a.rating;
         case 'newest':
-          return new Date(b.id).getTime() - new Date(a.id).getTime();
+          return Number(b.id) - Number(a.id);
         case 'name':
         default:
           return a.name.localeCompare(b.name);
@@ -98,7 +115,6 @@ export default function ProductsPage() {
   }, [products, searchTerm, selectedCategory, sortBy, priceRange, minRating]);
 
   const featuredProducts = products.filter(p => p.featured);
-  const topRatedProducts = products.sort((a, b) => b.rating - a.rating).slice(0, 3);
 
   if (isLoading) {
     return (
@@ -444,7 +460,7 @@ export default function ProductsPage() {
                           <Crown className="w-4 h-4 text-white" />
                         </div>
                       )}
-                      <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg blur opacity-0 group-hover:opacity-25 transition duration-500"></div>
+                      <div className="pointer-events-none absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg blur opacity-0 group-hover:opacity-25 transition duration-500"></div>
                     </div>
                   </div>
                 ))}

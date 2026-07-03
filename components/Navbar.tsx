@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ShoppingCart, Search, Menu, X, User, LogOut, Settings } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
@@ -10,8 +11,10 @@ export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const { getTotalItems } = useCart();
   const { user, logout } = useAuth();
+  const router = useRouter();
 
   const navigation = [
     { name: 'Home', href: '/home' },
@@ -25,6 +28,14 @@ export const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
     setIsUserMenuOpen(false);
+  };
+
+  const handleSearch = (event: React.FormEvent) => {
+    event.preventDefault();
+    const query = searchTerm.trim();
+    router.push(query ? `/products?query=${encodeURIComponent(query)}` : '/products');
+    setIsSearchOpen(false);
+    setIsMenuOpen(false);
   };
 
   return (
@@ -141,14 +152,16 @@ export const Navbar: React.FC = () => {
         {/* Search Bar */}
         {isSearchOpen && (
           <div className="pb-4">
-            <div className="relative">
+            <form onSubmit={handleSearch} className="relative">
               <input
                 type="text"
                 placeholder="Search products..."
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
                 className="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               />
               <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-            </div>
+            </form>
           </div>
         )}
 
