@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Modal } from '@/components/Modal';
 import { useAuth } from '@/context/AuthContext';
@@ -321,7 +322,7 @@ function getProductsForCategory(products: Product[], category: string) {
 
 export default function PCBuilderPage() {
   const { user, isLoading } = useAuth();
-  const { addToCart } = useCart();
+  const { addManyToCart } = useCart();
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [build, setBuild] = useState<PCBuild>({});
@@ -448,11 +449,11 @@ export default function PCBuilderPage() {
 
     if (components.length === 0) {
       toast.error('Select at least one in-stock component first.');
-      return;
+      return false;
     }
 
-    components.forEach((component) => addToCart(component));
-    toast.success(`${components.length} components added to cart.`);
+    const result = addManyToCart(components.map((component) => ({ product: component, quantity: 1 })));
+    return result.addedUnits > 0;
   };
 
   const saveBuild = () => {
@@ -1064,7 +1065,16 @@ export default function PCBuilderPage() {
                         toast.error('Resolve the compatibility warnings before checkout.');
                         return;
                       }
-                      addBuildToCart();
+
+                      let addedSuccessfully = false;
+                      flushSync(() => {
+                        addedSuccessfully = addBuildToCart();
+                      });
+
+                      if (!addedSuccessfully) {
+                        return;
+                      }
+
                       router.push('/checkout');
                     }}
                     disabled={!isMinimumViable}

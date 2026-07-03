@@ -12,6 +12,54 @@ type CartAction =
   | { type: 'CLEAR_CART' }
   | { type: 'LOAD_CART'; payload: CartItem[] };
 
+function mergeCartItems(
+  currentItems: CartItem[],
+  additions: Array<{ product: Product; quantity: number }>,
+): {
+  items: CartItem[];
+  addedUnits: number;
+  addedProducts: number;
+} {
+  const nextItems = [...currentItems];
+  let addedUnits = 0;
+  let addedProducts = 0;
+
+  additions.forEach(({ product, quantity }) => {
+    const existingItemIndex = nextItems.findIndex((item) => item.product.id === product.id);
+    const existingItem = existingItemIndex >= 0 ? nextItems[existingItemIndex] : undefined;
+    const currentQuantity = existingItem?.quantity ?? 0;
+    const allowedQuantity = Math.max(0, Math.min(quantity, product.stock - currentQuantity));
+
+    if (allowedQuantity === 0) {
+      return;
+    }
+
+    addedUnits += allowedQuantity;
+    addedProducts += 1;
+
+    if (existingItem && existingItemIndex >= 0) {
+      nextItems[existingItemIndex] = {
+        ...existingItem,
+        product,
+        quantity: existingItem.quantity + allowedQuantity,
+      };
+      return;
+    }
+
+    nextItems.push({
+      id: crypto.randomUUID(),
+      product,
+      quantity: allowedQuantity,
+    });
+  });
+
+  return {
+    items: nextItems,
+    addedUnits,
+    addedProducts,
+  };
+}
+
 const cartReducer = (state: CartItem[], action: CartAction): CartItem[] => {
   switch (action.type) {
     case 'ADD_TO_CART': {
@@ -100,6 +148,34 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     toast.success(`${product.name} added to cart!`);
   };
 
+  const addManyToCart = (products: Array<{ product: Product; quantity?: number }>) => {
+    const normalizedProducts = products
+      .filter(({ product, quantity = 1 }) => product.stock > 0 && quantity > 0)
+      .map(({ product, quantity = 1 }) => ({ product, quantity }));
+
+    if (normalizedProducts.length === 0) {
+      toast.error('No in-stock components were available to add.');
+      return { addedUnits: 0, addedProducts: 0 };
+    }
+
+    const result = mergeCartItems(items, normalizedProducts);
+
+    if (result.addedUnits === 0) {
+      toast.error('These components are already at the maximum available quantity in your cart.');
+      return result;
+    }
+
+    dispatch({ type: 'LOAD_CART', payload: result.items });
+
+    if (result.addedProducts === 1) {
+      toast.success(`${normalizedProducts[0].product.name} added to cart!`);
+    } else {
+      toast.success(`${result.addedProducts} components added to cart.`);
+    }
+
+    return result;
+  };
+
   const removeFromCart = (productId: string) => {
     dispatch({ type: 'REMOVE_FROM_CART', payload: productId });
     toast.success('Item removed from cart');
@@ -135,6 +211,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value: CartContextType = {
     items,
     addToCart,
+    addManyToCart,
     removeFromCart,
     updateQuantity,
     clearCart,
