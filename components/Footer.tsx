@@ -1,124 +1,86 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
-import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import { CATEGORY_INFO, categoryHref } from '@/lib/categories';
+import { Wordmark } from '@/components/ui';
 
-export const Footer: React.FC = () => {
+export const STORE_CONTACT = {
+  email: 'support@vertixhub.com',
+  phone: '+63 998 427 6714',
+  phoneHref: 'tel:+639984276714',
+  address: '#5943 Purok 2 Irisan, Baguio City, Philippines',
+};
+
+export function Footer() {
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">V</span>
-              </div>
-              <span className="text-xl font-bold">VertixHub</span>
-            </div>
-            <p className="text-gray-400 mb-4">
-              Your premier destination for high-performance PC components and gaming hardware. Build your dream setup with confidence.
-            </p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-            </div>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/products" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
-                  All Products
-                </Link>
-              </li>
-              <li>
-                <Link href="/categories" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
-                  Categories
-                </Link>
-              </li>
-              <li>
-                <Link href="/deals" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
-                  Special Deals
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
-                  About Us
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Customer Service */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Customer Service</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/contact" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
-                  Shipping Info
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
-                  Returns & Exchanges
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" prefetch={false} className="text-gray-400 hover:text-white transition-colors">
-                  FAQ
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Contact Info</h3>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <Mail className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-400">support@vertixhub.com</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-400">+63 998 427 6714</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-400">#5943 Purok 2 Irisan, Baguio City, Philippines</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-400">
-            © 2024 VertixHub. All rights reserved. | 
-            <Link href="/privacy" prefetch={false} className="hover:text-white transition-colors ml-1">
-              Privacy Policy
-            </Link> | 
-            <Link href="/terms" prefetch={false} className="hover:text-white transition-colors ml-1">
-              Terms of Service
-            </Link>
+    <footer className="mt-24 border-t border-line bg-surface">
+      <div className="shell grid gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div className="max-w-sm">
+          <Wordmark />
+          <p className="mt-3 text-sm text-muted">
+            Desktop PC parts, shipped from Baguio City to anywhere in the Philippines.
           </p>
+          <address className="mt-6 space-y-1 text-sm not-italic">
+            <p className="text-muted">{STORE_CONTACT.address}</p>
+            <p>
+              <a className="link" href={`mailto:${STORE_CONTACT.email}`}>
+                {STORE_CONTACT.email}
+              </a>
+            </p>
+            <p>
+              <a className="link" href={STORE_CONTACT.phoneHref}>
+                {STORE_CONTACT.phone}
+              </a>
+            </p>
+          </address>
         </div>
+
+        <nav aria-label="Shop by category">
+          <h2 className="spec-key mb-3 font-mono">Shop</h2>
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm md:grid-cols-1">
+            {CATEGORY_INFO.map((category) => (
+              <li key={category.name}>
+                <Link href={categoryHref(category.name)} prefetch={false} className="text-ink hover:underline underline-offset-4">
+                  {category.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <nav aria-label="Store">
+          <h2 className="spec-key mb-3 font-mono">Store</h2>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <Link href="/pc-builder" prefetch={false} className="hover:underline underline-offset-4">
+                PC Builder
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact#faq" prefetch={false} className="hover:underline underline-offset-4">
+                Shipping, returns and payment
+              </Link>
+            </li>
+            <li>
+              <Link href="/account" prefetch={false} className="hover:underline underline-offset-4">
+                Order history
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" prefetch={false} className="hover:underline underline-offset-4">
+                About the store
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" prefetch={false} className="hover:underline underline-offset-4">
+                Contact
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div className="border-t border-line">
+        <p className="shell py-5 text-xs text-muted">© {new Date().getFullYear()} VertixHub. Shipping and 12% VAT are itemized before you pay.</p>
       </div>
     </footer>
   );
-}; 
+}

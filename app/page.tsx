@@ -1,460 +1,340 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { Modal } from '@/components/Modal';
-import { 
-  Monitor, Cpu, HardDrive, User, Lock, Mail, Sparkles, Crown, 
-  Star, Shield, Award, Rocket, Heart, Package, Eye, EyeOff,
-  ArrowRight, CheckCircle, TrendingUp, Activity, Zap
-} from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { Check, ShoppingBag, X } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
+import { useCatalog } from '@/hooks/useCatalog';
+import { summarizeCategories, categoryHref } from '@/lib/categories';
+import { runCompatibilityChecks, socketsMatch, getSpec } from '@/lib/compatibility';
+import { discountPercent, formatPrice, formatSku } from '@/lib/format';
+import { FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from '@/lib/pricing';
+import { ProductCard, ProductCardSkeleton } from '@/components/ProductCard';
+import { Reveal } from '@/components/Reveal';
+import { Price, StockTag } from '@/components/ui';
+import { Product } from '@/types';
+import { ProductImage } from '@/components/ProductImage';
+import { productHref } from '@/lib/api';
 
-export default function LoginPage() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordMismatchOpen, setPasswordMismatchOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
+function SectionHeading({ index, title, action }: { index: string; title: string; action?: React.ReactNode }) {
+  return (
+    <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-line pb-3">
+      <h2 className="flex items-baseline gap-3 text-2xl font-bold sm:text-3xl">
+        <span className="font-mono text-sm font-normal text-muted">{index}</span>
+        {title}
+      </h2>
+      {action}
+    </div>
+  );
+}
 
-  const { user, login, register } = useAuth();
-  const router = useRouter();
+function OnTheBench({ products }: { products: Product[] }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const { addToCart } = useCart();
+  const product = products[activeIndex] ?? products[0];
 
-  // Redirect if already logged in
-  useEffect(() => {
-    if (user) {
-      if (user.isAdmin) {
-        router.push('/admin');
-      } else {
-        router.push('/home');
-      }
-    }
-  }, [user, router]);
+  if (!product) {
+    return <div className="skeleton aspect-[4/5] w-full rounded-card lg:aspect-auto lg:h-full" />;
+  }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    if (isLogin) {
-      const success = await login(formData.username, formData.password);
-      if (success) {
-        // Redirect will be handled by the useEffect above
-      }
-    } else {
-      if (formData.password !== formData.confirmPassword) {
-        setPasswordMismatchOpen(true);
-        setIsLoading(false);
-        return;
-      }
-      const success = await register(formData.name, formData.username, formData.email, formData.password);
-      if (success) {
-        // Redirect will be handled by the useEffect above
-      }
-    }
-    setIsLoading(false);
-  };
-
-  const features = [
-    {
-      icon: Monitor,
-      title: 'High-Performance Graphics',
-      description: 'Latest RTX 4090 and Radeon RX 7900 XTX cards for legendary gaming'
-    },
-    {
-      icon: Cpu,
-      title: 'Cutting-Edge Processors',
-      description: 'Intel 13th Gen and AMD Ryzen 7000 series for ultimate performance'
-    },
-    {
-      icon: HardDrive,
-      title: 'Ultra-Fast Storage',
-      description: 'NVMe Gen4 SSDs with speeds up to 7,000 MB/s'
-    },
-    {
-      icon: Zap,
-      title: 'Premium Memory',
-      description: 'DDR5 RAM with RGB lighting and legendary speeds'
-    }
-  ];
-
-  const stats = [
-    { number: "50K+", label: "Builds Created", icon: Crown },
-    { number: "99.9%", label: "Customer Satisfaction", icon: Star },
-    { number: "24/7", label: "Expert Support", icon: Shield },
-    { number: "500+", label: "Premium Components", icon: Award }
-  ];
+  const specs = Object.entries(product.specifications ?? {})
+    .filter(([, value]) => Boolean(value))
+    .slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-pink-900 overflow-hidden relative">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-500/5 to-pink-500/5 rounded-full blur-3xl animate-spin-slow"></div>
-      </div>
-
-      {/* Floating Particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-white/20 rounded-full animate-float"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${3 + Math.random() * 4}s`
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="relative flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Enhanced Branding Side */}
-          <div className="text-white lg:pr-8 animate-slide-in-left">
-            {/* Logo & Title */}
-            <div className="flex items-center space-x-4 mb-12">
-              <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-black text-3xl">V</span>
-              </div>
-              <div>
-                <h1 className="text-5xl font-black">VertixHub</h1>
-                <p className="text-purple-300">Legendary PC Components</p>
-              </div>
-            </div>
-            
-            <div className="mb-12">
-              <h2 className="text-4xl lg:text-5xl font-black mb-6 leading-tight">
-                Build Your
-                <span className="block bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-gradient">
-                  Dream PC
-                </span>
-              </h2>
-              <p className="text-xl text-gray-300 leading-relaxed mb-8">
-                Premium PC components and gaming hardware for enthusiasts and professionals. 
-                Join thousands who trust VertixHub for their legendary builds.
-              </p>
-            </div>
-
-            {/* Enhanced Features */}
-            <div className="space-y-6 mb-12">
-              {features.map((feature, index) => {
-                const IconComponent = feature.icon;
-                return (
-                  <div key={index} className="flex items-start space-x-4 group">
-                    <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <IconComponent className="w-6 h-6 text-yellow-400" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-lg mb-1">{feature.title}</h3>
-                      <p className="text-purple-200 text-sm leading-relaxed">{feature.description}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <stat.icon className="w-6 h-6 text-yellow-400" />
-                  </div>
-                  <div className="text-2xl font-black text-white mb-1">{stat.number}</div>
-                  <div className="text-xs text-gray-400 font-medium">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Enhanced Login/Register Form */}
-          <div className="animate-slide-in-right">
-            <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/20">
-              {/* Form Header */}
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-full text-purple-600 text-sm font-bold mb-6">
-                  <User className="w-5 h-5 mr-2" />
-                  {isLogin ? 'Member Access' : 'Join the Legend'}
-                  <Sparkles className="w-4 h-4 ml-2" />
-                </div>
-                <h3 className="text-3xl font-black text-gray-900 mb-2">
-                  {isLogin ? 'Welcome Back, Legend' : 'Become a Legend'}
-                </h3>
-                <p className="text-gray-600">
-                  {isLogin ? 'Access your legendary PC building journey' : 'Start your journey to legendary PC builds'}
-                </p>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {!isLogin && (
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-bold text-gray-900 mb-3">
-                      Full Name *
-                    </label>
-                    <div className="relative">
-                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                        <User className="w-5 h-5 text-gray-400" />
-                      </div>
-                      <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required={!isLogin}
-                        className="w-full pl-12 pr-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900 bg-gray-50 focus:bg-white"
-                        placeholder="Enter your legendary name"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div>
-                  <label htmlFor="username" className="block text-sm font-bold text-gray-900 mb-3">
-                    Username *
-                  </label>
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                      <User className="w-5 h-5 text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      name="username"
-                      id="username"
-                      value={formData.username}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full pl-12 pr-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900 bg-gray-50 focus:bg-white"
-                      placeholder={isLogin ? 'Enter username or "Admin"' : 'Choose your legendary username'}
-                    />
-                  </div>
-                </div>
-
-                {!isLogin && (
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-bold text-gray-900 mb-3">
-                      Email Address *
-                    </label>
-                    <div className="relative">
-                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                        <Mail className="w-5 h-5 text-gray-400" />
-                      </div>
-                      <input
-                        type="email"
-                        name="email"
-                        id="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required={!isLogin}
-                        className="w-full pl-12 pr-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900 bg-gray-50 focus:bg-white"
-                        placeholder="Enter your email address"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div>
-                  <label htmlFor="password" className="block text-sm font-bold text-gray-900 mb-3">
-                    Password *
-                  </label>
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                      <Lock className="w-5 h-5 text-gray-400" />
-                    </div>
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      id="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full pl-12 pr-12 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900 bg-gray-50 focus:bg-white"
-                      placeholder="Enter your secure password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                  </div>
-                </div>
-
-                {!isLogin && (
-                  <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-bold text-gray-900 mb-3">
-                      Confirm Password *
-                    </label>
-                    <div className="relative">
-                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                        <Shield className="w-5 h-5 text-gray-400" />
-                      </div>
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        name="confirmPassword"
-                        id="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleInputChange}
-                        required={!isLogin}
-                        className="w-full pl-12 pr-12 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-gray-900 bg-gray-50 focus:bg-white"
-                        placeholder="Confirm your password"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
-                        {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {isLogin && (
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-4">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Crown className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-blue-900 mb-1">Admin Access Available</p>
-                        <p className="text-xs text-blue-700">
-                          Use <span className="font-bold">"Admin"</span> as username and <span className="font-bold">"12345"</span> as password for admin panel
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-8 rounded-2xl font-black text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
-                >
-                  {isLoading ? (
-                    <>
-                      <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      {isLogin ? <CheckCircle className="w-6 h-6 mr-3" /> : <Rocket className="w-6 h-6 mr-3" />}
-                      {isLogin ? 'Access Legendary Hub' : 'Start Legend Journey'}
-                      <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform duration-300" />
-                    </>
-                  )}
-                </button>
-              </form>
-
-              {/* Switch Mode */}
-              <div className="mt-8 text-center">
-                <p className="text-gray-600 mb-4">
-                  {isLogin ? "New to VertixHub? " : "Already a legend? "}
-                </p>
-                <button
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-2xl font-bold hover:from-gray-200 hover:to-gray-300 transition-all duration-300 group"
-                >
-                  {isLogin ? 'Create New Account' : 'Sign In Instead'}
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                </button>
-              </div>
-
-              {/* Trust Indicators */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  {[
-                    { icon: Shield, label: "Secure" },
-                    { icon: Heart, label: "Trusted" },
-                    { icon: Award, label: "Premium" }
-                  ].map((indicator, index) => (
-                    <div key={index} className="flex flex-col items-center">
-                      <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center mb-2">
-                        <indicator.icon className="w-4 h-4 text-white" />
-                      </div>
-                      <span className="text-xs text-gray-500 font-medium">{indicator.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+    <div className="card flex h-full flex-col overflow-hidden">
+      <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
+        <p className="spec-key">On the bench</p>
+        <div className="flex gap-1" role="tablist" aria-label="Staff picks">
+          {products.map((entry, index) => (
+            <button
+              key={entry.id}
+              type="button"
+              role="tab"
+              aria-selected={index === activeIndex}
+              aria-label={entry.name}
+              onClick={() => setActiveIndex(index)}
+              className={`h-9 min-w-[36px] rounded-control px-2 font-mono text-xs transition-colors ${
+                index === activeIndex ? 'bg-ink text-bg' : 'text-muted hover:bg-sunken hover:text-ink'
+              }`}
+            >
+              {String(index + 1).padStart(2, '0')}
+            </button>
+          ))}
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(3deg); }
-        }
-        
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        
-        @keyframes gradient {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        
-        @keyframes slide-in-left {
-          from { opacity: 0; transform: translateX(-50px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        
-        @keyframes slide-in-right {
-          from { opacity: 0; transform: translateX(50px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-        
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-        
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient 3s ease infinite;
-        }
-        
-        .animate-slide-in-left {
-          animation: slide-in-left 0.8s ease-out;
-        }
-        
-        .animate-slide-in-right {
-          animation: slide-in-right 0.8s ease-out;
-        }
-      `}</style>
-
-      <Modal
-        isOpen={passwordMismatchOpen}
-        title="Passwords Do Not Match"
-        description="Please make sure your password and confirmation password are identical before creating your account."
-        confirmText="Got It"
-        onConfirm={() => setPasswordMismatchOpen(false)}
-        onClose={() => setPasswordMismatchOpen(false)}
-      />
+      <div key={product.id} className="grid flex-1 animate-fade-in sm:grid-cols-[1.1fr_1fr]" role="tabpanel">
+        <Link href={productHref(product.id)} prefetch={false} className="group flex items-center justify-center bg-white p-6" tabIndex={-1} aria-hidden="true">
+          <ProductImage src={product.image} alt="" className="aspect-square w-full max-w-[320px] object-contain transition-transform duration-500 group-hover:scale-[1.04]" />
+        </Link>
+        <div className="flex flex-col border-t border-line p-5 sm:border-l sm:border-t-0">
+          <p className="spec-key">
+            {product.category} · {formatSku(product.id)}
+          </p>
+          <h3 className="mt-1 text-xl font-bold leading-tight">
+            <Link href={productHref(product.id)} prefetch={false} className="hover:underline underline-offset-4">
+              {product.name}
+            </Link>
+          </h3>
+          <dl className="mt-4 divide-y divide-line border-y border-line">
+            {specs.map(([key, value]) => (
+              <div key={key} className="flex justify-between gap-3 py-1.5 text-sm">
+                <dt className="text-muted">{key}</dt>
+                <dd className="text-right font-mono text-[13px]">{value}</dd>
+              </div>
+            ))}
+          </dl>
+          <div className="mt-auto pt-5">
+            <Price product={product} size="md" />
+            <StockTag stock={product.stock} className="mt-1" />
+            <button type="button" className="btn-primary mt-4 w-full" onClick={() => addToCart(product)} disabled={product.stock <= 0}>
+              <ShoppingBag className="h-4 w-4" aria-hidden="true" />
+              Add to cart
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
-} 
+}
+
+function BuilderDemo({ products }: { products: Product[] }) {
+  const cpu = products.find((product) => product.category === 'Processors' && getSpec(product, 'Socket'));
+  const boards = products.filter((product) => product.category === 'Motherboards');
+  const ram = products.find((product) => product.category === 'Memory (RAM)');
+  const [boardId, setBoardId] = useState<string | null>(null);
+
+  const board = boards.find((entry) => entry.id === boardId) ?? boards.find((entry) => !socketsMatch(getSpec(entry, 'Socket'), getSpec(cpu, 'Socket'))) ?? boards[0];
+  const checks = useMemo(() => runCompatibilityChecks({ cpu, motherboard: board, ram }), [cpu, board, ram]);
+
+  if (!cpu || !board || boards.length < 2) {
+    return null;
+  }
+
+  return (
+    <div className="rounded-card border border-bg/20 bg-bg/5 p-5">
+      <p className="font-mono text-xs text-bg/70">Try it: pair a {cpu.name} with</p>
+      <div className="mt-3 grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Motherboard">
+        {boards.map((entry) => (
+          <button
+            key={entry.id}
+            type="button"
+            role="radio"
+            aria-checked={entry.id === board.id}
+            onClick={() => setBoardId(entry.id)}
+            className={`min-h-[44px] rounded-control border px-3 py-2 text-left text-sm transition-colors ${
+              entry.id === board.id ? 'border-bg bg-bg text-ink' : 'border-bg/25 text-bg hover:border-bg/60'
+            }`}
+          >
+            <span className="block font-semibold">{entry.name}</span>
+            <span className="font-mono text-xs opacity-75">{getSpec(entry, 'Socket')}</span>
+          </button>
+        ))}
+      </div>
+      <ul className="mt-4 space-y-2" aria-live="polite">
+        {checks.map((check) => (
+          <li key={`${board.id}-${check.id}`} className="flex animate-fade-in items-start gap-2 text-sm">
+            <span
+              className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                check.status === 'pass' ? 'bg-ok text-bg' : 'bg-danger text-bg'
+              }`}
+              aria-hidden="true"
+            >
+              {check.status === 'pass' ? <Check className="h-3 w-3" strokeWidth={3} /> : <X className="h-3 w-3" strokeWidth={3} />}
+            </span>
+            <span className="text-bg">
+              <span className="sr-only">{check.status === 'pass' ? 'Pass: ' : 'Problem: '}</span>
+              {check.message}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default function StorefrontPage() {
+  const { products, isLoading, error } = useCatalog();
+  const categories = useMemo(() => summarizeCategories(products), [products]);
+  const picks = products.filter((product) => product.featured).slice(0, 4);
+  const onSale = products
+    .filter((product) => discountPercent(product) > 0 && product.stock > 0)
+    .sort((a, b) => discountPercent(b) - discountPercent(a))
+    .slice(0, 6);
+
+  return (
+    <div>
+      {/* Opening: the headline states what the store does; the bench panel is the focal point. */}
+      <section className="shell grid gap-8 pb-16 pt-10 lg:grid-cols-[1fr_1.15fr] lg:gap-12 lg:pt-16">
+        <div className="flex flex-col justify-center">
+          <h1 className="text-balance text-[2.5rem] font-extrabold leading-[1.02] sm:text-6xl" style={{ fontStretch: '118%' }}>
+            Parts for the PC you are actually building.
+          </h1>
+          <p className="mt-5 max-w-lg text-pretty text-lg text-muted">
+            Graphics cards, CPUs, boards and memory with the specs up front. The builder checks sockets, memory type and
+            power draw before you pay.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/products" prefetch={false} className="btn-dark px-6">
+              Shop all parts
+            </Link>
+            <Link href="/pc-builder" prefetch={false} className="btn-outline px-6">
+              Plan a build
+            </Link>
+          </div>
+          {categories.length > 0 && (
+            <div className="mt-10">
+              <p className="spec-key mb-2">Jump to</p>
+              <div className="flex flex-wrap gap-2">
+                {categories.slice(0, 5).map((category) => (
+                  <Link
+                    key={category.name}
+                    href={categoryHref(category.name)}
+                    prefetch={false}
+                    className="inline-flex min-h-[36px] items-center rounded-control border border-line bg-surface px-3 text-sm transition-colors hover:border-ink/40"
+                  >
+                    {category.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        {error ? (
+          <div className="card flex items-center justify-center p-10 text-center text-muted">{error} Refresh the page to try again.</div>
+        ) : (
+          <OnTheBench products={picks} />
+        )}
+      </section>
+
+      {/* Category index: reads like a datasheet table of contents. */}
+      <Reveal as="section" className="shell pb-16">
+        <SectionHeading
+          index="01"
+          title="Shop by part"
+          action={
+            <Link href="/categories" prefetch={false} className="link text-sm">
+              All categories
+            </Link>
+          }
+        />
+        {isLoading ? (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {Array.from({ length: 8 }, (_, index) => (
+              <div key={index} className="skeleton h-16" />
+            ))}
+          </div>
+        ) : (
+          <ol className="grid grid-cols-1 gap-x-8 sm:grid-cols-2">
+            {categories.map((category, index) => (
+              <li key={category.name} className="border-b border-line">
+                <Link
+                  href={categoryHref(category.name)}
+                  prefetch={false}
+                  className="group flex min-h-[64px] items-center gap-4 py-3 transition-colors"
+                >
+                  <span className="w-6 font-mono text-xs text-muted">{String(index + 1).padStart(2, '0')}</span>
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-control bg-white p-1.5">
+                    {category.image && (
+                      <ProductImage src={category.image} alt="" loading="lazy" className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-110" />
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold group-hover:underline underline-offset-4">{category.name}</span>
+                    <span className="block truncate text-sm text-muted">{category.blurb}</span>
+                  </span>
+                  <span className="text-right text-sm">
+                    <span className="block tabular-nums">from {formatPrice(category.minPrice)}</span>
+                    <span className="block text-xs text-muted">
+                      {category.count} {category.count === 1 ? 'part' : 'parts'}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        )}
+      </Reveal>
+
+      <Reveal as="section" className="shell pb-20">
+        <SectionHeading
+          index="02"
+          title="Staff picks"
+          action={
+            <Link href="/products" prefetch={false} className="link text-sm">
+              Shop all parts
+            </Link>
+          }
+        />
+        <div className="grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 lg:grid-cols-4">
+          {isLoading
+            ? Array.from({ length: 4 }, (_, index) => <ProductCardSkeleton key={index} />)
+            : picks.map((product) => <ProductCard key={product.id} product={product} />)}
+        </div>
+      </Reveal>
+
+      {/* Rhythm break: the one dark band on the page, reserved for the builder. */}
+      <Reveal as="section" className="bg-ink text-bg">
+        <div className="shell grid gap-10 py-16 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-20">
+          <div>
+            <p className="font-mono text-sm text-bg/70">03 · PC Builder</p>
+            <h2 className="mt-3 text-balance text-3xl font-bold text-bg sm:text-4xl">Catch the wrong socket before it ships.</h2>
+            <p className="mt-4 max-w-md text-bg/80">
+              Pick one part per slot and the builder checks four things as you go: CPU and board socket, board and memory
+              generation, cooler mounting, and power supply headroom.
+            </p>
+            <Link href="/pc-builder" prefetch={false} className="btn mt-8 bg-bg px-6 text-ink hover:bg-bg/90">
+              Open the builder
+            </Link>
+          </div>
+          {!isLoading && <BuilderDemo products={products} />}
+        </div>
+      </Reveal>
+
+      {onSale.length > 0 && (
+        <Reveal as="section" className="shell pt-20">
+          <SectionHeading index="04" title="Marked down" />
+          <ul className="grid grid-cols-1 gap-x-8 md:grid-cols-2">
+            {onSale.map((product) => (
+              <li key={product.id} className="border-b border-line">
+                <Link href={productHref(product.id)} prefetch={false} className="group flex items-center gap-4 py-3">
+                  <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-control bg-white p-1.5">
+                    <ProductImage src={product.image} alt="" loading="lazy" className="h-full w-full object-contain" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-semibold group-hover:underline underline-offset-4">{product.name}</span>
+                    <span className="block text-sm text-muted">{product.category}</span>
+                  </span>
+                  <span className="text-right">
+                    <span className="block font-semibold tabular-nums text-accent">{formatPrice(product.price)}</span>
+                    <span className="block text-xs text-muted">
+                      <span className="line-through">{formatPrice(product.originalPrice ?? product.price)}</span> · {discountPercent(product)}% off
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+      )}
+
+      <Reveal as="section" className="shell pt-20">
+        <SectionHeading index="05" title="How ordering works" />
+        <dl className="grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            ['Shipping', `Free over ${formatPrice(FREE_SHIPPING_THRESHOLD, { whole: true })}. A flat ${formatPrice(SHIPPING_FEE, { whole: true })} below that, anywhere in the Philippines.`],
+            ['Tax', 'Prices exclude 12% VAT. It is itemized in your cart before checkout.'],
+            ['Payment', 'Card, GCash, Maya or PayPal. Choose at checkout.'],
+            ['Returns', 'Unopened items in original packaging can be returned within 30 days.'],
+          ].map(([term, detail]) => (
+            <div key={term} className="bg-surface p-5">
+              <dt className="font-semibold">{term}</dt>
+              <dd className="mt-1 text-sm text-muted">{detail}</dd>
+            </div>
+          ))}
+        </dl>
+      </Reveal>
+    </div>
+  );
+}

@@ -9,7 +9,7 @@ async function deployToGitHubPages() {
     // Make sure we have the build
     if (!fs.existsSync('out')) {
       console.log('📦 Building for production...');
-      execSync('npm run deploy', { stdio: 'inherit' });
+      execSync('npm run build:static', { stdio: 'inherit' });
     }
     
     // Create a temporary directory for gh-pages

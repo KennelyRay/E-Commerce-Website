@@ -1,154 +1,87 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AuthContextType, User } from '@/types';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { ensureAdminUser, getCurrentUser, getUsers, saveUsers, setCurrentUser } from '@/lib/shop';
+import { api, ApiError, errorMessage, getToken, setToken } from '@/lib/api';
+import { AuthContextType, AuthResult, User } from '@/types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+type SessionResponse = { token: string; user: User };
+
+function failure(error: unknown): AuthResult {
+  return { ok: false, message: errorMessage(error), field: error instanceof ApiError ? error.field : undefined };
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const initializeAuth = () => {
-      try {
-        const users = ensureAdminUser();
-        const savedUser = getCurrentUser();
+    if (!getToken()) {
+      setIsLoading(false);
+      return;
+    }
 
-        if (savedUser) {
-          const existingUser = users.find(
-            (candidate) => candidate.username.toLowerCase() === savedUser.username.toLowerCase(),
-          );
-
-          if (existingUser && !existingUser.isBanned) {
-            setUser(existingUser);
-            setCurrentUser(existingUser);
-          } else {
-            setCurrentUser(null);
-          }
+    api<{ user: User }>('/auth/me')
+      .then(({ user: current }) => setUser(current))
+      .catch((error) => {
+        // 401/403 already cleared the token. Anything else (offline) keeps it for the next visit.
+        if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+          setToken(null);
+          if (error.status === 403) toast.error(error.message);
         }
-      } catch (error) {
-        console.error('Failed to initialize authentication:', error);
-        toast.error('Failed to initialize application. Please refresh the page.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initializeAuth();
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
-    try {
-      const normalizedUsername = username.trim().toLowerCase();
-      const users = getUsers();
-      const foundUser = users.find(
-        (candidate) =>
-          candidate.username.toLowerCase() === normalizedUsername ||
-          candidate.email.toLowerCase() === normalizedUsername,
-      );
+  const startSession = useCallback((session: SessionResponse) => {
+    setToken(session.token);
+    setUser(session.user);
+  }, []);
 
-      if (foundUser && foundUser.password === password) {
-        if (foundUser.isBanned) {
-          toast.error('Your account has been banned. Please contact support.');
-          return false;
-        }
-
-        setUser(foundUser);
-        setCurrentUser(foundUser);
-
-        if (foundUser.isAdmin) {
-          toast.success('Welcome back, Administrator!');
-        } else {
-          toast.success(`Welcome back, ${foundUser.name}!`);
-        }
-        return true;
-      } else {
-        toast.error('Invalid username or password');
-        return false;
+  const login = useCallback(
+    async (username: string, password: string): Promise<AuthResult> => {
+      try {
+        const session = await api<SessionResponse>('/auth/login', { method: 'POST', body: { username, password }, auth: false });
+        startSession(session);
+        toast.success(session.user.isAdmin ? 'Signed in as administrator' : `Welcome back, ${session.user.name}`);
+        return { ok: true };
+      } catch (error) {
+        return failure(error);
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      toast.error('Login failed. Please try again.');
-      return false;
-    }
-  };
-
-  const register = async (name: string, username: string, email: string, password: string): Promise<boolean> => {
-    try {
-      const trimmedName = name.trim();
-      const trimmedUsername = username.trim();
-      const normalizedEmail = email.trim().toLowerCase();
-      const users = getUsers();
-
-      if (trimmedName.length < 2) {
-        toast.error('Please enter your full name.');
-        return false;
-      }
-
-      if (trimmedUsername.length < 3) {
-        toast.error('Username must be at least 3 characters.');
-        return false;
-      }
-
-      if (password.trim().length < 6) {
-        toast.error('Password must be at least 6 characters.');
-        return false;
-      }
-
-      const existingUserByUsername = users.find(
-        (candidate) => candidate.username.toLowerCase() === trimmedUsername.toLowerCase(),
-      );
-      if (existingUserByUsername) {
-        toast.error('Username already exists. Please choose a different username.');
-        return false;
-      }
-
-      const existingUserByEmail = users.find(
-        (candidate) => candidate.email.toLowerCase() === normalizedEmail,
-      );
-      if (existingUserByEmail) {
-        toast.error('Email already exists. Please use a different email.');
-        return false;
-      }
-
-      const newUser: User = {
-        id: crypto.randomUUID(),
-        name: trimmedName,
-        username: trimmedUsername,
-        email: normalizedEmail,
-        password,
-        isAdmin: false,
-        isBanned: false,
-        createdAt: new Date().toISOString(),
-      };
-
-      saveUsers([...users, newUser]);
-      setUser(newUser);
-      setCurrentUser(newUser);
-
-      toast.success(`Welcome to VertixHub, ${trimmedName}!`);
-      return true;
-    } catch (error) {
-      console.error('Registration error:', error);
-      toast.error('Registration failed. Please try again.');
-      return false;
-    }
-  };
-
-  const logout = () => {
-    setUser(null);
-    setCurrentUser(null);
-    toast.success('Logged out successfully');
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
-      {children}
-    </AuthContext.Provider>
+    },
+    [startSession],
   );
+
+  const register = useCallback(
+    async (name: string, username: string, email: string, password: string): Promise<AuthResult> => {
+      try {
+        const session = await api<SessionResponse>('/auth/register', { method: 'POST', body: { name, username, email, password }, auth: false });
+        startSession(session);
+        toast.success(`Account created. Welcome, ${session.user.name}.`);
+        return { ok: true };
+      } catch (error) {
+        return failure(error);
+      }
+    },
+    [startSession],
+  );
+
+  const logout = useCallback(async () => {
+    try {
+      await api('/auth/logout', { method: 'POST' });
+    } catch {
+      // The local sign-out below still happens; an orphaned session expires on its own.
+    }
+    setToken(null);
+    setUser(null);
+    toast.success('Signed out');
+  }, []);
+
+  const value = useMemo(() => ({ user, isLoading, login, register, logout }), [user, isLoading, login, register, logout]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
@@ -157,4 +90,4 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-} 
+}

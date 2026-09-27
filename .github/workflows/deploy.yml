@@ -1,8 +1,12 @@
-name: Deploy VertixHub to GitHub Pages
+name: Deploy storefront to GitHub Pages
+
+# Builds the static storefront. The API is deployed separately to Neon Functions
+# with `neon deploy` (see docs/NEON.md). The API URL below is public; set the
+# repository variable NEXT_PUBLIC_API_URL to point the site somewhere else.
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -11,46 +15,39 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: '20'
+          cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
 
-      - name: Build and Export
-        run: npm run deploy:unix
+      - name: Build static export
+        run: npm run build:static
         env:
-          NODE_ENV: production
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL || 'https://br-soft-mode-az0zpm32-api.compute.c-3.ap-southeast-1.aws.neon.tech' }}
 
-      - name: Add .nojekyll file
-        run: touch out/.nojekyll
+      - run: touch out/.nojekyll
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4 
+      - id: deployment
+        uses: actions/deploy-pages@v4

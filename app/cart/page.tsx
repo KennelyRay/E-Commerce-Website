@@ -1,206 +1,125 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
+import { formatPrice, formatSku } from '@/lib/format';
+import { FreeShippingMeter } from '@/components/CartDrawer';
+import { OrderSummaryRows } from '@/components/OrderSummary';
+import { Modal } from '@/components/Modal';
+import { Breadcrumbs, EmptyState, QuantityStepper, StockTag } from '@/components/ui';
+import { ProductImage } from '@/components/ProductImage';
+import { productHref } from '@/lib/api';
 
 export default function CartPage() {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
   const { items, updateQuantity, removeFromCart, clearCart, getTotalPrice, getTotalItems } = useCart();
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/');
-    }
-  }, [user, isLoading, router]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
-
-  if (items.length === 0) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-              <ShoppingBag className="w-12 h-12 text-gray-400" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h2>
-            <p className="text-gray-600 mb-8">
-              Looks like you haven't added any items to your cart yet.
-            </p>
-            <Link
-              href="/products"
-              prefetch={false}
-              className="bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
-            >
-              Start Shopping
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const [isClearOpen, setIsClearOpen] = useState(false);
+  const subtotal = getTotalPrice();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-          <button
-            onClick={clearCart}
-            className="text-red-600 hover:text-red-700 font-medium"
-          >
-            Clear Cart
+    <div className="shell pb-8 pt-6">
+      <Breadcrumbs items={[{ label: 'Store', href: '/' }, { label: 'Cart' }]} />
+      <div className="mt-4 flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
+        <h1 className="text-3xl font-bold sm:text-4xl">Cart</h1>
+        {items.length > 0 && (
+          <button type="button" onClick={() => setIsClearOpen(true)} className="min-h-[44px] text-sm text-muted underline underline-offset-4 hover:text-danger">
+            Empty cart
           </button>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              {items.map((item) => (
-                <div key={item.id} className="p-6 border-b border-gray-200 last:border-b-0">
-                  <div className="flex items-center space-x-4">
-                    <img
-                      src={item.product.image}
-                      alt={item.product.name}
-                      className="w-20 h-20 object-cover rounded-lg"
-                    />
-                    
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {item.product.name}
-                      </h3>
-                      <p className="text-gray-600 text-sm mt-1">
-                        {item.product.category}
-                      </p>
-                      <div className="flex items-center space-x-4 mt-3">
-                        <span className="text-xl font-bold text-gray-900">
-                          ₱{item.product.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                        </span>
-                        {item.product.originalPrice && (
-                          <span className="text-sm text-gray-500 line-through">
-                            ₱{item.product.originalPrice.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Quantity Controls */}
-                    <div className="flex items-center space-x-3">
-                      <button
-                        onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                        className="p-1 hover:bg-gray-100 rounded"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="font-semibold text-lg w-8 text-center">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                        className="p-1 hover:bg-gray-100 rounded"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    {/* Remove Button */}
-                    <button
-                      onClick={() => removeFromCart(item.product.id)}
-                      className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-
-                  {/* Item Total */}
-                  <div className="mt-4 flex justify-end">
-                    <span className="text-lg font-semibold">
-                      Subtotal: ₱{(item.product.price * item.quantity).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
-              
-              <div className="space-y-3 mb-6">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Items ({getTotalItems()})</span>
-                  <span className="font-semibold">₱{getTotalPrice().toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Shipping</span>
-                  <span className="font-semibold">
-                    {getTotalPrice() > 2500 ? 'FREE' : '₱150.00'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">VAT (12%)</span>
-                  <span className="font-semibold">
-                    ₱{(getTotalPrice() * 0.12).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                  </span>
-                </div>
-                <div className="border-t pt-3">
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>Total</span>
-                    <span>
-                      ₱{(getTotalPrice() + (getTotalPrice() > 2500 ? 0 : 150) + (getTotalPrice() * 0.12)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {getTotalPrice() < 2500 && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
-                  <p className="text-sm text-blue-800">
-                    Add ₱{(2500 - getTotalPrice()).toLocaleString('en-PH', { minimumFractionDigits: 2 })} more for free shipping!
-                  </p>
-                </div>
-              )}
-
-              <Link
-                href="/checkout"
-                prefetch={false}
-                className="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center"
-              >
-                Proceed to Checkout
-              </Link>
-
-              <Link
-                href="/products"
-                prefetch={false}
-                className="w-full mt-3 border border-gray-300 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center"
-              >
-                Continue Shopping
-              </Link>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
+
+      {items.length === 0 ? (
+        <div className="mt-8">
+          <EmptyState
+            title="Your cart is empty"
+            body="Browse the catalog, or plan a full system in the builder and add it in one go."
+            action={
+              <>
+                <Link href="/products" prefetch={false} className="btn-dark">
+                  Shop all parts
+                </Link>
+                <Link href="/pc-builder" prefetch={false} className="btn-outline">
+                  Open the builder
+                </Link>
+              </>
+            }
+          />
+        </div>
+      ) : (
+        <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_360px]">
+          <ul className="divide-y divide-line border-y border-line">
+            {items.map((item) => (
+              <li key={item.id} className="flex gap-4 py-5">
+                <Link href={productHref(item.product.id)} prefetch={false} className="flex h-24 w-24 shrink-0 items-center justify-center rounded-control bg-white p-2 sm:h-28 sm:w-28" tabIndex={-1} aria-hidden="true">
+                  <ProductImage src={item.product.image} alt="" className="h-full w-full object-contain" />
+                </Link>
+                <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:justify-between">
+                  <div className="min-w-0">
+                    <p className="spec-key">
+                      {item.product.category} · {formatSku(item.product.id)}
+                    </p>
+                    <Link href={productHref(item.product.id)} prefetch={false} className="mt-0.5 block font-semibold leading-snug hover:underline underline-offset-4">
+                      {item.product.name}
+                    </Link>
+                    <p className="mt-1 text-sm tabular-nums text-muted">{formatPrice(item.product.price)} each</p>
+                    <StockTag stock={item.product.stock} className="mt-1" />
+                  </div>
+                  <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end">
+                    <p className="font-display text-lg font-bold tabular-nums">{formatPrice(item.product.price * item.quantity)}</p>
+                    <div className="flex items-center gap-1">
+                      <QuantityStepper
+                        size="sm"
+                        value={item.quantity}
+                        max={item.product.stock}
+                        onChange={(next) => updateQuantity(item.product.id, next)}
+                        label={`Quantity for ${item.product.name}`}
+                      />
+                      <button type="button" onClick={() => removeFromCart(item.product.id)} className="icon-btn text-muted hover:text-danger" aria-label={`Remove ${item.product.name}`}>
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <aside className="h-fit lg:sticky lg:top-24">
+            <div className="card p-5">
+              <h2 className="text-lg font-bold">Order summary</h2>
+              <div className="mt-4">
+                <FreeShippingMeter subtotal={subtotal} />
+              </div>
+              <div className="mt-5">
+                <OrderSummaryRows subtotal={subtotal} itemCount={getTotalItems()} />
+              </div>
+              <Link href="/checkout" prefetch={false} className="btn-primary mt-5 w-full">
+                {user ? 'Continue to checkout' : 'Sign in to check out'}
+              </Link>
+              <Link href="/products" prefetch={false} className="btn-ghost mt-2 w-full">
+                Keep shopping
+              </Link>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      <Modal
+        isOpen={isClearOpen}
+        title="Empty your cart?"
+        description={`This removes all ${getTotalItems()} items. You cannot undo it.`}
+        confirmText="Empty cart"
+        cancelText="Keep items"
+        variant="danger"
+        onConfirm={() => {
+          clearCart();
+          setIsClearOpen(false);
+        }}
+        onClose={() => setIsClearOpen(false)}
+      />
     </div>
   );
-} 
+}

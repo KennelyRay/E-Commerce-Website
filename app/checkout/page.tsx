@@ -1,158 +1,127 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import {
-  ShoppingBag,
-  ArrowLeft,
-  CreditCard,
-  Lock,
-  CheckCircle,
-  AlertCircle,
-  MapPin,
-  Mail,
-  User,
-  Calendar,
-  ShieldCheck,
-  Sparkles,
-  Truck,
-  Wallet,
-} from 'lucide-react';
-import toast from 'react-hot-toast';
+import { api, ApiError, errorMessage } from '@/lib/api';
+import { refreshCatalog } from '@/hooks/useCatalog';
+import { computeOrderTotals } from '@/lib/pricing';
+import { formatDate, formatPrice, paymentLabels } from '@/lib/format';
+import { OrderSummaryRows } from '@/components/OrderSummary';
+import { Breadcrumbs, EmptyState, PageLoader, Spinner } from '@/components/ui';
 import { CheckoutFormData, Order, PaymentMethod } from '@/types';
-import { placeOrder } from '@/lib/shop';
+import { ProductImage } from '@/components/ProductImage';
 
-interface FormErrors {
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  address?: string;
-  city?: string;
-  zipCode?: string;
-  cardNumber?: string;
-  expiryDate?: string;
-  cvv?: string;
-}
+type FormErrors = Partial<Record<keyof CheckoutFormData, string>>;
 
-const InputField = ({
-  name,
-  type = 'text',
-  placeholder,
-  icon: Icon,
-  value,
-  onChange,
+const PAYMENT_OPTIONS: Array<{ value: PaymentMethod; title: string; detail: string }> = [
+  { value: 'credit-card', title: 'Credit or debit card', detail: 'Visa, Mastercard, JCB' },
+  { value: 'gcash', title: 'GCash', detail: 'Mobile wallet' },
+  { value: 'maya', title: 'Maya', detail: 'Mobile wallet' },
+  { value: 'paypal', title: 'PayPal', detail: 'PayPal balance or linked card' },
+];
+
+function Field({
+  id,
+  label,
   error,
-}: {
-  name: string;
-  type?: string;
-  placeholder: string;
-  icon: any;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string;
-}) => {
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-    }
-  };
-
+  className = '',
+  ...inputProps
+}: { id: keyof CheckoutFormData; label: string; error?: string; className?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <div>
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Icon className={`h-5 w-5 ${error ? 'text-red-400' : 'text-gray-400'}`} />
-        </div>
-        <input
-          type={type}
-          name={name}
-          value={value}
-          onChange={onChange}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 transition-colors bg-white ${
-            error
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-              : 'border-gray-200 focus:border-purple-500 focus:ring-purple-200'
-          }`}
-        />
-      </div>
+    <div className={className}>
+      <label htmlFor={id} className="label">
+        {label}
+      </label>
+      <input
+        id={id}
+        name={id}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${id}-error` : undefined}
+        className={`field ${error ? 'field-error' : ''}`}
+        {...inputProps}
+      />
       {error && (
-        <div className="flex items-center mt-2 text-red-600 text-sm">
-          <AlertCircle className="w-4 h-4 mr-1" />
+        <p id={`${id}-error`} className="mt-1.5 text-sm text-danger">
           {error}
-        </div>
+        </p>
       )}
     </div>
   );
-};
+}
 
-const SectionCard = ({
-  icon: Icon,
-  title,
-  subtitle,
-  children,
-}: {
-  icon: any;
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-}) => (
-  <div className="bg-white rounded-[1.75rem] shadow-sm p-6 lg:p-8 border border-gray-100">
-    <div className="flex items-start gap-4 mb-6">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-lg">
-        <Icon className="w-5 h-5" />
-      </div>
-      <div>
-        <h2 className="text-xl lg:text-2xl font-black text-gray-900">{title}</h2>
-        {subtitle ? <p className="text-sm text-gray-500 mt-1">{subtitle}</p> : null}
-      </div>
-    </div>
-    {children}
-  </div>
-);
+function Step({ index, title, children }: { index: string; title: string; children: React.ReactNode }) {
+  return (
+    <section className="border-t border-line pt-6" aria-labelledby={`step-${index}`}>
+      <h2 id={`step-${index}`} className="flex items-baseline gap-3 text-xl font-bold">
+        <span className="font-mono text-sm font-normal text-muted">{index}</span>
+        {title}
+      </h2>
+      <div className="mt-5">{children}</div>
+    </section>
+  );
+}
 
-const PaymentOption = ({
-  active,
-  title,
-  description,
-  accent,
-  badge,
-  onClick,
-}: {
-  active: boolean;
-  title: string;
-  description: string;
-  accent: React.ReactNode;
-  badge?: string;
-  onClick: () => void;
-}) => (
-  <button
-    type="button"
-    onClick={onClick}
-    className={`w-full rounded-2xl border-2 p-4 text-left transition-all ${
-      active ? 'border-purple-500 bg-purple-50 shadow-lg' : 'border-gray-200 hover:border-gray-300 bg-white'
-    }`}
-  >
-    <div className="flex items-start justify-between gap-3">
-      <div className="flex items-center gap-3">
-        {accent}
-        <div>
-          <h3 className="font-bold text-gray-900">{title}</h3>
-          <p className="text-sm text-gray-600">{description}</p>
+function OrderConfirmation({ order }: { order: Order }) {
+  return (
+    <div className="shell max-w-2xl py-12">
+      <div className="animate-pop-in">
+        <svg viewBox="0 0 52 52" className="h-14 w-14 text-ok" aria-hidden="true">
+          <circle cx="26" cy="26" r="24" fill="none" stroke="currentColor" strokeWidth="3" />
+          <path d="M15 27l7 7 15-15" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="animate-draw [stroke-dasharray:40] [stroke-dashoffset:40]" />
+        </svg>
+        <h1 className="mt-5 text-3xl font-bold sm:text-4xl">Order placed</h1>
+        <p className="mt-2 text-muted">
+          Thanks, {order.shippingAddress.firstName}. Your order number is <span className="font-mono text-ink">{order.orderNumber}</span>.
+        </p>
+      </div>
+
+      <div className="card mt-8 divide-y divide-line">
+        <ul className="p-5">
+          {order.items.map((item) => (
+            <li key={item.id} className="flex items-center gap-3 py-2">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-control bg-white p-1">
+                <ProductImage src={item.product.image} alt="" className="h-full w-full object-contain" />
+              </span>
+              <span className="min-w-0 flex-1 truncate text-sm">
+                {item.product.name} <span className="text-muted">× {item.quantity}</span>
+              </span>
+              <span className="text-sm tabular-nums">{formatPrice(item.product.price * item.quantity)}</span>
+            </li>
+          ))}
+        </ul>
+        <dl className="grid gap-4 p-5 text-sm sm:grid-cols-3">
+          <div>
+            <dt className="spec-key">Total</dt>
+            <dd className="mt-0.5 font-semibold tabular-nums">{formatPrice(order.total)}</dd>
+          </div>
+          <div>
+            <dt className="spec-key">Payment</dt>
+            <dd className="mt-0.5 font-semibold">{paymentLabels[order.paymentMethod]}</dd>
+          </div>
+          <div>
+            <dt className="spec-key">Estimated delivery</dt>
+            <dd className="mt-0.5 font-semibold">{formatDate(order.estimatedDelivery)}</dd>
+          </div>
+        </dl>
+        <div className="p-5 text-sm text-muted">
+          Shipping to {order.shippingAddress.address}, {order.shippingAddress.city} {order.shippingAddress.zipCode}
         </div>
       </div>
-      {badge ? (
-        <span className={`rounded-full px-3 py-1 text-xs font-bold ${active ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600'}`}>
-          {badge}
-        </span>
-      ) : null}
+
+      <div className="mt-8 flex flex-wrap gap-3">
+        <Link href="/account" prefetch={false} className="btn-dark">
+          View order history
+        </Link>
+        <Link href="/products" prefetch={false} className="btn-outline">
+          Keep shopping
+        </Link>
+      </div>
     </div>
-  </button>
-);
+  );
+}
 
 export default function CheckoutPage() {
   const { user, isLoading } = useAuth();
@@ -161,16 +130,11 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit-card');
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/');
-    }
-  }, [user, isLoading, router]);
-
+  const formRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState<CheckoutFormData>({
-    email: user?.email || '',
+    email: '',
     firstName: '',
     lastName: '',
     address: '',
@@ -178,155 +142,117 @@ export default function CheckoutPage() {
     zipCode: '',
     cardNumber: '',
     expiryDate: '',
-    cvv: ''
+    cvv: '',
   });
 
   useEffect(() => {
-    if (user?.email && !formData.email) {
-      setFormData(prev => ({ ...prev, email: user.email }));
+    if (!isLoading && !user) {
+      router.replace('/login?next=/checkout');
     }
-  }, [user?.email, formData.email]);
+  }, [user, isLoading, router]);
 
-  if (isLoading) {
+  useEffect(() => {
+    if (user) {
+      const [firstName = '', ...rest] = user.name.split(' ');
+      setFormData((current) => ({
+        ...current,
+        email: current.email || user.email,
+        firstName: current.firstName || firstName,
+        lastName: current.lastName || rest.join(' '),
+      }));
+    }
+  }, [user]);
+
+  if (isLoading || !user) {
+    return <PageLoader label="Loading checkout" />;
+  }
+
+  if (completedOrder) {
+    return <OrderConfirmation order={completedOrder} />;
+  }
+
+  if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading checkout...</p>
-        </div>
+      <div className="shell py-12">
+        <EmptyState
+          title="Nothing to check out yet"
+          body="Your cart is empty."
+          action={
+            <Link href="/products" prefetch={false} className="btn-dark">
+              Shop all parts
+            </Link>
+          }
+        />
       </div>
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  const totals = computeOrderTotals(getTotalPrice());
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    } else if (formData.firstName.trim().length < 2) {
-      newErrors.firstName = 'First name must be at least 2 characters';
-    }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    } else if (formData.lastName.trim().length < 2) {
-      newErrors.lastName = 'Last name must be at least 2 characters';
-    }
-
-    if (!formData.address.trim()) {
-      newErrors.address = 'Address is required';
-    } else if (formData.address.trim().length < 10) {
-      newErrors.address = 'Please enter a complete address';
-    }
-
-    if (!formData.city.trim()) {
-      newErrors.city = 'City is required';
-    }
-
-    const zipRegex = /^\d{4}$/;
-    if (!formData.zipCode) {
-      newErrors.zipCode = 'ZIP code is required';
-    } else if (!zipRegex.test(formData.zipCode)) {
-      newErrors.zipCode = 'ZIP code must be 4 digits';
-    }
+  const validate = () => {
+    const next: FormErrors = {};
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) next.email = 'Enter a valid email address.';
+    if (formData.firstName.trim().length < 2) next.firstName = 'Enter your first name.';
+    if (formData.lastName.trim().length < 2) next.lastName = 'Enter your last name.';
+    if (formData.address.trim().length < 10) next.address = 'Include street, barangay and building or house number.';
+    if (!formData.city.trim()) next.city = 'Enter your city or municipality.';
+    if (!/^\d{4}$/.test(formData.zipCode)) next.zipCode = 'Philippine ZIP codes have 4 digits.';
 
     if (paymentMethod === 'credit-card') {
-      const cardRegex = /^\d{16}$/;
-      if (!formData.cardNumber) {
-        newErrors.cardNumber = 'Card number is required';
-      } else if (!cardRegex.test(formData.cardNumber.replace(/\s/g, ''))) {
-        newErrors.cardNumber = 'Card number must be 16 digits';
-      }
-
-      const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
-      if (!formData.expiryDate) {
-        newErrors.expiryDate = 'Expiry date is required';
-      } else if (!expiryRegex.test(formData.expiryDate)) {
-        newErrors.expiryDate = 'Use MM/YY format';
+      if (!/^\d{16}$/.test(formData.cardNumber.replace(/\s/g, ''))) next.cardNumber = 'Card numbers have 16 digits.';
+      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(formData.expiryDate)) {
+        next.expiryDate = 'Use MM/YY.';
       } else {
-        const [month, year] = formData.expiryDate.split('/');
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear() % 100;
-        const currentMonth = currentDate.getMonth() + 1;
-        
-        if (parseInt(year) < currentYear || (parseInt(year) === currentYear && parseInt(month) < currentMonth)) {
-          newErrors.expiryDate = 'Card has expired';
-        }
+        const [month, year] = formData.expiryDate.split('/').map(Number);
+        const now = new Date();
+        const currentYear = now.getFullYear() % 100;
+        if (year < currentYear || (year === currentYear && month < now.getMonth() + 1)) next.expiryDate = 'This card has expired.';
       }
-
-      const cvvRegex = /^\d{3,4}$/;
-      if (!formData.cvv) {
-        newErrors.cvv = 'CVV is required';
-      } else if (!cvvRegex.test(formData.cvv)) {
-        newErrors.cvv = 'CVV must be 3-4 digits';
-      }
+      if (!/^\d{3,4}$/.test(formData.cvv)) next.cvv = '3 or 4 digits on the back of the card.';
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors(next);
+    return next;
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    let nextValue = value;
 
-    if (name === 'cardNumber') {
-      const formatted = value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
-      setFormData(prev => ({ ...prev, [name]: formatted }));
+    if (name === 'cardNumber') nextValue = value.replace(/\D/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ');
+    if (name === 'expiryDate') {
+      const digits = value.replace(/\D/g, '').slice(0, 4);
+      nextValue = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
     }
-    else if (name === 'expiryDate') {
-      let formatted = value.replace(/\D/g, '');
-      if (formatted.length >= 2) {
-        formatted = formatted.substring(0, 2) + '/' + formatted.substring(2, 4);
-      }
-      setFormData(prev => ({ ...prev, [name]: formatted }));
-    }
-    else if (name === 'cvv') {
-      const formatted = value.replace(/\D/g, '').substring(0, 4);
-      setFormData(prev => ({ ...prev, [name]: formatted }));
-    }
-    else if (name === 'zipCode') {
-      const formatted = value.replace(/\D/g, '').substring(0, 4);
-      setFormData(prev => ({ ...prev, [name]: formatted }));
-    }
-    else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+    if (name === 'cvv' || name === 'zipCode') nextValue = value.replace(/\D/g, '').slice(0, 4);
 
+    setFormData((current) => ({ ...current, [name]: nextValue }));
     if (errors[name as keyof FormErrors]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+      setErrors((current) => ({ ...current, [name]: undefined }));
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      toast.error('Please fix the errors below');
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const nextErrors = validate();
+    const firstError = Object.keys(nextErrors)[0];
+
+    if (firstError) {
+      formRef.current?.querySelector<HTMLInputElement>(`[name="${firstError}"]`)?.focus();
       return;
     }
 
     setIsProcessing(true);
+    setSubmitError(null);
 
-    setTimeout(() => {
-      try {
-        if (!user) {
-          throw new Error('You must be logged in to place an order.');
-        }
-
-        const order = placeOrder({
-          user,
-          items,
+    // TODO: hand off to a payment gateway here. Until one is connected the server
+    // records the order and reserves stock without taking payment (stated on the page).
+    try {
+      // Only ids and quantities are sent; the server prices the order from the database.
+      const order = await api<Order>('/orders', {
+        method: 'POST',
+        body: {
+          items: items.map((item) => ({ productId: item.product.id, quantity: item.quantity })),
           shippingAddress: {
             firstName: formData.firstName.trim(),
             lastName: formData.lastName.trim(),
@@ -334,519 +260,153 @@ export default function CheckoutPage() {
             address: formData.address.trim(),
             city: formData.city.trim(),
             zipCode: formData.zipCode.trim(),
-            country: 'Philippines',
           },
           paymentMethod,
-          subtotal,
-          shipping,
-          tax,
-          total,
-        });
+        },
+      });
 
-        setCompletedOrder(order);
-        clearCart();
-        toast.success('Order placed successfully!');
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'Unable to place order.';
-        toast.error(message);
-      } finally {
-        setIsProcessing(false);
+      setCompletedOrder(order);
+      clearCart();
+      void refreshCatalog();
+      window.scrollTo({ top: 0 });
+    } catch (error) {
+      const field = error instanceof ApiError ? error.field : undefined;
+      if (field && field in formData) {
+        const message = errorMessage(error);
+        setErrors((current) => ({ ...current, [field]: message }));
+        formRef.current?.querySelector<HTMLInputElement>(`[name="${field}"]`)?.focus();
+      } else {
+        setSubmitError(errorMessage(error));
       }
-    }, 1500);
+      // Stock may have changed under us; re-price the cart so the summary is current.
+      if (error instanceof ApiError && error.status === 409) void refreshCatalog();
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  if (items.length === 0 && !completedOrder) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-              <ShoppingBag className="w-12 h-12 text-gray-400" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h2>
-            <p className="text-gray-600 mb-8">
-              Add some items to your cart before checking out.
-            </p>
-                          <Link
-                href="/products"
-                prefetch={false}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
-              >
-              Start Shopping
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (completedOrder) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-12 h-12 text-green-600" />
-            </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Order Confirmed!</h1>
-            <p className="text-lg text-gray-600 mb-8">
-              Thank you for your purchase! Your order has been placed successfully.
-              You will receive a confirmation email shortly.
-            </p>
-            <div className="bg-gray-50 rounded-xl p-6 mb-8">
-              <h3 className="font-semibold text-gray-900 mb-2">Order Details</h3>
-              <p className="text-gray-600">Order #: {completedOrder.orderNumber}</p>
-              <p className="text-gray-600">
-                Estimated delivery:{' '}
-                {new Date(completedOrder.estimatedDelivery).toLocaleDateString('en-PH', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
-              </p>
-              <p className="text-gray-600">
-                Payment method: {completedOrder.paymentMethod.replace('-', ' ')}
-              </p>
-            </div>
-            <div className="space-y-4">
-              <Link
-                href="/products"
-                prefetch={false}
-                className="block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
-              >
-                Continue Shopping
-              </Link>
-              <Link
-                href="/account"
-                prefetch={false}
-                className="block text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                View My Orders
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const subtotal = getTotalPrice();
-  const shipping = subtotal > 2500 ? 0 : 150;
-  const tax = subtotal * 0.12;
-  const total = subtotal + shipping + tax;
-  const freeShippingGap = Math.max(0, 2500 - subtotal);
-  const paymentButtonLabel =
-    paymentMethod === 'credit-card'
-      ? 'Complete Order'
-      : paymentMethod === 'gcash'
-        ? 'Pay with GCash'
-        : paymentMethod === 'maya'
-          ? 'Pay with Maya'
-          : 'Pay with PayPal';
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        <div className="mb-10">
-          <Link
-            href="/cart"
-            prefetch={false}
-            className="inline-flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors mb-6"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back to Cart</span>
-          </Link>
-          <div className="rounded-[2rem] bg-gradient-to-r from-slate-900 via-purple-900 to-fuchsia-900 text-white p-8 lg:p-10 shadow-2xl overflow-hidden relative">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_30%)] pointer-events-none"></div>
-            <div className="relative">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-bold mb-6">
-                <Sparkles className="w-4 h-4 text-yellow-300" />
-                Secure checkout
-              </div>
-              <h1 className="text-4xl lg:text-5xl font-black mb-3">Checkout</h1>
-              <p className="text-white/80 text-lg max-w-2xl">
-                Finalize your order with protected payment options, delivery details, and a clear order summary.
-              </p>
-              <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="rounded-2xl bg-white/10 border border-white/10 p-4">
-                  <p className="text-sm text-white/65 mb-1">Items in order</p>
-                  <p className="text-2xl font-black">{getTotalItems()}</p>
-                </div>
-                <div className="rounded-2xl bg-white/10 border border-white/10 p-4">
-                  <p className="text-sm text-white/65 mb-1">Payment protection</p>
-                  <p className="text-2xl font-black">256-bit SSL</p>
-                </div>
-                <div className="rounded-2xl bg-white/10 border border-white/10 p-4">
-                  <p className="text-sm text-white/65 mb-1">Delivery estimate</p>
-                  <p className="text-2xl font-black">3-5 days</p>
-                </div>
-              </div>
+    <div className="shell pb-8 pt-6">
+      <Breadcrumbs items={[{ label: 'Store', href: '/' }, { label: 'Cart', href: '/cart' }, { label: 'Checkout' }]} />
+      <h1 className="mt-4 text-3xl font-bold sm:text-4xl">Checkout</h1>
+
+      <div className="mt-6 grid gap-10 lg:grid-cols-[1fr_380px]">
+        <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-10">
+          <Step index="01" title="Contact">
+            <Field id="email" label="Email for order updates" type="email" autoComplete="email" value={formData.email} onChange={handleChange} error={errors.email} />
+          </Step>
+
+          <Step index="02" title="Delivery address">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field id="firstName" label="First name" autoComplete="given-name" value={formData.firstName} onChange={handleChange} error={errors.firstName} />
+              <Field id="lastName" label="Last name" autoComplete="family-name" value={formData.lastName} onChange={handleChange} error={errors.lastName} />
+              <Field
+                id="address"
+                label="Street address"
+                autoComplete="street-address"
+                placeholder="House no., street, barangay"
+                value={formData.address}
+                onChange={handleChange}
+                error={errors.address}
+                className="sm:col-span-2"
+              />
+              <Field id="city" label="City or municipality" autoComplete="address-level2" value={formData.city} onChange={handleChange} error={errors.city} />
+              <Field id="zipCode" label="ZIP code" inputMode="numeric" autoComplete="postal-code" value={formData.zipCode} onChange={handleChange} error={errors.zipCode} />
             </div>
-          </div>
-        </div>
+            <p className="mt-3 text-sm text-muted">We ship within the Philippines only.</p>
+          </Step>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <SectionCard
-                icon={Mail}
-                title="Contact Information"
-                subtitle="Use an active email so you receive order updates and payment confirmations."
-              >
-                <InputField
-                  name="email"
-                  type="email"
-                  placeholder="your.email@example.com"
-                  icon={Mail}
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  error={errors.email}
-                />
-              </SectionCard>
-
-              <SectionCard
-                icon={MapPin}
-                title="Shipping Address"
-                subtitle="We currently ship across the Philippines with secure packaging and tracking support."
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                  <InputField
-                    name="firstName"
-                    placeholder="First name"
-                    icon={User}
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    error={errors.firstName}
-                  />
-                  <InputField
-                    name="lastName"
-                    placeholder="Last name"
-                    icon={User}
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    error={errors.lastName}
-                  />
-                </div>
-
-                <div className="mb-6">
-                  <InputField
-                    name="address"
-                    placeholder="Street address, barangay, building, etc."
-                    icon={MapPin}
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    error={errors.address}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <InputField
-                    name="city"
-                    placeholder="City"
-                    icon={MapPin}
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    error={errors.city}
-                  />
-                  <InputField
-                    name="zipCode"
-                    placeholder="ZIP Code (4 digits)"
-                    icon={MapPin}
-                    value={formData.zipCode}
-                    onChange={handleInputChange}
-                    error={errors.zipCode}
-                  />
-                </div>
-              </SectionCard>
-
-              <SectionCard
-                icon={CreditCard}
-                title="Payment Method"
-                subtitle="Choose the checkout method that works best for you."
-              >
-                <div className="mb-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <PaymentOption
-                      active={paymentMethod === 'credit-card'}
-                      title="Credit/Debit Card"
-                      description="Visa, Mastercard, JCB"
-                      badge="Fastest"
-                      onClick={() => setPaymentMethod('credit-card')}
-                      accent={
-                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                          <CreditCard className="w-6 h-6 text-blue-600" />
-                        </div>
-                      }
-                    />
-                    <PaymentOption
-                      active={paymentMethod === 'gcash'}
-                      title="GCash"
-                      description="Mobile wallet"
-                      badge="Popular"
-                      onClick={() => setPaymentMethod('gcash')}
-                      accent={
-                        <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-sm">
-                          G₱
-                        </div>
-                      }
-                    />
-                    <PaymentOption
-                      active={paymentMethod === 'maya'}
-                      title="Maya"
-                      description="Digital wallet"
-                      onClick={() => setPaymentMethod('maya')}
-                      accent={
-                        <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center text-white font-bold text-sm">
-                          M
-                        </div>
-                      }
-                    />
-                    <PaymentOption
-                      active={paymentMethod === 'paypal'}
-                      title="PayPal"
-                      description="Global payments"
-                      onClick={() => setPaymentMethod('paypal')}
-                      accent={
-                        <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white font-bold text-sm">
-                          PP
-                        </div>
-                      }
-                    />
-                  </div>
-                </div>
-
-                {paymentMethod === 'credit-card' && (
-                  <div className="space-y-6 rounded-[1.5rem] bg-slate-50 p-5 border border-slate-100">
-                    <div>
-                      <InputField
-                        name="cardNumber"
-                        placeholder="1234 5678 9012 3456"
-                        icon={CreditCard}
-                        value={formData.cardNumber}
-                        onChange={handleInputChange}
-                        error={errors.cardNumber}
+          <Step index="03" title="Payment">
+            <fieldset>
+              <legend className="sr-only">Payment method</legend>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {PAYMENT_OPTIONS.map((option) => {
+                  const checked = paymentMethod === option.value;
+                  return (
+                    <label
+                      key={option.value}
+                      className={`flex min-h-[64px] cursor-pointer items-center gap-3 rounded-control border px-4 py-3 transition-colors focus-within:ring-2 focus-within:ring-accent ${
+                        checked ? 'border-ink bg-surface' : 'border-line bg-surface hover:border-ink/40'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value={option.value}
+                        checked={checked}
+                        onChange={() => setPaymentMethod(option.value)}
+                        className="h-4 w-4 accent-[rgb(var(--ink))]"
                       />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-6">
-                      <InputField
-                        name="expiryDate"
-                        placeholder="MM/YY"
-                        icon={Calendar}
-                        value={formData.expiryDate}
-                        onChange={handleInputChange}
-                        error={errors.expiryDate}
-                      />
-                      <InputField
-                        name="cvv"
-                        placeholder="CVV"
-                        icon={Lock}
-                        value={formData.cvv}
-                        onChange={handleInputChange}
-                        error={errors.cvv}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {paymentMethod === 'gcash' && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-[1.5rem] p-6">
-                    <div className="flex items-center mb-4">
-                      <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold mr-3">
-                        G₱
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">GCash Payment</h3>
-                        <p className="text-sm text-gray-600">You'll be redirected to GCash to complete payment</p>
-                      </div>
-                    </div>
-                    <div className="bg-white rounded-lg p-4">
-                      <p className="text-sm text-gray-700 mb-2">
-                        <strong>Instructions:</strong>
-                      </p>
-                      <ol className="text-sm text-gray-600 space-y-1">
-                        <li>1. You'll be redirected to GCash app/website</li>
-                        <li>2. Log in with your GCash credentials</li>
-                        <li>3. Verify the payment amount and confirm</li>
-                        <li>4. Return to complete your order</li>
-                      </ol>
-                    </div>
-                  </div>
-                )}
-
-                {paymentMethod === 'maya' && (
-                  <div className="bg-green-50 border border-green-200 rounded-[1.5rem] p-6">
-                    <div className="flex items-center mb-4">
-                      <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold mr-3">
-                        M
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">Maya Payment</h3>
-                        <p className="text-sm text-gray-600">You'll be redirected to Maya to complete payment</p>
-                      </div>
-                    </div>
-                    <div className="bg-white rounded-lg p-4">
-                      <p className="text-sm text-gray-700 mb-2">
-                        <strong>Instructions:</strong>
-                      </p>
-                      <ol className="text-sm text-gray-600 space-y-1">
-                        <li>1. You'll be redirected to Maya app/website</li>
-                        <li>2. Enter your Maya PIN or use biometrics</li>
-                        <li>3. Confirm the payment details</li>
-                        <li>4. Complete payment to finish your order</li>
-                      </ol>
-                    </div>
-                  </div>
-                )}
-
-                {paymentMethod === 'paypal' && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-[1.5rem] p-6">
-                    <div className="flex items-center mb-4">
-                      <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold mr-3">
-                        PP
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">PayPal Payment</h3>
-                        <p className="text-sm text-gray-600">You'll be redirected to PayPal to complete payment</p>
-                      </div>
-                    </div>
-                    <div className="bg-white rounded-lg p-4">
-                      <p className="text-sm text-gray-700 mb-2">
-                        <strong>Benefits:</strong>
-                      </p>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        <li>• Buyer protection guaranteed</li>
-                        <li>• Pay with PayPal balance, bank, or card</li>
-                        <li>• Secure international payments</li>
-                        <li>• No need to share card details</li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-2xl">
-                  <div className="flex items-center">
-                    <Lock className="w-5 h-5 text-blue-600 mr-2" />
-                    <p className="text-sm text-blue-800">
-                      Your payment information is secure and encrypted with 256-bit SSL
-                    </p>
-                  </div>
-                </div>
-              </SectionCard>
-
-              <button
-                type="submit"
-                disabled={isProcessing || items.length === 0}
-                className="w-full bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600 text-white py-5 px-6 rounded-2xl font-bold text-lg hover:opacity-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg"
-              >
-                {isProcessing ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>
-                      {paymentMethod === 'credit-card' && 'Processing Payment...'}
-                      {paymentMethod === 'gcash' && 'Connecting to GCash...'}
-                      {paymentMethod === 'maya' && 'Connecting to Maya...'}
-                      {paymentMethod === 'paypal' && 'Connecting to PayPal...'}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-5 h-5" />
-                    <span>{paymentButtonLabel} - ₱{total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
-
-          <div className="lg:sticky lg:top-8 space-y-6 h-fit">
-            <div className="rounded-[2rem] bg-gradient-to-br from-slate-900 via-purple-900 to-fuchsia-900 text-white p-6 lg:p-8 shadow-2xl">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-black">Order Summary</h2>
-                  <p className="text-white/70 text-sm">Review your items before payment</p>
-                </div>
-                <div className="rounded-2xl bg-white/10 px-4 py-3">
-                  <p className="text-xs uppercase tracking-[0.16em] text-white/55 mb-1">Total</p>
-                  <p className="text-2xl font-black">₱{total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</p>
-                </div>
+                      <span>
+                        <span className="block text-sm font-semibold">{option.title}</span>
+                        <span className="block text-xs text-muted">{option.detail}</span>
+                      </span>
+                    </label>
+                  );
+                })}
               </div>
+            </fieldset>
 
-              <div className="space-y-4 mb-6">
-                {items.map((item) => (
-                  <div key={item.id} className="flex items-center gap-3 rounded-2xl bg-white/10 border border-white/10 p-3">
-                    <img
-                      src={item.product.image}
-                      alt={item.product.name}
-                      className="w-14 h-14 object-cover rounded-xl"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-white truncate">{item.product.name}</h3>
-                      <p className="text-sm text-white/65">Qty: {item.quantity}</p>
-                    </div>
-                    <span className="text-sm font-bold text-white">
-                      ₱{(item.product.price * item.quantity).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="space-y-3 border-t border-white/10 pt-5 text-sm">
-                <div className="flex justify-between text-white/75">
-                  <span>Subtotal ({getTotalItems()} items)</span>
-                  <span>₱{subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
-                </div>
-                <div className="flex justify-between text-white/75">
-                  <span>Shipping</span>
-                  <span className={shipping === 0 ? 'text-emerald-300 font-semibold' : ''}>
-                    {shipping === 0 ? 'FREE' : `₱${shipping.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`}
-                  </span>
-                </div>
-                <div className="flex justify-between text-white/75">
-                  <span>VAT (12%)</span>
-                  <span>₱{tax.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
-                </div>
-                <div className="border-t border-white/10 pt-3 flex justify-between text-xl font-black">
-                  <span>Total</span>
-                  <span>₱{total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
-                </div>
-              </div>
-            </div>
-
-            {subtotal < 2500 && (
-              <div className="rounded-[1.5rem] bg-blue-50 border border-blue-200 p-5">
-                <div className="flex items-start gap-3">
-                  <Truck className="w-5 h-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-blue-900">Unlock free shipping</p>
-                    <p className="text-sm text-blue-800 mt-1">
-                      Add ₱{freeShippingGap.toLocaleString('en-PH', { minimumFractionDigits: 2 })} more to qualify for free delivery.
-                    </p>
-                  </div>
-                </div>
+            {paymentMethod === 'credit-card' && (
+              <div key="card" className="mt-5 grid animate-fade-in gap-4 sm:grid-cols-[2fr_1fr_1fr]">
+                <Field id="cardNumber" label="Card number" inputMode="numeric" autoComplete="cc-number" placeholder="1234 5678 9012 3456" value={formData.cardNumber} onChange={handleChange} error={errors.cardNumber} />
+                <Field id="expiryDate" label="Expiry" inputMode="numeric" autoComplete="cc-exp" placeholder="MM/YY" value={formData.expiryDate} onChange={handleChange} error={errors.expiryDate} />
+                <Field id="cvv" label="CVV" inputMode="numeric" autoComplete="cc-csc" value={formData.cvv} onChange={handleChange} error={errors.cvv} />
               </div>
             )}
 
-            <div className="rounded-[1.5rem] bg-white border border-gray-100 p-6 shadow-sm">
-              <h3 className="text-lg font-black text-gray-900 mb-4">Why customers feel safe here</h3>
-              <div className="space-y-3 text-sm text-gray-600">
-                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
-                  <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                  <span>30-day money-back guarantee</span>
-                </div>
-                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                  <span>2-year manufacturer warranty</span>
-                </div>
-                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
-                  <Wallet className="w-5 h-5 text-purple-600" />
-                  <span>Secure payment processing and order protection</span>
-                </div>
-              </div>
+            <p className="mt-5 rounded-control border border-dashed border-warn/60 p-3 text-sm text-ink">
+              <strong>Online payment is not connected yet.</strong> Placing the order records it and reserves the stock. No money is
+              taken on this site, and card details are not saved.
+            </p>
+          </Step>
+
+          {submitError && (
+            <p role="alert" className="animate-fade-in rounded-control border border-danger/40 bg-danger/5 px-4 py-3 text-sm text-danger">
+              {submitError}
+            </p>
+          )}
+
+          <button type="submit" disabled={isProcessing} className="btn-primary h-14 w-full text-base">
+            {isProcessing ? (
+              <>
+                <Spinner />
+                Placing order
+              </>
+            ) : (
+              `Place order · ${formatPrice(totals.total)}`
+            )}
+          </button>
+        </form>
+
+        <aside className="h-fit lg:sticky lg:top-24">
+          <div className="card p-5">
+            <div className="flex items-baseline justify-between">
+              <h2 className="text-lg font-bold">Your order</h2>
+              <Link href="/cart" prefetch={false} className="text-sm text-muted underline underline-offset-4 hover:text-ink">
+                Edit cart
+              </Link>
+            </div>
+            <ul className="mt-4 space-y-3 border-b border-line pb-4">
+              {items.map((item) => (
+                <li key={item.id} className="flex items-center gap-3">
+                  <span className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-control bg-white p-1">
+                    <ProductImage src={item.product.image} alt="" className="h-full w-full object-contain" />
+                    <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-ink px-1 text-[11px] font-semibold text-bg">
+                      {item.quantity}
+                    </span>
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-sm">{item.product.name}</span>
+                  <span className="text-sm tabular-nums">{formatPrice(item.product.price * item.quantity)}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4">
+              <OrderSummaryRows subtotal={totals.subtotal} itemCount={getTotalItems()} />
             </div>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );
-} 
+}

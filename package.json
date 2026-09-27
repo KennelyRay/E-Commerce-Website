@@ -1,45 +1,44 @@
 {
   "name": "vertixhub-ecommerce",
   "version": "1.0.0",
-  "description": "VertixHub - Premium PC Hardware E-commerce Store built with Next.js",
+  "description": "VertixHub: PC parts storefront (Next.js static export) with a Neon Functions API",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:github": "set NODE_ENV=production&& next build",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:seed": "prisma db seed",
     "start": "next start",
     "lint": "next lint",
-    "export": "next build",
-    "deploy": "npm run build:github && powershell -Command \"New-Item -Path 'out/.nojekyll' -ItemType File -Force\"",
-    "deploy:github": "node deploy-github.js",
-    "deploy:unix": "NODE_ENV=production npm run build && touch out/.nojekyll",
-    "serve": "npx serve out",
-    "clean": "powershell -Command \"Remove-Item -Path '.next', 'out' -Recurse -Force -ErrorAction SilentlyContinue\""
+    "api:dev": "tsx --env-file=.env scripts/dev-api.ts",
+    "db:migrate": "tsx --env-file=.env scripts/db-migrate.ts",
+    "db:seed": "tsx --env-file=.env scripts/db-seed.ts",
+    "build:static": "cross-env STATIC_EXPORT=true next build",
+    "serve": "npx serve out"
   },
   "dependencies": {
-    "@prisma/client": "^6.16.1",
+    "@aws-sdk/client-s3": "^3.1141.0",
+    "@neon/config": "^1.8.2",
+    "@neon/functions": "^0.11.0",
+    "hono": "^4.13.9",
     "lucide-react": "^0.294.0",
     "next": "14.0.4",
+    "pg": "^8.23.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
+    "@hono/node-server": "^2.1.1",
     "@types/node": "20.10.4",
+    "@types/pg": "^8.23.1",
     "@types/react": "18.2.45",
     "@types/react-dom": "18.2.17",
     "autoprefixer": "10.4.16",
+    "cross-env": "^10.1.0",
     "eslint": "8.55.0",
     "eslint-config-next": "14.0.4",
     "postcss": "8.4.32",
-    "prisma": "^6.16.1",
     "tailwindcss": "3.3.6",
+    "tsx": "^4.23.15",
     "typescript": "5.3.3"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
   }
 }

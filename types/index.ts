@@ -33,6 +33,11 @@ export interface CartContextType {
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  isDrawerOpen: boolean;
+  openDrawer: () => void;
+  closeDrawer: () => void;
+  lastAddedId: string | null;
+  addedTick: number;
 }
 
 export interface User {
@@ -40,7 +45,6 @@ export interface User {
   name: string;
   username: string;
   email: string;
-  password: string;
   isAdmin: boolean;
   isBanned: boolean;
   createdAt: string;
@@ -74,11 +78,13 @@ export interface Order {
   shippingAddress: Address;
 }
 
+export type AuthResult = { ok: true } | { ok: false; message: string; field?: string };
+
 export interface AuthContextType {
   user: User | null;
-  login: (username: string, password: string) => Promise<boolean>;
-  register: (name: string, username: string, email: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  login: (username: string, password: string) => Promise<AuthResult>;
+  register: (name: string, username: string, email: string, password: string) => Promise<AuthResult>;
+  logout: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -94,11 +100,7 @@ export interface CheckoutFormData {
   cvv: string;
 }
 
-export interface AdminStats {
-  totalUsers: number;
-  totalProducts: number;
-  totalOrders: number;
-  totalRevenue: number;
-  lowStockProducts: Product[];
-  recentOrders: Order[];
-} 
+export interface AdminUser extends User {
+  orderCount: number;
+  spent: number;
+}

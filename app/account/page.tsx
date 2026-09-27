@@ -1,250 +1,286 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ChevronDown } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { User, Mail, Calendar, ShoppingBag, LogOut, Package, CreditCard } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { api, ApiError, errorMessage, productHref } from '@/lib/api';
+import { formatDate, formatPrice, orderStatusLabels, paymentLabels } from '@/lib/format';
+import { ProductImage } from '@/components/ProductImage';
+import { Breadcrumbs, EmptyState, PageLoader, Spinner } from '@/components/ui';
 import { Order } from '@/types';
-import { getOrdersByUser } from '@/lib/shop';
+
+const STATUS_TRACK: Order['status'][] = ['paid', 'processing', 'shipped', 'delivered'];
+
+function StatusTrack({ status }: { status: Order['status'] }) {
+  const current = Math.max(0, STATUS_TRACK.indexOf(status));
+
+  return (
+    <ol className="grid grid-cols-4 gap-1" aria-label={`Order status: ${orderStatusLabels[status]}`}>
+      {STATUS_TRACK.map((step, index) => (
+        <li key={step} className="min-w-0">
+          <div className={`h-1 rounded-full transition-colors duration-500 ${index <= current ? 'bg-ok' : 'bg-line'}`} />
+          <p className={`mt-1.5 truncate text-xs ${index === current ? 'font-semibold text-ink' : 'text-muted'}`}>
+            {orderStatusLabels[step]}
+          </p>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function OrderRow({ order, defaultOpen }: { order: Order; defaultOpen: boolean }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const units = order.items.reduce((sum, item) => sum + item.quantity, 0);
+
+  return (
+    <li className="card overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setIsOpen((open) => !open)}
+        aria-expanded={isOpen}
+        aria-controls={`order-${order.id}`}
+        className="flex w-full flex-wrap items-center gap-x-6 gap-y-2 p-4 text-left transition-colors hover:bg-sunken/60 sm:p-5"
+      >
+        <span className="min-w-[140px]">
+          <span className="block font-mono text-sm">{order.orderNumber}</span>
+          <span className="block text-xs text-muted">{formatDate(order.createdAt)}</span>
+        </span>
+        <span className="text-sm text-muted">
+          {units} {units === 1 ? 'item' : 'items'}
+        </span>
+        <span className="text-sm font-medium">{orderStatusLabels[order.status]}</span>
+        <span className="ml-auto font-display text-lg font-bold tabular-nums">{formatPrice(order.total)}</span>
+        <ChevronDown className={`h-5 w-5 text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+      </button>
+
+      {isOpen && (
+        <div id={`order-${order.id}`} className="animate-fade-in border-t border-line p-4 sm:p-5">
+          <StatusTrack status={order.status} />
+          <div className="mt-6 grid gap-6 md:grid-cols-[1.4fr_1fr]">
+            <ul className="space-y-2">
+              {order.items.map((item) => (
+                <li key={item.id} className="flex items-center gap-3">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-control bg-white p-1">
+                    <ProductImage src={item.product.image} alt="" className="h-full w-full object-contain" />
+                  </span>
+                  <Link href={productHref(item.product.id)} prefetch={false} className="min-w-0 flex-1 truncate text-sm hover:underline underline-offset-4">
+                    {item.product.name}
+                  </Link>
+                  <span className="text-sm text-muted">× {item.quantity}</span>
+                </li>
+              ))}
+            </ul>
+            <dl className="space-y-2 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted">Subtotal</dt>
+                <dd className="tabular-nums">{formatPrice(order.subtotal)}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted">Shipping</dt>
+                <dd className="tabular-nums">{order.shipping === 0 ? 'Free' : formatPrice(order.shipping)}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted">VAT</dt>
+                <dd className="tabular-nums">{formatPrice(order.tax)}</dd>
+              </div>
+              <div className="flex justify-between gap-4 border-t border-line pt-2 font-semibold">
+                <dt>Total</dt>
+                <dd className="tabular-nums">{formatPrice(order.total)}</dd>
+              </div>
+              <div className="pt-3 text-muted">
+                {paymentLabels[order.paymentMethod]} · Estimated delivery {formatDate(order.estimatedDelivery, 'short')}
+                <br />
+                {order.shippingAddress.address}, {order.shippingAddress.city} {order.shippingAddress.zipCode}
+              </div>
+            </dl>
+          </div>
+        </div>
+      )}
+    </li>
+  );
+}
+
+function ChangePassword() {
+  const [form, setForm] = useState({ currentPassword: '', newPassword: '' });
+  const [error, setError] = useState<{ field?: string; message: string } | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (form.newPassword.length < 8) {
+      setError({ field: 'newPassword', message: 'Use at least 8 characters.' });
+      return;
+    }
+    setIsSaving(true);
+    setError(null);
+    try {
+      await api('/auth/password', { method: 'POST', body: form });
+      setForm({ currentPassword: '', newPassword: '' });
+      toast.success('Password changed. Other devices were signed out.');
+    } catch (caught) {
+      setError({ field: caught instanceof ApiError ? caught.field : undefined, message: errorMessage(caught) });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <form onSubmit={submit} noValidate className="card mt-4 space-y-3 p-4">
+      <h2 className="text-base font-bold">Change password</h2>
+      {(['currentPassword', 'newPassword'] as const).map((field) => (
+        <div key={field}>
+          <label htmlFor={field} className="label">
+            {field === 'currentPassword' ? 'Current password' : 'New password'}
+          </label>
+          <input
+            id={field}
+            type="password"
+            autoComplete={field === 'currentPassword' ? 'current-password' : 'new-password'}
+            value={form[field]}
+            onChange={(event) => setForm((current) => ({ ...current, [field]: event.target.value }))}
+            aria-invalid={error?.field === field}
+            className={`field ${error?.field === field ? 'field-error' : ''}`}
+          />
+        </div>
+      ))}
+      {error && (
+        <p role="alert" className="text-sm text-danger">
+          {error.message}
+        </p>
+      )}
+      <button type="submit" disabled={isSaving || !form.currentPassword || !form.newPassword} className="btn-outline w-full">
+        {isSaving && <Spinner />}
+        Update password
+      </button>
+    </form>
+  );
+}
 
 export default function AccountPage() {
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<Order[] | null>(null);
 
   useEffect(() => {
     if (!isLoading && !user) {
-      router.push('/');
+      router.replace('/login?next=/account');
     }
   }, [user, isLoading, router]);
 
+  const [ordersError, setOrdersError] = useState<string | null>(null);
+
+  const loadOrders = useCallback(() => {
+    setOrdersError(null);
+    api<Order[]>('/orders')
+      .then(setOrders)
+      .catch((error) => setOrdersError(errorMessage(error)));
+  }, []);
+
   useEffect(() => {
-    if (!user) {
-      setOrders([]);
-      return;
-    }
+    if (user) loadOrders();
+  }, [user, loadOrders]);
 
-    const loadOrders = () => {
-      setOrders(getOrdersByUser(user.id));
-    };
+  const totalSpent = useMemo(() => (orders ?? []).reduce((sum, order) => sum + order.total, 0), [orders]);
 
-    loadOrders();
-    window.addEventListener('vertixhub:storefront-updated', loadOrders);
-
-    return () => {
-      window.removeEventListener('vertixhub:storefront-updated', loadOrders);
-    };
-  }, [user]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+  if (isLoading || !user) {
+    return <PageLoader label="Loading your account" />;
   }
-
-  if (!user) {
-    return null;
-  }
-
-  const handleLogout = () => {
-    logout();
-    router.push('/');
-  };
-
-  const totalSpent = useMemo(
-    () => orders.reduce((sum, order) => sum + order.total, 0),
-    [orders],
-  );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">My Account</h1>
+    <div className="shell pb-8 pt-6">
+      <Breadcrumbs items={[{ label: 'Store', href: '/' }, { label: 'Account' }]} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Profile Info */}
-          <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Profile Information</h2>
-            
-            <div className="space-y-6">
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-2xl">
-                    {(user.name || user.username).charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{user.name}</h3>
-                  {user.isAdmin && (
-                    <span className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-medium">
-                      Administrator
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex items-center space-x-3">
-                  <Mail className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">Email</p>
-                    <p className="font-medium">{user.email}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <Calendar className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">Member since</p>
-                    <p className="font-medium">
-                      {new Date(user.createdAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <Package className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">Orders placed</p>
-                    <p className="font-medium">{orders.length}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <CreditCard className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">Lifetime spend</p>
-                    <p className="font-medium">
-                      ₱{totalSpent.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                <button
-                  onClick={() => router.push('/products')}
-                  className="w-full flex items-center space-x-3 px-4 py-3 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors"
-                >
-                  <ShoppingBag className="w-5 h-5" />
-                  <span>Continue Shopping</span>
-                </button>
-
-                <button
-                  onClick={() => router.push('/cart')}
-                  className="w-full flex items-center space-x-3 px-4 py-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <ShoppingBag className="w-5 h-5" />
-                  <span>View Cart</span>
-                </button>
-
-                {user.isAdmin && (
-                  <button
-                    onClick={() => router.push('/admin')}
-                    className="w-full flex items-center space-x-3 px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors"
-                  >
-                    <User className="w-5 h-5" />
-                    <span>Admin Panel</span>
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Account</h3>
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center space-x-3 px-4 py-3 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors"
-              >
-                <LogOut className="w-5 h-5" />
-                <span>Sign Out</span>
-              </button>
-            </div>
+      <div className="mt-4 flex flex-wrap items-end justify-between gap-6 border-b border-line pb-6">
+        <div className="flex items-center gap-4">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-ink font-display text-xl font-bold text-bg" aria-hidden="true">
+            {(user.name || user.username).charAt(0).toUpperCase()}
+          </span>
+          <div>
+            <h1 className="text-2xl font-bold sm:text-3xl">{user.name}</h1>
+            <p className="text-sm text-muted">
+              {user.email} · @{user.username} · Member since {formatDate(user.createdAt)}
+            </p>
           </div>
         </div>
+        <div className="flex flex-wrap gap-2">
+          {user.isAdmin && (
+            <Link href="/admin" prefetch={false} className="btn-outline">
+              Store admin
+            </Link>
+          )}
+          <button
+            type="button"
+            onClick={async () => {
+              await logout();
+              router.push('/');
+            }}
+            className="btn-ghost text-danger"
+          >
+            Sign out
+          </button>
+        </div>
+      </div>
 
-        <div className="mt-8 bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">Recent Orders</h2>
-              <p className="text-sm text-gray-500">Track purchases and payment summaries</p>
+      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_260px]">
+        <section aria-labelledby="orders-heading">
+          <h2 id="orders-heading" className="text-xl font-bold">
+            Orders
+          </h2>
+          {ordersError ? (
+            <div className="mt-4">
+              <EmptyState
+                title="Orders did not load"
+                body={ordersError}
+                action={
+                  <button type="button" className="btn-dark" onClick={loadOrders}>
+                    Try again
+                  </button>
+                }
+              />
             </div>
-            <span className="text-sm font-medium text-purple-600">{orders.length} total</span>
-          </div>
-
-          {orders.length === 0 ? (
-            <div className="text-center py-10 border border-dashed border-gray-200 rounded-lg">
-              <ShoppingBag className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-600 mb-4">No orders yet. Start building your cart.</p>
-              <button
-                onClick={() => router.push('/products')}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-5 py-2 rounded-lg font-medium"
-              >
-                Shop Products
-              </button>
+          ) : orders === null ? (
+            <div className="mt-4 space-y-3">
+              <div className="skeleton h-20" />
+              <div className="skeleton h-20" />
+            </div>
+          ) : orders.length === 0 ? (
+            <div className="mt-4">
+              <EmptyState
+                title="No orders yet"
+                body="Orders you place will show here with their status and delivery estimate."
+                action={
+                  <Link href="/products" prefetch={false} className="btn-dark">
+                    Shop all parts
+                  </Link>
+                }
+              />
             </div>
           ) : (
-            <div className="space-y-4">
-              {orders.slice(0, 5).map((order) => (
-                <div
-                  key={order.id}
-                  className="border border-gray-100 rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
-                >
-                  <div>
-                    <p className="font-semibold text-gray-900">{order.orderNumber}</p>
-                    <p className="text-sm text-gray-500">
-                      {new Date(order.createdAt).toLocaleDateString('en-PH', {
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {order.items.length} item(s) • {order.paymentMethod.replace('-', ' ')}
-                    </p>
-                  </div>
-                  <div className="text-left md:text-right">
-                    <p className="font-semibold text-gray-900">
-                      ₱{order.total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                    </p>
-                    <p className="text-sm text-green-600 capitalize">{order.status}</p>
-                    <p className="text-xs text-gray-500">
-                      ETA{' '}
-                      {new Date(order.estimatedDelivery).toLocaleDateString('en-PH', {
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </p>
-                  </div>
-                </div>
+            <ul className="mt-4 space-y-3">
+              {orders.map((order, index) => (
+                <OrderRow key={order.id} order={order} defaultOpen={index === 0} />
               ))}
-            </div>
+            </ul>
           )}
-        </div>
+        </section>
 
-        {/* Welcome Message */}
-        <div className="mt-8 bg-gradient-primary rounded-lg p-6 text-white">
-          <h2 className="text-2xl font-bold mb-2">Welcome to VertixHub, {user.name}!</h2>
-          <p className="text-purple-100">
-            Thank you for being part of our community. Build your dream PC with our premium components.
-          </p>
-        </div>
+        <aside className="h-fit">
+          <dl className="card divide-y divide-line">
+            <div className="p-4">
+              <dt className="spec-key">Orders placed</dt>
+              <dd className="mt-1 font-display text-2xl font-bold tabular-nums">{orders?.length ?? 0}</dd>
+            </div>
+            <div className="p-4">
+              <dt className="spec-key">Total spent</dt>
+              <dd className="mt-1 font-display text-2xl font-bold tabular-nums">{formatPrice(totalSpent)}</dd>
+            </div>
+          </dl>
+          <ChangePassword />
+        </aside>
       </div>
     </div>
   );
-} 
+}

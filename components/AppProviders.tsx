@@ -10,13 +10,18 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       <CartProvider>
         {children}
         <Toaster
-          position="top-right"
+          position="bottom-center"
           toastOptions={{
-            duration: 3000,
+            duration: 3500,
             style: {
-              background: '#363636',
-              color: '#fff',
+              background: 'rgb(var(--ink))',
+              color: 'rgb(var(--bg))',
+              borderRadius: '6px',
+              fontSize: '14px',
+              maxWidth: '420px',
             },
+            success: { iconTheme: { primary: 'rgb(var(--ok))', secondary: 'rgb(var(--bg))' } },
+            error: { iconTheme: { primary: 'rgb(var(--danger))', secondary: 'rgb(var(--bg))' } },
           }}
         />
       </CartProvider>

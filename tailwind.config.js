@@ -1,55 +1,74 @@
 /** @type {import('tailwindcss').Config} */
+const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+
 module.exports = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: ['class', '[data-theme="dark"]'],
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#faf5ff',
-          100: '#f3e8ff',
-          200: '#e9d5ff',
-          300: '#d8b4fe',
-          400: '#c084fc',
-          500: '#a855f7',
-          600: '#9333ea',
-          700: '#7c3aed',
-          800: '#6b21a8',
-          900: '#581c87',
+        bg: token('bg'),
+        surface: token('surface'),
+        sunken: token('sunken'),
+        ink: token('ink'),
+        muted: token('muted'),
+        line: token('line'),
+        accent: token('accent'),
+        'on-accent': token('on-accent'),
+        ok: token('ok'),
+        warn: token('warn'),
+        danger: token('danger'),
+      },
+      fontFamily: {
+        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-sans)', 'sans-serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
+      },
+      borderRadius: {
+        control: '6px',
+        card: '10px',
+      },
+      boxShadow: {
+        overlay: '0 24px 48px -12px rgb(0 0 0 / 0.28), 0 0 0 1px rgb(var(--line))',
+      },
+      keyframes: {
+        'slide-in-right': {
+          from: { transform: 'translateX(100%)' },
+          to: { transform: 'translateX(0)' },
         },
-        purple: {
-          50: '#faf5ff',
-          100: '#f3e8ff',
-          200: '#e9d5ff',
-          300: '#d8b4fe',
-          400: '#c084fc',
-          500: '#a855f7',
-          600: '#9333ea',
-          700: '#7c3aed',
-          800: '#6b21a8',
-          900: '#581c87',
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
         },
-        pink: {
-          50: '#fdf2f8',
-          100: '#fce7f3',
-          200: '#fbcfe8',
-          300: '#f9a8d4',
-          400: '#f472b6',
-          500: '#ec4899',
-          600: '#db2777',
-          700: '#be185d',
-          800: '#9d174d',
-          900: '#831843',
+        'pop-in': {
+          from: { opacity: '0', transform: 'translateY(8px) scale(0.98)' },
+          to: { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
+        bump: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '40%': { transform: 'scale(1.35)' },
+        },
+        shimmer: {
+          from: { backgroundPosition: '200% 0' },
+          to: { backgroundPosition: '-200% 0' },
+        },
+        draw: {
+          to: { strokeDashoffset: '0' },
         },
       },
-      backgroundImage: {
-        'gradient-primary': 'linear-gradient(135deg, #9333ea 0%, #ec4899 100%)',
-        'gradient-secondary': 'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)',
+      animation: {
+        'slide-in-right': 'slide-in-right 320ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+        'fade-in': 'fade-in 200ms ease-out',
+        'pop-in': 'pop-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+        bump: 'bump 360ms ease-out',
+        shimmer: 'shimmer 1.6s linear infinite',
+        draw: 'draw 450ms 250ms ease-out forwards',
       },
     },
   },
   plugins: [],
-} 
+};

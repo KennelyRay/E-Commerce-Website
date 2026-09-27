@@ -1,24 +1,11 @@
-import React from 'react';
 import productsData from '@/data/products.json';
-import ProductPageClient from './ProductPageClient';
-import { Product } from '@/types';
+import { LegacyProductRedirect } from './LegacyProductRedirect';
 
-interface ProductPageProps {
-  params: {
-    id: string;
-  };
+// Old /products/<id> links from before product pages moved to /product?id=<id>.
+export function generateStaticParams() {
+  return productsData.products.map((product) => ({ id: product.id }));
 }
 
-// Generate static params for all products in JSON file
-export async function generateStaticParams() {
-  const products = productsData.products as unknown as Product[];
-  return products.map((product) => ({
-    id: product.id,
-  }));
+export default function LegacyProductPage({ params }: { params: { id: string } }) {
+  return <LegacyProductRedirect id={params.id} />;
 }
-
-export default function ProductPage({ params }: ProductPageProps) {
-  const product = (productsData.products as unknown as Product[]).find(p => p.id === params.id);
-  
-  return <ProductPageClient product={product} />;
-} 
