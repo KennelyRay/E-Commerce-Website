@@ -11,6 +11,7 @@ const sans = IBM_Plex_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://vertixhub.vercel.app'),
   title: {
     default: 'VertixHub | PC parts and custom builds',
     template: '%s | VertixHub',

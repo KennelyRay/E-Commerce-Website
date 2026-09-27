@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <style>
+    .ink { stroke: #16181B; } .pad { fill: #16181B; } .via { stroke: #B8380F; }
+    @media (prefers-color-scheme: dark) { .ink { stroke: #EEEBE4; } .pad { fill: #EEEBE4; } .via { stroke: #FF7247; } }
+  </style>
+  <path class="ink" d="M5 6V10L11.8 16.8M27 6V10L20.2 16.8" stroke-width="3.2"/>
+  <rect class="pad" x="2.4" y="2" width="5.2" height="4.4"/>
+  <rect class="pad" x="24.4" y="2" width="5.2" height="4.4"/>
+  <circle class="via" cx="16" cy="21" r="4.4" stroke-width="3.2"/>
+</svg>

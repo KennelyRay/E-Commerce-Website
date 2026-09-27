@@ -3,14 +3,17 @@
 import React from 'react';
 import Link from 'next/link';
 import { Minus, Plus } from 'lucide-react';
+import { LogoMark } from '@/components/Logo';
 import { discountPercent, formatPrice, stockState } from '@/lib/format';
 import { Product } from '@/types';
 
-export function Wordmark({ className = '' }: { className?: string }) {
-  // Text wordmark until a real logo is supplied.
+export function Wordmark({ className = '', showMark = true }: { className?: string; showMark?: boolean }) {
   return (
-    <span className={`font-display text-[19px] font-extrabold tracking-tight text-ink ${className}`} style={{ fontStretch: '125%' }}>
-      Vertix<span className="text-accent">Hub</span>
+    <span className={`inline-flex items-center gap-2 ${className}`}>
+      {showMark && <LogoMark size={26} className="shrink-0 text-ink" />}
+      <span className="font-display text-[19px] font-extrabold tracking-tight text-ink" style={{ fontStretch: '125%' }}>
+        VertixHub
+      </span>
     </span>
   );
 }
