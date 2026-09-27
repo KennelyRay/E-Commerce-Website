@@ -20,15 +20,25 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const app = new Hono<Env>();
 
+// Exact origins, or patterns with `*` for one DNS label segment, e.g.
+// https://vertixhub-*.vercel.app to cover Vercel preview deployments.
 const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? '')
   .split(',')
   .map((origin) => origin.trim())
-  .filter(Boolean);
+  .filter(Boolean)
+  .map((origin) => {
+    if (!origin.includes('*')) return origin;
+    const escaped = origin.replace(/[.+?^$()|[\]\\{}]/g, '\\$&');
+    return new RegExp(`^${escaped.replace(/\*/g, '[a-z0-9-]+')}$`);
+  });
+
+const isAllowedOrigin = (origin: string) =>
+  allowedOrigins.some((allowed) => (typeof allowed === 'string' ? allowed === origin : allowed.test(origin)));
 
 app.use(
   '*',
   cors({
-    origin: (origin) => (allowedOrigins.includes(origin) ? origin : null),
+    origin: (origin) => (isAllowedOrigin(origin) ? origin : null),
     allowHeaders: ['Authorization', 'Content-Type'],
     allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     maxAge: 86400,

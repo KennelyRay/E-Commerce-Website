@@ -31,7 +31,7 @@ Current deployment: project `winter-shape-89901930` (VertixHub), branch `product
    neon functions get api      # prints the function URL
    ```
 
-   Neon injects `DATABASE_URL` and the Object Storage credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_ENDPOINT_URL_S3`, `AWS_REGION`). `ALLOWED_ORIGINS` defaults to `https://kennelyray.github.io`; set `PRODUCTION_ORIGINS` before deploying to allow a custom domain as well.
+   Neon injects `DATABASE_URL` and the Object Storage credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_ENDPOINT_URL_S3`, `AWS_REGION`). `ALLOWED_ORIGINS` defaults to `https://vertixhub.vercel.app` plus `https://vertixhub-*.vercel.app` for Vercel previews. To add a custom domain, set `PRODUCTION_ORIGINS` to the full comma-separated list before deploying.
 
 4. Check it:
 
@@ -39,9 +39,9 @@ Current deployment: project `winter-shape-89901930` (VertixHub), branch `product
    curl <function-url>/health    # {"ok":true,"storage":true}
    ```
 
-5. Push to `main` to publish the storefront. The workflow builds against the API URL above unless the repository variable `NEXT_PUBLIC_API_URL` says otherwise.
+5. In Vercel, open the project's Settings > Environment Variables and set `NEXT_PUBLIC_API_URL` to `https://br-soft-mode-az0zpm32-api.compute.c-3.ap-southeast-1.aws.neon.tech` for Production and Preview. Redeploy, since the value is read at build time.
 
-6. Sign in to the storefront as `Admin` with `ADMIN_PASSWORD` from `.env`, open Account, and change the password.
+6. Sign in at https://vertixhub.vercel.app as `Admin` with `ADMIN_PASSWORD` from `.env`, open Account, and change the password.
 
 ## Photo URLs
 

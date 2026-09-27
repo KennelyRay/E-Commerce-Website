@@ -8,9 +8,10 @@ export default defineConfig({
       name: 'VertixHub API',
       source: './functions/api.ts',
       env: {
-        // Browser origins allowed to call the deployed API, comma separated.
+        // Browser origins allowed to call the deployed API, comma separated. The
+        // wildcard covers Vercel preview deployments of the vertixhub project.
         // Local development uses ALLOWED_ORIGINS from .env instead.
-        ALLOWED_ORIGINS: process.env.PRODUCTION_ORIGINS ?? 'https://kennelyray.github.io',
+        ALLOWED_ORIGINS: process.env.PRODUCTION_ORIGINS ?? 'https://vertixhub.vercel.app,https://vertixhub-*.vercel.app',
         PRODUCT_IMAGE_BUCKET: 'product-images',
       },
     },

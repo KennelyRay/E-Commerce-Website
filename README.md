@@ -6,7 +6,7 @@ PC parts storefront for a store in Baguio City: catalog, PC Builder with compati
 
 | Piece | Where it runs | Code |
 | --- | --- | --- |
-| Storefront (Next.js 14, static export) | GitHub Pages | `app/`, `components/` |
+| Storefront (Next.js 14) | Vercel, https://vertixhub.vercel.app | `app/`, `components/` |
 | API (Hono) | Neon Functions | `functions/api.ts` |
 | Database (Postgres) | Neon | `db/schema.sql` |
 | Product photos | Neon Object Storage, bucket `product-images` | `functions/lib/storage.ts` |
@@ -34,7 +34,8 @@ Photo uploads in the admin need Object Storage credentials, which Neon injects o
 
 ## Deploy
 
-See [docs/NEON.md](docs/NEON.md) for the API and database, then push to `main` to publish the storefront through `.github/workflows/deploy.yml`.
+- API and database: see [docs/NEON.md](docs/NEON.md).
+- Storefront: Vercel builds on every push. In the Vercel project settings, set `NEXT_PUBLIC_API_URL` to `https://br-soft-mode-az0zpm32-api.compute.c-3.ap-southeast-1.aws.neon.tech` for Production and Preview. It is read at build time, so redeploy after changing it.
 
 ## Scripts
 
@@ -44,7 +45,7 @@ See [docs/NEON.md](docs/NEON.md) for the API and database, then push to `main` t
 | `npm run api:dev` | API on Node against the database in `.env` |
 | `npm run db:migrate` | Applies `db/schema.sql` |
 | `npm run db:seed` | Inserts missing products and the Admin account; never overwrites edits |
-| `npm run build:static` | Static export into `out/` under `/E-Commerce-Website` |
+| `npm run build:static` | Optional static export into `out/` (for static hosts such as GitHub Pages) |
 
 ## Not built yet
 
