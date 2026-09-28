@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { CartDrawer } from '@/components/CartDrawer';
 import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
+import { SiteBackground } from '@/components/SiteBackground';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? '/';
@@ -12,6 +13,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <SiteBackground />
       <a
         href="#main"
         className="sr-only z-[200] rounded-control bg-ink px-4 py-2 text-bg focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
