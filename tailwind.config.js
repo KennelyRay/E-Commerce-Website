@@ -22,11 +22,16 @@ module.exports = {
         ok: token('ok'),
         warn: token('warn'),
         danger: token('danger'),
+        panel: token('panel'),
+        'panel-ink': token('panel-ink'),
+        'panel-muted': token('panel-muted'),
+        'panel-accent': token('panel-accent'),
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
         display: ['var(--font-display)', 'var(--font-sans)', 'sans-serif'],
         mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
+        brand: ['var(--font-brand)', 'var(--font-display)', 'sans-serif'],
       },
       borderRadius: {
         control: '6px',
@@ -59,6 +64,11 @@ module.exports = {
         draw: {
           to: { strokeDashoffset: '0' },
         },
+        shake: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '20%, 60%': { transform: 'translateX(-6px)' },
+          '40%, 80%': { transform: 'translateX(6px)' },
+        },
       },
       animation: {
         'slide-in-right': 'slide-in-right 320ms cubic-bezier(0.2, 0.8, 0.2, 1)',
@@ -67,6 +77,7 @@ module.exports = {
         bump: 'bump 360ms ease-out',
         shimmer: 'shimmer 1.6s linear infinite',
         draw: 'draw 450ms 250ms ease-out forwards',
+        shake: 'shake 360ms ease-in-out',
       },
     },
   },

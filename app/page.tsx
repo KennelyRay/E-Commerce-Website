@@ -113,8 +113,8 @@ function BuilderDemo({ products }: { products: Product[] }) {
   }
 
   return (
-    <div className="rounded-card border border-bg/20 bg-bg/5 p-5">
-      <p className="font-mono text-xs text-bg/70">Try it: pair a {cpu.name} with</p>
+    <div className="rounded-card border border-panel-ink/20 bg-panel-ink/5 p-5">
+      <p className="font-mono text-xs text-panel-muted">Try it: pair a {cpu.name} with</p>
       <div className="mt-3 grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Motherboard">
         {boards.map((entry) => (
           <button
@@ -124,7 +124,7 @@ function BuilderDemo({ products }: { products: Product[] }) {
             aria-checked={entry.id === board.id}
             onClick={() => setBoardId(entry.id)}
             className={`min-h-[44px] rounded-control border px-3 py-2 text-left text-sm transition-colors ${
-              entry.id === board.id ? 'border-bg bg-bg text-ink' : 'border-bg/25 text-bg hover:border-bg/60'
+              entry.id === board.id ? 'border-panel-accent bg-panel-accent/15 text-panel-ink' : 'border-panel-ink/25 text-panel-ink hover:border-panel-ink/60'
             }`}
           >
             <span className="block font-semibold">{entry.name}</span>
@@ -137,13 +137,13 @@ function BuilderDemo({ products }: { products: Product[] }) {
           <li key={`${board.id}-${check.id}`} className="flex animate-fade-in items-start gap-2 text-sm">
             <span
               className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-                check.status === 'pass' ? 'bg-ok text-bg' : 'bg-danger text-bg'
+                check.status === 'pass' ? 'bg-ok text-panel' : 'bg-danger text-panel'
               }`}
               aria-hidden="true"
             >
               {check.status === 'pass' ? <Check className="h-3 w-3" strokeWidth={3} /> : <X className="h-3 w-3" strokeWidth={3} />}
             </span>
-            <span className="text-bg">
+            <span className="text-panel-ink">
               <span className="sr-only">{check.status === 'pass' ? 'Pass: ' : 'Problem: '}</span>
               {check.message}
             </span>
@@ -274,17 +274,17 @@ export default function StorefrontPage() {
         </div>
       </Reveal>
 
-      {/* Rhythm break: the one dark band on the page, reserved for the builder. */}
-      <Reveal as="section" className="bg-ink text-bg">
+      {/* Rhythm break: the one dark band on the page, in the logo's black, reserved for the builder. */}
+      <Reveal as="section" className="border-y border-line bg-panel text-panel-ink">
         <div className="shell grid gap-10 py-16 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:py-20">
           <div>
-            <p className="font-mono text-sm text-bg/70">03 · PC Builder</p>
-            <h2 className="mt-3 text-balance text-3xl font-bold text-bg sm:text-4xl">Catch the wrong socket before it ships.</h2>
-            <p className="mt-4 max-w-md text-bg/80">
+            <p className="font-mono text-sm text-panel-muted">03 · PC Builder</p>
+            <h2 className="mt-3 text-balance text-3xl font-bold text-panel-ink sm:text-4xl">Catch the wrong socket before it ships.</h2>
+            <p className="mt-4 max-w-md text-panel-muted">
               Pick one part per slot and the builder checks four things as you go: CPU and board socket, board and memory
               generation, cooler mounting, and power supply headroom.
             </p>
-            <Link href="/pc-builder" prefetch={false} className="btn mt-8 bg-bg px-6 text-ink hover:bg-bg/90">
+            <Link href="/pc-builder" prefetch={false} className="btn mt-8 bg-panel-accent px-6 text-panel hover:bg-panel-accent/90">
               Open the builder
             </Link>
           </div>

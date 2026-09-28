@@ -8,11 +8,12 @@ import { discountPercent, formatPrice, stockState } from '@/lib/format';
 import { Product } from '@/types';
 
 export function Wordmark({ className = '', showMark = true }: { className?: string; showMark?: boolean }) {
+  // Russo One matches the wide, heavy lettering of the logo; "Hub" takes the logo violet.
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
-      {showMark && <LogoMark size={26} className="shrink-0 text-ink" />}
-      <span className="font-display text-[19px] font-extrabold tracking-tight text-ink" style={{ fontStretch: '125%' }}>
-        VertixHub
+      {showMark && <LogoMark size={30} />}
+      <span className="font-brand text-[20px] leading-none text-ink">
+        Vertix<span className="text-accent">Hub</span>
       </span>
     </span>
   );

@@ -1,39 +1,39 @@
-# VertixHub mark
+# VertixHub brand
 
 ![VertixHub logo](../public/brand/vertixhub-logo.png)
-
-## Idea
-
-Two PCB traces run from their solder pads, bend at 45 degrees (the way boards are actually routed) and meet at a via: a vertex and a hub. The via is the only part in the accent colour.
 
 ## Files
 
 | File | Use |
 | --- | --- |
-| `public/brand/vertixhub-mark.svg` | Mark on light backgrounds |
-| `public/brand/vertixhub-mark-inverse.svg` | Mark on dark backgrounds |
-| `public/brand/vertixhub-mark-mono.svg` | One-colour printing, stamps, engraving |
-| `public/brand/vertixhub-logo.png`, `-inverse.png` | Mark with wordmark, transparent PNG |
-| `components/Logo.tsx` | The mark inside the website (follows the theme) |
-| `app/icon.svg` | Favicon; switches colours with the browser theme |
-| `app/apple-icon.png` | iOS home screen |
+| `public/brand/vertixhub-logo.png` | Master logo (603 × 433, dark background) |
+| `public/brand/vertixhub-icon.png` | Icon on its rounded dark tile, used by `components/Logo.tsx` |
+| `public/brand/VetixHub_Editable_Logo.svg` | Earlier editable draft. It differs from the master and spells the name "Vetix"; not used by the site |
+| `app/icon.png`, `app/favicon.ico` | Browser tab |
+| `app/apple-icon.png`, `public/icon-192.png`, `public/icon-512.png` | Home screen icons |
 | `app/opengraph-image.png` | Link previews |
 
-The mark is drawn on a 32 unit grid: traces 3.2 wide, pads 5.2 × 4.4, via radius 4.4. Keep the SVG files and `components/Logo.tsx` in sync if the geometry changes.
+The icon files are cut from the master PNG. The case sits on a dark tile everywhere because its faces share the logo's black background, so it cannot be placed straight onto a light page. A vector or 1024 px export of the logo would make the large icons (512 px, link preview) sharper.
 
 ## Colour
 
-| | Light | Dark |
-| --- | --- | --- |
-| Traces and pads | Ink `#16181B` | Paper `#EEEBE4` |
-| Via | Vermilion `#B8380F` | Vermilion `#FF7247` |
+| Token | Light theme | Dark theme | From the logo |
+| --- | --- | --- | --- |
+| Accent | `#5234F0` | `#8B78FF` | Violet `#5034F8` |
+| Background | `#F6F6F8` | `#08090B` | Background `#050607` |
+| Text | `#0C0D10` | `#F7F7F8` | White `#F7F7F7` |
+| Panels (always dark) | `#101116` | `#101116` | Case faces |
 
-## Wordmark
+The light theme accent is the logo violet. The dark theme uses a lighter tint so small violet text stays readable on black. Use violet as the single accent: buttons, links, prices on sale, focus. Keep gradients inside the logo itself.
 
-"VertixHub" set in Archivo ExtraBold at 125% width, all one colour. The accent stays on the via, so the name is not split into two colours.
+## Type
+
+- Wordmark: Russo One, "Vertix" in the text colour and "Hub" in violet.
+- Headings: Archivo, bold and expanded.
+- Body: IBM Plex Sans. Specs and SKUs: IBM Plex Mono.
 
 ## Use
 
-- Smallest size: 16 px for the mark alone, 20 px mark height in the lockup.
-- Clear space: at least the via's diameter on every side.
-- Do not rotate it, round the pad corners, add gradients or glows, or recolour the traces in the accent.
+- Smallest size: 16 px for the icon.
+- Clear space: at least a quarter of the icon's width on every side.
+- Do not recolour the H or the fan, stretch the case, or place the icon on a light background without its tile.

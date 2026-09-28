@@ -117,9 +117,9 @@ export default function AboutPage() {
         </dl>
       </Reveal>
 
-      <Reveal as="section" className="mt-16 rounded-card bg-ink p-6 text-bg sm:p-8">
-        <h2 className="text-2xl font-bold text-bg">Delivery</h2>
-        <p className="mt-2 max-w-2xl text-bg/80">
+      <Reveal as="section" className="mt-16 rounded-card bg-panel p-6 text-panel-ink sm:p-8">
+        <h2 className="text-2xl font-bold text-panel-ink">Delivery</h2>
+        <p className="mt-2 max-w-2xl text-panel-muted">
           Orders ship from Baguio City to addresses in the Philippines, with an estimated delivery of about five days. Shipping is
           free on orders over {formatPrice(FREE_SHIPPING_THRESHOLD, { whole: true })}.
         </p>
