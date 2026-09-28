@@ -16,10 +16,10 @@ const KEY_SPECS: Record<string, string[]> = {
   Processors: ['Socket', 'Cores', 'TDP'],
   Motherboards: ['Socket', 'Chipset', 'Form Factor'],
   'Memory (RAM)': ['Capacity', 'Speed'],
-  Storage: ['Capacity', 'Interface'],
+  Storage: ['Capacity', 'Interface', 'Form Factor'],
   'Power Supplies': ['Wattage', 'Efficiency'],
   Cases: ['Form Factor'],
-  Cooling: ['Type', 'TDP'],
+  Cooling: ['Type', 'Height', 'Radiator'],
 };
 
 export function keySpecLine(product: Product, limit = 3) {

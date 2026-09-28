@@ -409,7 +409,12 @@ admin.post('/products/:id/image', async (c) => {
   if (!exists.rowCount) throw new HttpError(404, 'Product not found.');
 
   const url = await uploadProductImage(`products/${id}/${Date.now()}.${extension}`, new Uint8Array(await file.arrayBuffer()), file.type);
-  const { rows } = await pool.query(`UPDATE products SET image = $1, updated_at = now() WHERE id = $2 RETURNING *`, [url, id]);
+  // A new photo drops the old photo credit, unless the caller is re-hosting that same credited photo.
+  const keepCredit = form.keepCredit === 'true';
+  const { rows } = await pool.query(
+    `UPDATE products SET image = $1, image_credit = CASE WHEN $3 THEN image_credit ELSE NULL END, updated_at = now() WHERE id = $2 RETURNING *`,
+    [url, id, keepCredit],
+  );
   return c.json(toProduct(rows[0]));
 });
 

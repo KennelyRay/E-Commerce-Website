@@ -15,6 +15,27 @@ import { Reveal } from '@/components/Reveal';
 import { Breadcrumbs, EmptyState, PageLoader, Price, QuantityStepper, StockTag } from '@/components/ui';
 import { ProductImage } from '@/components/ProductImage';
 import { productHref } from '@/lib/api';
+import { ImageCredit } from '@/types';
+
+/** Credit line required by Creative Commons licences (author, licence, source). */
+function PhotoCredit({ credit }: { credit: ImageCredit }) {
+  return (
+    <p className="mt-2 text-xs text-muted">
+      Photo: {credit.author},{' '}
+      {credit.licenseUrl ? (
+        <a href={credit.licenseUrl} target="_blank" rel="noopener noreferrer license" className="underline underline-offset-2 hover:text-ink">
+          {credit.license}
+        </a>
+      ) : (
+        credit.license
+      )}
+      , via{' '}
+      <a href={credit.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-ink">
+        Wikimedia Commons
+      </a>
+    </p>
+  );
+}
 
 function ZoomImage({ src, alt }: { src: string; alt: string }) {
   const [origin, setOrigin] = useState('50% 50%');
@@ -27,6 +48,10 @@ function ZoomImage({ src, alt }: { src: string; alt: string }) {
     const y = ((event.clientY - rect.top) / rect.height) * 100;
     setOrigin(`${x}% ${y}%`);
   };
+
+  if (!src) {
+    return <ProductImage src="" alt={alt} className="aspect-square w-full rounded-card border border-line bg-white text-sm" />;
+  }
 
   return (
     <div
@@ -150,6 +175,7 @@ export function ProductDetail({ id }: { id: string }) {
       <div className="mt-6 grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
         <div>
           <ZoomImage src={images[imageIndex] ?? product.image} alt={product.name} />
+          {product.imageCredit && imageIndex === 0 && <PhotoCredit credit={product.imageCredit} />}
           {images.length > 1 && (
             <div className="mt-3 flex items-center gap-2">
               <button type="button" className="icon-btn border border-line" onClick={() => setImageIndex((imageIndex - 1 + images.length) % images.length)} aria-label="Previous image">

@@ -22,6 +22,9 @@ CREATE TABLE IF NOT EXISTS products (
 
 CREATE INDEX IF NOT EXISTS products_category_idx ON products (category);
 
+-- Author and licence for photos that require a credit (e.g. Wikimedia Commons, CC BY-SA).
+ALTER TABLE products ADD COLUMN IF NOT EXISTS image_credit jsonb;
+
 CREATE TABLE IF NOT EXISTS users (
   id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name           text NOT NULL,

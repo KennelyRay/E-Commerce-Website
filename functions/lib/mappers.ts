@@ -21,6 +21,7 @@ export function toProduct(row: Row) {
     featured: Boolean(row.featured),
     tags: (row.tags as string[]) ?? [],
     specifications: (row.specifications as Record<string, string>) ?? {},
+    imageCredit: row.image_credit ?? undefined,
   };
 }
 

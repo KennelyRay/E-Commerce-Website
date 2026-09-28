@@ -2,336 +2,1303 @@
   "products": [
     {
       "id": "1",
-      "name": "NVIDIA GeForce RTX 4090",
-      "description": "Ultimate gaming graphics card with 24GB GDDR6X memory. Experience unparalleled performance with ray tracing and DLSS 3.0. Features advanced cooling with triple-fan design and RGB lighting.",
-      "price": 1599.99,
-      "originalPrice": 1699.99,
-      "image": "https://c1.neweggimages.com/productimage/nb1280/14-930-136-01.jpg",
+      "name": "ASUS ROG Strix GeForce RTX 4090 OC 24GB",
+      "description": "Triple-fan RTX 4090 with 24GB GDDR6X for 4K gaming and GPU rendering. Uses a 16-pin 12VHPWR power connector.",
+      "price": 113999,
       "category": "Graphics Cards",
-      "stock": 12,
-      "rating": 4.9,
-      "reviews": 324,
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
       "featured": true,
-      "tags": ["nvidia", "rtx", "gaming", "ray-tracing", "4k"],
+      "tags": [
+        "nvidia",
+        "geforce",
+        "rtx 4090",
+        "asus",
+        "rog strix",
+        "4k"
+      ],
       "specifications": {
         "Memory": "24GB GDDR6X",
-        "Memory Bus": "384-bit",
-        "Base Clock": "2235 MHz",
-        "Boost Clock": "2520 MHz",
-        "CUDA Cores": "16384",
-        "RT Cores": "128 (3rd gen)",
-        "Tensor Cores": "512 (4th gen)",
         "Power Consumption": "450W",
-        "Recommended PSU": "850W",
-        "Outputs": "3x DisplayPort 1.4a, 1x HDMI 2.1",
-        "DirectX": "12 Ultimate",
-        "Ray Tracing": "Yes",
-        "DLSS": "3.0"
+        "Recommended PSU": "1000W",
+        "Outputs": "2x HDMI 2.1a, 3x DisplayPort 1.4a",
+        "Length": "357.6mm",
+        "Power Connector": "1x 16-pin 12VHPWR"
+      },
+      "launchPriceUsd": 1999,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Asus_Strix_RTX_4090.jpg/960px-Asus_Strix_RTX_4090.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Benlisquare",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Asus_Strix_RTX_4090.jpg"
       }
     },
     {
       "id": "2",
       "name": "AMD Ryzen 9 7900X",
-      "description": "High-performance 12-core processor with 4.7GHz boost clock. Perfect for gaming and content creation with advanced Zen 4 architecture.",
-      "price": 549.99,
-      "originalPrice": 599.99,
-      "image": "https://c1.neweggimages.com/productimage/nb1280/19-113-774-V01.jpg",
+      "description": "12-core, 24-thread Zen 4 desktop processor for the AM5 platform. Unlocked for overclocking; no cooler in the box.",
+      "price": 31299,
       "category": "Processors",
-      "stock": 18,
-      "rating": 4.8,
-      "reviews": 256,
-      "featured": true,
-      "tags": ["amd", "ryzen", "12-core", "gaming", "productivity"],
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "amd",
+        "ryzen",
+        "am5",
+        "zen 4",
+        "12-core"
+      ],
       "specifications": {
+        "Socket": "AM5",
         "Cores": "12",
         "Threads": "24",
         "Base Clock": "4.7 GHz",
-        "Max Boost Clock": "5.6 GHz",
-        "Cache": "76MB",
-        "Architecture": "Zen 4",
-        "Process": "5nm",
-        "Socket": "AM5",
-        "Memory Support": "DDR5-5200",
-        "PCIe": "5.0",
+        "Boost Clock": "5.6 GHz",
+        "L3 Cache": "64MB",
         "TDP": "170W",
-        "Integrated Graphics": "RDNA 2"
+        "Memory Support": "DDR5",
+        "Integrated Graphics": "AMD Radeon (2 CU)"
+      },
+      "launchPriceUsd": 549,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/AMD_Ryzen_9_7900X.jpg/960px-AMD_Ryzen_9_7900X.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "CristoCalis",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:AMD_Ryzen_9_7900X.jpg"
       }
     },
     {
       "id": "3",
-      "name": "ASUS ROG Strix Z790-E",
-      "description": "Premium gaming motherboard with WiFi 6E, DDR5 support, and advanced cooling solutions. Built for Intel 13th gen with RGB lighting and premium components.",
-      "price": 459.99,
-      "image": "https://c1.neweggimages.com/productimage/nb1280/13-119-504-V01.jpg",
+      "name": "ASUS ROG Strix Z690-A Gaming WiFi",
+      "description": "ATX Z690 board for 12th and 13th-gen Intel processors, with DDR5 memory, four M.2 slots and Wi-Fi 6.",
+      "price": 19899,
       "category": "Motherboards",
-      "stock": 15,
-      "rating": 4.7,
-      "reviews": 189,
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
       "featured": false,
-      "tags": ["asus", "rog", "z790", "gaming", "wifi6e"],
+      "tags": [
+        "asus",
+        "rog strix",
+        "z690",
+        "lga1700",
+        "ddr5",
+        "wifi"
+      ],
       "specifications": {
         "Socket": "LGA 1700",
-        "Chipset": "Intel Z790",
-        "Memory": "DDR5-7200+ (OC)",
-        "Memory Slots": "4 x DIMM",
-        "Max Memory": "128GB",
-        "PCIe Slots": "1 x PCIe 5.0 x16, 2 x PCIe 4.0 x16",
-        "M.2 Slots": "4 x M.2",
-        "SATA": "6 x SATA 6Gb/s",
-        "USB": "USB 3.2 Gen 2x2, USB-C",
-        "Networking": "2.5Gb Ethernet, WiFi 6E",
-        "Audio": "ROG SupremeFX 7.1",
-        "RGB": "Aura Sync RGB"
+        "Chipset": "Intel Z690",
+        "Form Factor": "ATX",
+        "Memory": "DDR5, 4 slots, up to 128GB",
+        "M.2 Slots": "4",
+        "Wireless": "Wi-Fi 6, Bluetooth 5.2"
+      },
+      "launchPriceUsd": 349,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/2023_P%C5%82yta_g%C5%82%C3%B3wna_Asus_ROG_STRIX_Z690-A_GAMING_WIFI.jpg/960px-2023_P%C5%82yta_g%C5%82%C3%B3wna_Asus_ROG_STRIX_Z690-A_GAMING_WIFI.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Jacek Halicki",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2023_P%C5%82yta_g%C5%82%C3%B3wna_Asus_ROG_STRIX_Z690-A_GAMING_WIFI.jpg"
       }
     },
     {
       "id": "4",
-      "name": "Corsair Vengeance DDR5-5600 32GB",
-      "description": "High-performance DDR5 memory kit with RGB lighting. 32GB (2x16GB) for ultimate multitasking performance with aluminum heat spreaders.",
-      "price": 299.99,
-      "originalPrice": 349.99,
-      "image": "https://c1.neweggimages.com/productimage/nb1280/20-233-852-V01.jpg",
+      "name": "Corsair Vengeance RGB DDR5-6000 32GB (2 x 16GB) White",
+      "description": "Two 16GB DDR5 modules at 6000MT/s CL36 with RGB lighting, in white. Suits AM5 and DDR5 LGA1700 boards.",
+      "price": 9699,
       "category": "Memory (RAM)",
-      "stock": 25,
-      "rating": 4.6,
-      "reviews": 412,
-      "featured": true,
-      "tags": ["corsair", "ddr5", "rgb", "32gb", "gaming"],
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "corsair",
+        "vengeance",
+        "ddr5",
+        "rgb",
+        "32gb"
+      ],
       "specifications": {
-        "Capacity": "32GB (2 x 16GB)",
         "Type": "DDR5",
-        "Speed": "5600MHz",
-        "Timings": "CL36-36-36-76",
-        "Voltage": "1.25V",
-        "RGB": "Dynamic RGB lighting",
-        "Heat Spreader": "Aluminum",
-        "Intel XMP": "3.0",
-        "AMD EXPO": "Yes",
-        "Warranty": "Lifetime",
-        "Form Factor": "DIMM 288-pin"
+        "Capacity": "32GB (2 x 16GB)",
+        "Speed": "6000MT/s",
+        "Latency": "CL36",
+        "Voltage": "1.35V",
+        "Form Factor": "DIMM 288-pin",
+        "Color": "White"
+      },
+      "launchPriceUsd": 169.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/2023_Pami%C4%99ci_Corsair_Vengeance_RGB.jpg/960px-2023_Pami%C4%99ci_Corsair_Vengeance_RGB.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Jacek Halicki",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2023_Pami%C4%99ci_Corsair_Vengeance_RGB.jpg"
       }
     },
     {
       "id": "5",
-      "name": "Samsung 980 PRO 2TB NVMe",
-      "description": "Ultra-fast PCIe 4.0 NVMe SSD with up to 7,000 MB/s read speeds. Perfect for gaming and professional workloads with advanced thermal management.",
-      "price": 199.99,
-      "originalPrice": 249.99,
-      "image": "https://c1.neweggimages.com/productimage/nb1280/20-147-804-V01.jpg",
+      "name": "Samsung 980 PRO 1TB NVMe SSD",
+      "description": "PCIe 4.0 M.2 SSD with up to 7,000MB/s reads, also compatible with the PlayStation 5 expansion slot.",
+      "price": 13199,
       "category": "Storage",
-      "stock": 30,
-      "rating": 4.8,
-      "reviews": 567,
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
       "featured": false,
-      "tags": ["samsung", "nvme", "pcie4", "2tb", "fast"],
+      "tags": [
+        "samsung",
+        "980 pro",
+        "nvme",
+        "pcie 4.0",
+        "m.2"
+      ],
       "specifications": {
-        "Capacity": "2TB",
-        "Interface": "PCIe Gen 4.0 x4, NVMe 1.3c",
+        "Capacity": "1TB",
+        "Interface": "PCIe 4.0 x4 NVMe",
         "Form Factor": "M.2 2280",
-        "Sequential Read": "7,000 MB/s",
-        "Sequential Write": "6,900 MB/s",
-        "Random Read": "1,000K IOPS",
-        "Random Write": "1,300K IOPS",
-        "Controller": "Samsung Elpis",
-        "NAND": "Samsung V-NAND 3-bit MLC",
-        "DRAM": "2GB LPDDR4",
-        "Encryption": "AES 256-bit",
-        "Warranty": "5 years"
+        "Sequential Read": "7,000MB/s",
+        "Sequential Write": "5,000MB/s",
+        "Endurance": "600TBW"
+      },
+      "launchPriceUsd": 229.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Samsung_980_PRO_PCIe_4.0_NVMe_SSD_1TB-top_PNr%C2%B00915.jpg/960px-Samsung_980_PRO_PCIe_4.0_NVMe_SSD_1TB-top_PNr%C2%B00915.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "D-Kuru",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Samsung_980_PRO_PCIe_4.0_NVMe_SSD_1TB-top_PNr%C2%B00915.jpg"
       }
     },
     {
       "id": "6",
-      "name": "EVGA SuperNOVA 850W 80+ Gold",
-      "description": "Fully modular power supply with 80+ Gold certification. Reliable power delivery for high-end gaming systems with Japanese capacitors and 10-year warranty.",
-      "price": 149.99,
-      "image": "https://c1.neweggimages.com/productimage/nb1280/17-438-030-V01.jpg",
+      "name": "be quiet! Straight Power 12 1200W",
+      "description": "Fully modular 1200W ATX 3.0 power supply rated 80 PLUS Platinum, with a native 12VHPWR cable for current graphics cards.",
+      "price": 16599,
       "category": "Power Supplies",
-      "stock": 22,
-      "rating": 4.7,
-      "reviews": 298,
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
       "featured": false,
-      "tags": ["evga", "modular", "850w", "gold", "reliable"],
+      "tags": [
+        "be quiet!",
+        "straight power",
+        "1200w",
+        "platinum",
+        "atx 3.0"
+      ],
       "specifications": {
-        "Wattage": "850W",
-        "Efficiency": "80+ Gold (90%)",
-        "Modular": "Fully Modular",
-        "ATX": "24-pin",
-        "CPU": "2 x 8-pin (4+4)",
-        "PCIe": "6 x 8-pin (6+2)",
-        "SATA": "12 x SATA",
-        "Molex": "8 x Molex",
-        "Fan": "135mm Fluid Dynamic Bearing",
-        "Protection": "OVP, UVP, OCP, OPP, SCP",
-        "Warranty": "10 years",
-        "Cables": "All cables included"
+        "Wattage": "1200W",
+        "Efficiency": "80 PLUS Platinum",
+        "Modular": "Fully modular",
+        "Form Factor": "ATX",
+        "Standard": "ATX 3.0, 12VHPWR"
+      },
+      "launchPriceUsd": 289.9,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/Be_quiet%21_Straight_Power_12_1200W_20240405_HOF1650-HDR_RAW-Export_000105.png/960px-Be_quiet%21_Straight_Power_12_1200W_20240405_HOF1650-HDR_RAW-Export_000105.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "PantheraLeo1359531",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Be_quiet!_Straight_Power_12_1200W_20240405_HOF1650-HDR_RAW-Export_000105.png"
       }
     },
     {
       "id": "7",
-      "name": "NZXT H7 Elite Gaming Case",
-      "description": "Premium mid-tower case with tempered glass, RGB lighting, and excellent airflow. Perfect for showcasing your build with integrated RGB strips and smart device control.",
-      "price": 199.99,
-      "originalPrice": 229.99,
-      "image": "https://c1.neweggimages.com/productimage/nb1280/11-146-374-V01.jpg",
+      "name": "NZXT H500i Mid-Tower Case (White)",
+      "description": "Steel mid-tower with a tempered glass side panel and cable management channel, in white.",
+      "price": 5699,
       "category": "Cases",
-      "stock": 18,
-      "rating": 4.6,
-      "reviews": 178,
-      "featured": true,
-      "tags": ["nzxt", "tempered-glass", "rgb", "mid-tower", "airflow"],
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "nzxt",
+        "h500i",
+        "mid-tower",
+        "atx",
+        "white"
+      ],
       "specifications": {
         "Form Factor": "Mid-Tower ATX",
-        "Motherboard": "Mini-ITX, Micro-ATX, ATX",
-        "GPU Length": "425mm",
-        "CPU Cooler": "185mm",
-        "PSU": "200mm",
-        "Drive Bays": "2 x 3.5\", 4 x 2.5\"",
-        "Expansion Slots": "7",
-        "Front I/O": "USB 3.2 Gen 2 Type-C, 2x USB 3.0",
-        "RGB": "Integrated RGB strips",
-        "Fans": "3 x 140mm included",
-        "Radiator": "360mm front, 280mm top",
-        "Weight": "8.6 kg"
+        "Motherboard Support": "Mini-ITX, Micro-ATX, ATX",
+        "Max GPU Length": "381mm",
+        "Max CPU Cooler Height": "165mm",
+        "Color": "White"
+      },
+      "launchPriceUsd": 99.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/NZXT_H500i_case_empty_10-13-2018.jpg/960px-NZXT_H500i_case_empty_10-13-2018.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Saucy",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:NZXT_H500i_case_empty_10-13-2018.jpg"
       }
     },
     {
       "id": "8",
-      "name": "Noctua NH-D15 CPU Cooler",
-      "description": "Flagship dual-tower CPU cooler with superior cooling performance. Whisper-quiet operation with premium build quality and dual NF-A15 fans.",
-      "price": 109.99,
-      "image": "https://c1.neweggimages.com/productimage/nb1280/35-608-041-V01.jpg",
+      "name": "Noctua NH-D15",
+      "description": "Dual-tower air cooler with two 140mm fans. LGA1700 needs Noctua's free NM-i17xx mounting kit, included in newer boxes.",
+      "price": 5699,
       "category": "Cooling",
-      "stock": 28,
-      "rating": 4.9,
-      "reviews": 445,
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
       "featured": false,
-      "tags": ["noctua", "air-cooling", "quiet", "dual-tower", "premium"],
+      "tags": [
+        "noctua",
+        "nh-d15",
+        "air cooler",
+        "dual tower"
+      ],
       "specifications": {
-        "Type": "Dual Tower Air Cooler",
-        "Fans": "2 x NF-A15 PWM (140mm)",
-        "Speed": "300-1500 RPM",
-        "Noise Level": "24.6 dB(A)",
+        "Type": "Dual-tower air",
+        "Socket": "LGA1700, LGA1200, AM5, AM4",
         "Height": "165mm",
-        "Width": "150mm",
-        "Depth": "161mm",
-        "Weight": "1320g",
-        "Socket": "LGA1700, LGA1200, AM4, AM5",
-        "TDP": "220W+",
-        "Material": "Nickel-plated copper",
-        "Warranty": "6 years"
+        "Fans": "2x 140mm"
+      },
+      "launchPriceUsd": 99.9,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/NH-D15_with_classic_fans.jpg/960px-NH-D15_with_classic_fans.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Kaleb Kloppe",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:NH-D15_with_classic_fans.jpg"
       }
     },
     {
       "id": "9",
       "name": "Intel Core i7-13700K",
-      "description": "High-performance 16-core processor with hybrid architecture. Excellent for gaming and productivity tasks with P-cores and E-cores for optimal performance.",
-      "price": 419.99,
-      "originalPrice": 459.99,
-      "image": "https://c1.neweggimages.com/productimage/nb1280/19-118-414-V01.jpg",
+      "description": "16-core (8 performance + 8 efficient) 13th-gen processor for LGA1700. Works with DDR5 or DDR4 boards.",
+      "price": 23399,
       "category": "Processors",
-      "stock": 20,
-      "rating": 4.7,
-      "reviews": 312,
-      "featured": true,
-      "tags": ["intel", "i7", "16-core", "gaming", "productivity"],
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "intel",
+        "core i7",
+        "lga1700",
+        "raptor lake"
+      ],
       "specifications": {
+        "Socket": "LGA 1700",
         "Cores": "16 (8P + 8E)",
         "Threads": "24",
-        "P-Core Base": "3.4 GHz",
-        "P-Core Turbo": "5.4 GHz",
-        "E-Core Base": "2.5 GHz",
-        "E-Core Turbo": "4.2 GHz",
-        "Cache": "30MB Intel Smart Cache",
-        "Architecture": "Intel 7 (10nm)",
-        "Socket": "LGA 1700",
-        "Memory": "DDR5-5600, DDR4-3200",
-        "PCIe": "5.0 + 4.0",
+        "Base Clock": "3.4 GHz (P-core)",
+        "Boost Clock": "5.4 GHz",
+        "L3 Cache": "30MB",
         "TDP": "125W",
-        "Max Turbo Power": "253W"
+        "Max Turbo Power": "253W",
+        "Memory Support": "DDR5-5600, DDR4-3200",
+        "Integrated Graphics": "Intel UHD 770"
+      },
+      "launchPriceUsd": 409,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Intel_Core_i7_13700K.jpg/960px-Intel_Core_i7_13700K.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "4300streetcar",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Intel_Core_i7_13700K.jpg"
       }
     },
     {
       "id": "10",
-      "name": "AMD Radeon RX 7800 XT",
-      "description": "High-performance graphics card with 16GB GDDR6 memory. Excellent for 1440p gaming with ray tracing support and advanced RDNA 3 architecture.",
-      "price": 699.99,
-      "image": "https://c1.neweggimages.com/productimage/nb1280/14-126-544-V01.jpg",
+      "name": "Sapphire Radeon RX 7900 XTX 24GB",
+      "description": "Radeon RX 7900 XTX with 24GB GDDR6 for 4K gaming.",
+      "price": 56999,
       "category": "Graphics Cards",
-      "stock": 16,
-      "rating": 4.5,
-      "reviews": 234,
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
       "featured": false,
-      "tags": ["amd", "radeon", "16gb", "1440p", "ray-tracing"],
+      "tags": [
+        "amd",
+        "radeon",
+        "rx 7900 xtx",
+        "sapphire",
+        "4k"
+      ],
       "specifications": {
-        "Memory": "16GB GDDR6",
-        "Memory Bus": "256-bit",
-        "Game Clock": "2124 MHz",
-        "Boost Clock": "2430 MHz",
-        "Stream Processors": "3840",
-        "RT Accelerators": "60",
-        "Architecture": "RDNA 3",
-        "Process": "5nm + 6nm",
-        "Power Consumption": "263W",
-        "Recommended PSU": "700W",
-        "Outputs": "2x DisplayPort 2.1, 2x HDMI 2.1",
-        "DirectX": "12 Ultimate",
-        "Ray Tracing": "Yes"
+        "Memory": "24GB GDDR6",
+        "Power Consumption": "355W",
+        "Recommended PSU": "800W"
+      },
+      "launchPriceUsd": 999,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/Sapphire_AMD_Radeon_RX_7900_XTX.jpg/960px-Sapphire_AMD_Radeon_RX_7900_XTX.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Geni",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sapphire_AMD_Radeon_RX_7900_XTX.jpg"
       }
     },
     {
       "id": "11",
       "name": "MSI MPG B650 Carbon WiFi",
-      "description": "Premium AMD B650 motherboard with WiFi 6E, DDR5 support, and carbon fiber aesthetics. Perfect for Ryzen processors with advanced VRM design.",
-      "price": 279.99,
-      "image": "https://c1.neweggimages.com/productimage/nb1280/13-144-595-V01.jpg",
+      "description": "ATX B650 board for Ryzen 7000 and 9000 processors, with DDR5 memory, four M.2 slots and Wi-Fi 6E.",
+      "price": 18899,
       "category": "Motherboards",
-      "stock": 19,
-      "rating": 4.6,
-      "reviews": 156,
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
       "featured": false,
-      "tags": ["msi", "b650", "wifi6e", "carbon", "amd"],
+      "tags": [
+        "msi",
+        "b650",
+        "am5",
+        "ddr5",
+        "wifi"
+      ],
       "specifications": {
         "Socket": "AM5",
         "Chipset": "AMD B650",
-        "Memory": "DDR5-6000+ (OC)",
-        "Memory Slots": "4 x DIMM",
-        "Max Memory": "128GB",
-        "PCIe Slots": "1 x PCIe 5.0 x16, 1 x PCIe 4.0 x16",
-        "M.2 Slots": "3 x M.2",
-        "SATA": "4 x SATA 6Gb/s",
-        "USB": "USB 3.2 Gen 2, USB-C",
-        "Networking": "2.5Gb Ethernet, WiFi 6E",
-        "Audio": "Realtek ALC4080",
-        "VRM": "14+2+1 Phase"
-      }
+        "Form Factor": "ATX",
+        "Memory": "DDR5, 4 slots, up to 128GB",
+        "M.2 Slots": "4",
+        "Wireless": "Wi-Fi 6E, Bluetooth 5.3"
+      },
+      "launchPriceUsd": 329.99,
+      "image": ""
     },
     {
       "id": "12",
-      "name": "G.Skill Trident Z5 DDR5-6000 64GB",
-      "description": "Extreme performance DDR5 memory kit with RGB lighting. 64GB (2x32GB) for professional workloads and heavy multitasking with premium Samsung B-die.",
-      "price": 599.99,
-      "originalPrice": 699.99,
-      "image": "https://c1.neweggimages.com/productimage/nb1280/20-232-899-V01.jpg",
+      "name": "Corsair Vengeance RGB DDR5-6000 64GB (2 x 32GB) White",
+      "description": "Two 32GB DDR5 modules at 6000MT/s with RGB lighting, in white, for large projects and heavy multitasking.",
+      "price": 15699,
       "category": "Memory (RAM)",
-      "stock": 8,
-      "rating": 4.8,
-      "reviews": 89,
-      "featured": true,
-      "tags": ["gskill", "trident", "ddr5", "64gb", "rgb"],
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "corsair",
+        "vengeance",
+        "ddr5",
+        "rgb",
+        "64gb"
+      ],
       "specifications": {
-        "Capacity": "64GB (2 x 32GB)",
         "Type": "DDR5",
-        "Speed": "6000MHz",
-        "Timings": "CL30-38-38-96",
+        "Capacity": "64GB (2 x 32GB)",
+        "Speed": "6000MT/s",
+        "Form Factor": "DIMM 288-pin",
+        "Color": "White"
+      },
+      "launchPriceUsd": 274.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/2023_Pami%C4%99ci_Corsair_Vengeance_RGB.jpg/960px-2023_Pami%C4%99ci_Corsair_Vengeance_RGB.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Jacek Halicki",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2023_Pami%C4%99ci_Corsair_Vengeance_RGB.jpg"
+      }
+    },
+    {
+      "id": "13",
+      "name": "AMD Ryzen 9 9950X",
+      "description": "16-core, 32-thread Zen 5 processor for AM5. Built for heavy rendering, compiling and streaming workloads.",
+      "price": 36999,
+      "category": "Processors",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": true,
+      "tags": [
+        "amd",
+        "ryzen",
+        "am5",
+        "zen 5",
+        "16-core"
+      ],
+      "specifications": {
+        "Socket": "AM5",
+        "Cores": "16",
+        "Threads": "32",
+        "Base Clock": "4.3 GHz",
+        "Boost Clock": "5.7 GHz",
+        "L3 Cache": "64MB",
+        "TDP": "170W",
+        "Memory Support": "DDR5",
+        "Integrated Graphics": "AMD Radeon (2 CU)"
+      },
+      "launchPriceUsd": 649,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/AMD_Ryzen_9_9950X_2.jpg/960px-AMD_Ryzen_9_9950X_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "4300streetcar",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:AMD_Ryzen_9_9950X_2.jpg"
+      }
+    },
+    {
+      "id": "14",
+      "name": "AMD Ryzen 7 5800X3D",
+      "description": "8-core AM4 processor with 96MB of 3D V-Cache, a strong gaming upgrade for existing AM4 boards and DDR4 memory.",
+      "price": 25599,
+      "category": "Processors",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "amd",
+        "ryzen",
+        "am4",
+        "3d v-cache",
+        "gaming"
+      ],
+      "specifications": {
+        "Socket": "AM4",
+        "Cores": "8",
+        "Threads": "16",
+        "Base Clock": "3.4 GHz",
+        "Boost Clock": "4.5 GHz",
+        "L3 Cache": "96MB",
+        "TDP": "105W",
+        "Memory Support": "DDR4"
+      },
+      "launchPriceUsd": 449,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/AMD_Ryzen_7_5800X3D.jpg/960px-AMD_Ryzen_7_5800X3D.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Phiarc",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:AMD_Ryzen_7_5800X3D.jpg"
+      }
+    },
+    {
+      "id": "15",
+      "name": "AMD Ryzen 5 5600X",
+      "description": "6-core Zen 3 processor for AM4 with DDR4. Includes the AMD Wraith Stealth cooler.",
+      "price": 17099,
+      "category": "Processors",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "amd",
+        "ryzen",
+        "am4",
+        "6-core",
+        "budget"
+      ],
+      "specifications": {
+        "Socket": "AM4",
+        "Cores": "6",
+        "Threads": "12",
+        "Base Clock": "3.7 GHz",
+        "Boost Clock": "4.6 GHz",
+        "L3 Cache": "32MB",
+        "TDP": "65W",
+        "Memory Support": "DDR4"
+      },
+      "launchPriceUsd": 299,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/AMD_Ryzen_5_5600X.jpg/960px-AMD_Ryzen_5_5600X.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Phiarc",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:AMD_Ryzen_5_5600X.jpg"
+      }
+    },
+    {
+      "id": "16",
+      "name": "Intel Core i5-13600K",
+      "description": "14-core (6 performance + 8 efficient) 13th-gen processor for LGA1700, a balanced pick for gaming builds.",
+      "price": 18199,
+      "category": "Processors",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "intel",
+        "core i5",
+        "lga1700",
+        "raptor lake"
+      ],
+      "specifications": {
+        "Socket": "LGA 1700",
+        "Cores": "14 (6P + 8E)",
+        "Threads": "20",
+        "Base Clock": "3.5 GHz (P-core)",
+        "Boost Clock": "5.1 GHz",
+        "L3 Cache": "24MB",
+        "TDP": "125W",
+        "Max Turbo Power": "181W",
+        "Memory Support": "DDR5-5600, DDR4-3200",
+        "Integrated Graphics": "Intel UHD 770"
+      },
+      "launchPriceUsd": 319,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/Intel_Core_i5_13600K.jpg/960px-Intel_Core_i5_13600K.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "4300streetcar",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Intel_Core_i5_13600K.jpg"
+      }
+    },
+    {
+      "id": "17",
+      "name": "ASUS ROG Strix B450-F Gaming",
+      "description": "ATX B450 board for Ryzen AM4 processors with DDR4 memory and two M.2 slots.",
+      "price": 7999,
+      "category": "Motherboards",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "asus",
+        "rog strix",
+        "b450",
+        "am4",
+        "ddr4"
+      ],
+      "specifications": {
+        "Socket": "AM4",
+        "Chipset": "AMD B450",
+        "Form Factor": "ATX",
+        "Memory": "DDR4, 4 slots, up to 64GB",
+        "M.2 Slots": "2",
+        "Wireless": "None"
+      },
+      "launchPriceUsd": 139.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Asus_ROG_Strix_B450-F_Front_and_Back.jpg/960px-Asus_ROG_Strix_B450-F_Front_and_Back.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Oligopolism",
+        "license": "CC0",
+        "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Asus_ROG_Strix_B450-F_Front_and_Back.jpg"
+      }
+    },
+    {
+      "id": "18",
+      "name": "ASUS TUF B450-Plus Gaming",
+      "description": "ATX B450 board for AM4 processors with DDR4 memory, one M.2 slot and a reinforced PCIe slot.",
+      "price": 6599,
+      "category": "Motherboards",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "asus",
+        "tuf",
+        "b450",
+        "am4",
+        "ddr4"
+      ],
+      "specifications": {
+        "Socket": "AM4",
+        "Chipset": "AMD B450",
+        "Form Factor": "ATX",
+        "Memory": "DDR4, 4 slots, up to 64GB",
+        "M.2 Slots": "1",
+        "Wireless": "None"
+      },
+      "launchPriceUsd": 114.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/ASUS_TUF_B450-PLUS_GAMING_20181221.jpg/960px-ASUS_TUF_B450-PLUS_GAMING_20181221.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Tiia Monto",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:ASUS_TUF_B450-PLUS_GAMING_20181221.jpg"
+      }
+    },
+    {
+      "id": "19",
+      "name": "Gigabyte B550 UD AC",
+      "description": "ATX B550 board for AM4 with DDR4 memory, PCIe 4.0 graphics and M.2, and Wi-Fi 5.",
+      "price": 7499,
+      "category": "Motherboards",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "gigabyte",
+        "b550",
+        "am4",
+        "ddr4",
+        "wifi"
+      ],
+      "specifications": {
+        "Socket": "AM4",
+        "Chipset": "AMD B550",
+        "Form Factor": "ATX",
+        "Memory": "DDR4, 4 slots, up to 128GB",
+        "M.2 Slots": "2",
+        "Wireless": "Wi-Fi 5, Bluetooth 4.2"
+      },
+      "launchPriceUsd": 129.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3b/Gigabyte_B550_UD_AC-Y1_-_Front.png/960px-Gigabyte_B550_UD_AC-Y1_-_Front.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Nicolasfoster",
+        "license": "CC0",
+        "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gigabyte_B550_UD_AC-Y1_-_Front.png"
+      }
+    },
+    {
+      "id": "20",
+      "name": "ASUS TUF Gaming B650-Plus WiFi",
+      "description": "ATX B650 board for AM5 with DDR5 memory, three M.2 slots and Wi-Fi 6.",
+      "price": 13199,
+      "category": "Motherboards",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "asus",
+        "tuf",
+        "b650",
+        "am5",
+        "ddr5",
+        "wifi"
+      ],
+      "specifications": {
+        "Socket": "AM5",
+        "Chipset": "AMD B650",
+        "Form Factor": "ATX",
+        "Memory": "DDR5, 4 slots, up to 128GB",
+        "M.2 Slots": "3",
+        "Wireless": "Wi-Fi 6, Bluetooth 5.2"
+      },
+      "launchPriceUsd": 229.99,
+      "image": ""
+    },
+    {
+      "id": "21",
+      "name": "Gigabyte GeForce RTX 4070 AERO OC 12G",
+      "description": "White triple-fan RTX 4070 with 12GB GDDR6X, aimed at high-refresh 1440p gaming.",
+      "price": 37099,
+      "category": "Graphics Cards",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": true,
+      "tags": [
+        "nvidia",
+        "geforce",
+        "rtx 4070",
+        "gigabyte",
+        "aero",
+        "white"
+      ],
+      "specifications": {
+        "Memory": "12GB GDDR6X",
+        "Power Consumption": "200W",
+        "Recommended PSU": "650W",
+        "Outputs": "HDMI 2.1a, 3x DisplayPort 1.4a",
+        "Power Connector": "1x 16-pin 12VHPWR"
+      },
+      "launchPriceUsd": 649.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/2023_Gigabyte_GeForce_RTX_4070_Aero_OC_12GB_%286%29.jpg/960px-2023_Gigabyte_GeForce_RTX_4070_Aero_OC_12GB_%286%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Jacek Halicki",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2023_Gigabyte_GeForce_RTX_4070_Aero_OC_12GB_(6).jpg"
+      }
+    },
+    {
+      "id": "22",
+      "name": "ASUS Dual Radeon RX 6600 XT OC 8GB",
+      "description": "Dual-fan RX 6600 XT with 8GB GDDR6 for 1080p gaming, powered by a single 8-pin connector.",
+      "price": 22299,
+      "category": "Graphics Cards",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "amd",
+        "radeon",
+        "rx 6600 xt",
+        "asus",
+        "1080p"
+      ],
+      "specifications": {
+        "Memory": "8GB GDDR6",
+        "Power Consumption": "160W",
+        "Recommended PSU": "550W",
+        "Outputs": "HDMI 2.1, 3x DisplayPort 1.4a",
+        "Power Connector": "1x 8-pin"
+      },
+      "launchPriceUsd": 389.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Asus_AMD_RX_6600_XT_GPU._With_dual_fan._%2852000339764%29.jpg/960px-Asus_AMD_RX_6600_XT_GPU._With_dual_fan._%2852000339764%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Chi Ho Chan from Hong Kong",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Asus_AMD_RX_6600_XT_GPU._With_dual_fan._(52000339764).jpg"
+      }
+    },
+    {
+      "id": "23",
+      "name": "ZOTAC Gaming GeForce RTX 3060 12GB",
+      "description": "RTX 3060 with 12GB GDDR6, a compact card for 1080p gaming and light creative work.",
+      "price": 18899,
+      "category": "Graphics Cards",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "nvidia",
+        "geforce",
+        "rtx 3060",
+        "zotac",
+        "1080p"
+      ],
+      "specifications": {
+        "Memory": "12GB GDDR6",
+        "Power Consumption": "170W",
+        "Recommended PSU": "550W",
+        "Outputs": "HDMI 2.1, 3x DisplayPort 1.4a",
+        "Power Connector": "1x 8-pin"
+      },
+      "launchPriceUsd": 329.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/Zotac_GeForce_RTX_3060_12GB_VRAM_LHR_video_card.jpg/960px-Zotac_GeForce_RTX_3060_12GB_VRAM_LHR_video_card.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Qurren",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zotac_GeForce_RTX_3060_12GB_VRAM_LHR_video_card.jpg"
+      }
+    },
+    {
+      "id": "24",
+      "name": "Corsair Vengeance LPX DDR4-2666 16GB (2 x 8GB)",
+      "description": "Two 8GB low-profile DDR4 modules at 2666MT/s CL16. Fits under large air coolers on AM4 and DDR4 boards.",
+      "price": 3499,
+      "category": "Memory (RAM)",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "corsair",
+        "vengeance lpx",
+        "ddr4",
+        "16gb"
+      ],
+      "specifications": {
+        "Type": "DDR4",
+        "Capacity": "16GB (2 x 8GB)",
+        "Speed": "2666MT/s",
+        "Latency": "CL16",
+        "Voltage": "1.2V",
+        "Form Factor": "DIMM 288-pin",
+        "Color": "Black"
+      },
+      "launchPriceUsd": 59.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/94/2%2A8Go_DDR4_Corsair_-_2018-05-08.jpg/960px-2%2A8Go_DDR4_Corsair_-_2018-05-08.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Bretwa",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2*8Go_DDR4_Corsair_-_2018-05-08.jpg"
+      }
+    },
+    {
+      "id": "25",
+      "name": "Corsair Vengeance LPX DDR4-3200 32GB (2 x 16GB)",
+      "description": "Two 16GB low-profile DDR4 modules at 3200MT/s CL16, a common pairing for Ryzen AM4 builds.",
+      "price": 6299,
+      "category": "Memory (RAM)",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "corsair",
+        "vengeance lpx",
+        "ddr4",
+        "32gb"
+      ],
+      "specifications": {
+        "Type": "DDR4",
+        "Capacity": "32GB (2 x 16GB)",
+        "Speed": "3200MT/s",
+        "Latency": "CL16",
         "Voltage": "1.35V",
-        "RGB": "Trident Z5 RGB lighting",
-        "Heat Spreader": "Aluminum",
-        "Intel XMP": "3.0",
-        "AMD EXPO": "Yes",
-        "IC": "Samsung B-die",
-        "Warranty": "Lifetime",
-        "Form Factor": "DIMM 288-pin"
+        "Form Factor": "DIMM 288-pin",
+        "Color": "Black"
+      },
+      "launchPriceUsd": 109.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/94/2%2A8Go_DDR4_Corsair_-_2018-05-08.jpg/960px-2%2A8Go_DDR4_Corsair_-_2018-05-08.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Bretwa",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2*8Go_DDR4_Corsair_-_2018-05-08.jpg"
+      }
+    },
+    {
+      "id": "26",
+      "name": "Samsung 990 PRO 4TB NVMe SSD",
+      "description": "High-capacity PCIe 4.0 M.2 SSD with up to 7,450MB/s reads for game libraries and video projects.",
+      "price": 19699,
+      "category": "Storage",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": true,
+      "tags": [
+        "samsung",
+        "990 pro",
+        "nvme",
+        "pcie 4.0",
+        "m.2",
+        "4tb"
+      ],
+      "specifications": {
+        "Capacity": "4TB",
+        "Interface": "PCIe 4.0 x4 NVMe",
+        "Form Factor": "M.2 2280",
+        "Sequential Read": "7,450MB/s",
+        "Sequential Write": "6,900MB/s",
+        "Endurance": "2,400TBW"
+      },
+      "launchPriceUsd": 344.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Samsung_MZ-V9P4T0_%28Samsung_990_PRO_4TB%29_20250226_002.png/960px-Samsung_MZ-V9P4T0_%28Samsung_990_PRO_4TB%29_20250226_002.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "PantheraLeo1359531",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Samsung_MZ-V9P4T0_(Samsung_990_PRO_4TB)_20250226_002.png"
+      }
+    },
+    {
+      "id": "27",
+      "name": "Crucial P3 Plus 2TB NVMe SSD",
+      "description": "PCIe 4.0 M.2 SSD with up to 5,000MB/s reads at a lower price per gigabyte.",
+      "price": 9199,
+      "category": "Storage",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "crucial",
+        "p3 plus",
+        "nvme",
+        "pcie 4.0",
+        "m.2"
+      ],
+      "specifications": {
+        "Capacity": "2TB",
+        "Interface": "PCIe 4.0 x4 NVMe",
+        "Form Factor": "M.2 2280",
+        "Sequential Read": "5,000MB/s",
+        "Sequential Write": "4,200MB/s",
+        "Endurance": "440TBW"
+      },
+      "launchPriceUsd": 159.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Crucial_CT20000P3PSSD8_20240302_004_OK_corr02_Kopie.jpg/960px-Crucial_CT20000P3PSSD8_20240302_004_OK_corr02_Kopie.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "PantheraLeo1359531",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Crucial_CT20000P3PSSD8_20240302_004_OK_corr02_Kopie.jpg"
+      }
+    },
+    {
+      "id": "28",
+      "name": "Kingston NV2 2TB NVMe SSD",
+      "description": "Entry-level PCIe 4.0 M.2 SSD with up to 3,500MB/s reads for boot drives and game storage.",
+      "price": 7999,
+      "category": "Storage",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "kingston",
+        "nv2",
+        "nvme",
+        "pcie 4.0",
+        "m.2"
+      ],
+      "specifications": {
+        "Capacity": "2TB",
+        "Interface": "PCIe 4.0 x4 NVMe",
+        "Form Factor": "M.2 2280",
+        "Sequential Read": "3,500MB/s",
+        "Sequential Write": "2,800MB/s",
+        "Endurance": "640TBW"
+      },
+      "launchPriceUsd": 139.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/2023_Dysk_SSD_Kingston_NV2_2TB.jpg/960px-2023_Dysk_SSD_Kingston_NV2_2TB.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Jacek Halicki",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2023_Dysk_SSD_Kingston_NV2_2TB.jpg"
+      }
+    },
+    {
+      "id": "29",
+      "name": "Crucial MX500 1TB SATA SSD",
+      "description": "2.5-inch SATA SSD, a straightforward upgrade for older systems without M.2 slots.",
+      "price": 7699,
+      "category": "Storage",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "crucial",
+        "mx500",
+        "sata",
+        "ssd",
+        "2.5-inch"
+      ],
+      "specifications": {
+        "Capacity": "1TB",
+        "Interface": "SATA 6Gb/s",
+        "Form Factor": "2.5-inch",
+        "Sequential Read": "560MB/s",
+        "Sequential Write": "510MB/s",
+        "Endurance": "360TBW"
+      },
+      "launchPriceUsd": 134.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/CT1000MX500SSD1_rear_20210220.jpg/960px-CT1000MX500SSD1_rear_20210220.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Solomon203",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:CT1000MX500SSD1_rear_20210220.jpg"
+      }
+    },
+    {
+      "id": "30",
+      "name": "Seagate BarraCuda 2TB 3.5-inch HDD",
+      "description": "7200RPM 3.5-inch hard drive for bulk storage, backups and media libraries.",
+      "price": 3799,
+      "category": "Storage",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "seagate",
+        "barracuda",
+        "hdd",
+        "sata",
+        "7200rpm"
+      ],
+      "specifications": {
+        "Capacity": "2TB",
+        "Interface": "SATA 6Gb/s",
+        "Form Factor": "3.5-inch",
+        "Spindle Speed": "7200RPM",
+        "Cache": "256MB"
+      },
+      "launchPriceUsd": 64.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Seagate_BarraCuda_Compute_2TB_3.5-inch_SATA_HDD_-_top_view.jpg/960px-Seagate_BarraCuda_Compute_2TB_3.5-inch_SATA_HDD_-_top_view.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "ITEagle Europe - Sebastiaan Broekhoven",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Seagate_BarraCuda_Compute_2TB_3.5-inch_SATA_HDD_-_top_view.jpg"
+      }
+    },
+    {
+      "id": "31",
+      "name": "Corsair CX600M",
+      "description": "Semi-modular 600W power supply rated 80 PLUS Bronze for mid-range builds.",
+      "price": 4299,
+      "category": "Power Supplies",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "corsair",
+        "cx",
+        "600w",
+        "bronze"
+      ],
+      "specifications": {
+        "Wattage": "600W",
+        "Efficiency": "80 PLUS Bronze",
+        "Modular": "Semi-modular",
+        "Form Factor": "ATX"
+      },
+      "launchPriceUsd": 74.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Corsair_CX600M_2_2019-05-06.jpg/960px-Corsair_CX600M_2_2019-05-06.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "FASTILY",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Corsair_CX600M_2_2019-05-06.jpg"
+      }
+    },
+    {
+      "id": "32",
+      "name": "Corsair VS650",
+      "description": "Non-modular 650W power supply rated 80 PLUS White for budget builds.",
+      "price": 3499,
+      "category": "Power Supplies",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "corsair",
+        "vs",
+        "650w"
+      ],
+      "specifications": {
+        "Wattage": "650W",
+        "Efficiency": "80 PLUS White",
+        "Modular": "Non-modular",
+        "Form Factor": "ATX"
+      },
+      "launchPriceUsd": 59.99,
+      "image": "https://upload.wikimedia.org/wikipedia/commons/8/82/Corsair_VS650_%28CP-9020172%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "imageCredit": {
+        "author": "Tey.eur",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Corsair_VS650_(CP-9020172).jpg"
+      }
+    },
+    {
+      "id": "33",
+      "name": "Lian Li O11 Dynamic EVO XL (der8auer Edition)",
+      "description": "Full tower with dual-chamber layout and room for three 420mm radiators, a popular choice for custom water cooling.",
+      "price": 13199,
+      "category": "Cases",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": true,
+      "tags": [
+        "lian li",
+        "o11 dynamic",
+        "full tower",
+        "e-atx"
+      ],
+      "specifications": {
+        "Form Factor": "Full Tower",
+        "Motherboard Support": "Mini-ITX to E-ATX",
+        "Max GPU Length": "460mm",
+        "Max CPU Cooler Height": "167mm"
+      },
+      "launchPriceUsd": 229.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/PC-Geh%C3%A4use_%22Lian_Li_O11_Dynamic_Evo_XL%22_%28der8auer-Edition%29_20240407_HOF2004-HDR_RAW-Export_000217.png/960px-PC-Geh%C3%A4use_%22Lian_Li_O11_Dynamic_Evo_XL%22_%28der8auer-Edition%29_20240407_HOF2004-HDR_RAW-Export_000217.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "PantheraLeo1359531",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:PC-Geh%C3%A4use_%22Lian_Li_O11_Dynamic_Evo_XL%22_(der8auer-Edition)_20240407_HOF2004-HDR_RAW-Export_000217.png"
+      }
+    },
+    {
+      "id": "34",
+      "name": "Fractal Design Focus G (Blue)",
+      "description": "Budget mid-tower with a large window and two front fans included, in blue.",
+      "price": 3499,
+      "category": "Cases",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "fractal design",
+        "focus g",
+        "mid-tower",
+        "atx",
+        "budget"
+      ],
+      "specifications": {
+        "Form Factor": "Mid-Tower ATX",
+        "Motherboard Support": "Mini-ITX, Micro-ATX, ATX",
+        "Max GPU Length": "380mm",
+        "Max CPU Cooler Height": "165mm",
+        "Color": "Blue"
+      },
+      "launchPriceUsd": 59.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Fractal_Design_Focus_G.jpg/960px-Fractal_Design_Focus_G.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Tiia Monto",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fractal_Design_Focus_G.jpg"
+      }
+    },
+    {
+      "id": "35",
+      "name": "Cooler Master Cosmos C700P Black Edition",
+      "description": "Full tower with a curved tempered glass panel, carry handles and an invertible layout.",
+      "price": 17099,
+      "category": "Cases",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "cooler master",
+        "cosmos",
+        "full tower",
+        "e-atx"
+      ],
+      "specifications": {
+        "Form Factor": "Full Tower",
+        "Motherboard Support": "Mini-ITX to E-ATX",
+        "Max GPU Length": "490mm",
+        "Max CPU Cooler Height": "198mm",
+        "Color": "Black"
+      },
+      "launchPriceUsd": 299.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0a/Cooler_Master_Cosmos_C700P_Black_Edition_20190601a.jpg/960px-Cooler_Master_Cosmos_C700P_Black_Edition_20190601a.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Solomon203",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cooler_Master_Cosmos_C700P_Black_Edition_20190601a.jpg"
+      }
+    },
+    {
+      "id": "36",
+      "name": "Noctua NH-D15 chromax.black",
+      "description": "All-black version of the NH-D15 dual-tower cooler with two 140mm fans.",
+      "price": 6299,
+      "category": "Cooling",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": true,
+      "tags": [
+        "noctua",
+        "nh-d15",
+        "chromax",
+        "air cooler",
+        "black"
+      ],
+      "specifications": {
+        "Type": "Dual-tower air",
+        "Socket": "LGA1700, LGA1200, AM5, AM4",
+        "Height": "165mm",
+        "Fans": "2x 140mm"
+      },
+      "launchPriceUsd": 109.9,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/NH-D15_with_black_fans.jpg/960px-NH-D15_with_black_fans.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Kaleb Kloppe",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:NH-D15_with_black_fans.jpg"
+      }
+    },
+    {
+      "id": "37",
+      "name": "Cooler Master Hyper 212 EVO",
+      "description": "Single-tower air cooler with one 120mm fan. Does not include an LGA1700 bracket.",
+      "price": 1999,
+      "category": "Cooling",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "cooler master",
+        "hyper 212",
+        "air cooler",
+        "budget"
+      ],
+      "specifications": {
+        "Type": "Single-tower air",
+        "Socket": "AM5, AM4, LGA1200",
+        "Height": "159mm",
+        "Fans": "1x 120mm"
+      },
+      "launchPriceUsd": 34.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Cooler_Master_Hyper_212_EVO_-_CPU_Cooler_with_120mm_PWM_Fan_%28RR-212E-20PK-R2%29.jpg/960px-Cooler_Master_Hyper_212_EVO_-_CPU_Cooler_with_120mm_PWM_Fan_%28RR-212E-20PK-R2%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "osman gucel",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cooler_Master_Hyper_212_EVO_-_CPU_Cooler_with_120mm_PWM_Fan_(RR-212E-20PK-R2).jpg"
+      }
+    },
+    {
+      "id": "38",
+      "name": "Corsair H100i 240mm Liquid CPU Cooler",
+      "description": "All-in-one liquid cooler with a 240mm radiator and two 120mm fans.",
+      "price": 9199,
+      "category": "Cooling",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "corsair",
+        "h100i",
+        "aio",
+        "liquid cooler",
+        "240mm"
+      ],
+      "specifications": {
+        "Type": "240mm liquid (AIO)",
+        "Socket": "LGA1700, LGA1200, AM5, AM4",
+        "Radiator": "240mm",
+        "Fans": "2x 120mm"
+      },
+      "launchPriceUsd": 159.99,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Corsair_H100i_240mm_CPU_cooler._On_MSI_Z590_Torpedo_motherboard._%2851987363353%29.jpg/960px-Corsair_H100i_240mm_CPU_cooler._On_MSI_Z590_Torpedo_motherboard._%2851987363353%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Chi Ho Chan from Hong Kong",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Corsair_H100i_240mm_CPU_cooler._On_MSI_Z590_Torpedo_motherboard._(51987363353).jpg"
+      }
+    },
+    {
+      "id": "39",
+      "name": "be quiet! Dark Rock TF 2",
+      "description": "Top-flow air cooler that also blows air across the board's power circuitry and memory.",
+      "price": 5499,
+      "category": "Cooling",
+      "stock": 10,
+      "rating": 0,
+      "reviews": 0,
+      "featured": false,
+      "tags": [
+        "be quiet!",
+        "dark rock",
+        "top-flow",
+        "air cooler"
+      ],
+      "specifications": {
+        "Type": "Top-flow air",
+        "Socket": "LGA1700, LGA1200, AM5, AM4",
+        "Height": "163mm",
+        "Fans": "1x 135mm"
+      },
+      "launchPriceUsd": 94.9,
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/2023_Ch%C5%82odzenie_procesora_be_quiet%21_Dark_Rock_Top_Flow_%283%29.jpg/960px-2023_Ch%C5%82odzenie_procesora_be_quiet%21_Dark_Rock_Top_Flow_%283%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageCredit": {
+        "author": "Jacek Halicki",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2023_Ch%C5%82odzenie_procesora_be_quiet!_Dark_Rock_Top_Flow_(3).jpg"
       }
     }
   ]
-} 
+}

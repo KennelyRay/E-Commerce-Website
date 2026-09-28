@@ -13,6 +13,15 @@ export interface Product {
   featured?: boolean;
   tags: string[];
   specifications?: Record<string, string | undefined>;
+  /** Present when the photo's licence requires a credit line. */
+  imageCredit?: ImageCredit;
+}
+
+export interface ImageCredit {
+  author: string;
+  license: string;
+  licenseUrl?: string;
+  sourceUrl: string;
 }
 
 export interface CartItem {

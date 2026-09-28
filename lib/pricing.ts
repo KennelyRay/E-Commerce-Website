@@ -1,4 +1,4 @@
-export const FREE_SHIPPING_THRESHOLD = 2500;
+export const FREE_SHIPPING_THRESHOLD = 5000;
 export const SHIPPING_FEE = 150;
 export const VAT_RATE = 0.12;
 

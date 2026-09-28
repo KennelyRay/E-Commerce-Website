@@ -2,7 +2,7 @@ import { Client } from 'pg';
 import productsData from '../data/products.json';
 import { hashPassword } from '../functions/lib/password';
 
-type SeedProduct = (typeof productsData.products)[number] & { images?: string[] };
+type SeedProduct = (typeof productsData.products)[number] & { images?: string[]; originalPrice?: number; imageCredit?: object };
 
 const connectionString = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL;
 const adminPassword = process.env.ADMIN_PASSWORD;
@@ -22,8 +22,8 @@ async function main() {
     let inserted = 0;
     for (const product of productsData.products as SeedProduct[]) {
       const result = await client.query(
-        `INSERT INTO products (id, name, description, price, original_price, image, images, category, stock, rating, reviews, featured, tags, specifications)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+        `INSERT INTO products (id, name, description, price, original_price, image, images, category, stock, rating, reviews, featured, tags, specifications, image_credit)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
          ON CONFLICT (id) DO NOTHING`,
         [
           product.id,
@@ -40,6 +40,7 @@ async function main() {
           product.featured ?? false,
           JSON.stringify(product.tags),
           JSON.stringify(product.specifications ?? {}),
+          product.imageCredit ? JSON.stringify(product.imageCredit) : null,
         ],
       );
       inserted += result.rowCount ?? 0;

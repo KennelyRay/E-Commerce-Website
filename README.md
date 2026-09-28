@@ -15,6 +15,12 @@ The browser talks to the API with a bearer token. Checkout sends only product id
 
 The cart and the one saved PC build stay in the browser. Accounts, orders, stock and prices live in Neon.
 
+## Catalog
+
+`data/products.json` holds 39 real parts. Prices are launch MSRPs converted at PHP 57 per USD (the `launchPriceUsd` field keeps the source figure); stock is a placeholder of 10 per part. Set real prices and stock in Admin > Inventory.
+
+Product photos come from Wikimedia Commons under CC0, CC BY or CC BY-SA licences. These licences require a credit, so each product stores `imageCredit` (author, licence, source) and the product page shows it under the photo. Keep the credit if you reuse a photo elsewhere. Uploading your own photo in the admin removes the credit automatically.
+
 ## Run it locally
 
 Needs Node 20 or newer.
@@ -45,10 +51,11 @@ Photo uploads in the admin need Object Storage credentials, which Neon injects o
 | `npm run api:dev` | API on Node against the database in `.env` |
 | `npm run db:migrate` | Applies `db/schema.sql` |
 | `npm run db:seed` | Inserts missing products and the Admin account; never overwrites edits |
+| `npm run catalog:sync -- --upload <apiUrl>` | Replaces the catalog with `data/products.json` (overwrites edits) and copies credited photos into the bucket |
 | `npm run build:static` | Optional static export into `out/` (for static hosts such as GitHub Pages) |
 
 ## Not built yet
 
 - Online payment. Checkout records the order and reserves stock without charging; the page says so. The hand-off point is marked `TODO` in `app/checkout/page.tsx`.
 - Privacy Policy and Terms of Service pages.
-- Product photos for the seeded catalog: most image URLs in `data/products.json` no longer resolve. Upload replacements from Admin > Inventory.
+- Photos for the two AM5 boards (MSI MPG B650 Carbon WiFi, ASUS TUF Gaming B650-Plus WiFi). No freely licensed photo exists; upload your own from Admin > Inventory.

@@ -9,13 +9,13 @@ export type CategoryInfo = {
 // Only categories the catalog actually stocks. Order follows a typical build sequence.
 export const CATEGORY_INFO: CategoryInfo[] = [
   { name: 'Processors', slug: 'processors', blurb: 'AMD and Intel desktop CPUs' },
-  { name: 'Motherboards', slug: 'motherboards', blurb: 'AM5 and LGA1700 boards' },
-  { name: 'Memory (RAM)', slug: 'memory', blurb: 'DDR5 desktop kits' },
+  { name: 'Motherboards', slug: 'motherboards', blurb: 'AM5, AM4 and LGA1700 boards' },
+  { name: 'Memory (RAM)', slug: 'memory', blurb: 'DDR5 and DDR4 desktop kits' },
   { name: 'Graphics Cards', slug: 'graphics-cards', blurb: 'GeForce and Radeon GPUs' },
-  { name: 'Storage', slug: 'storage', blurb: 'NVMe solid state drives' },
+  { name: 'Storage', slug: 'storage', blurb: 'NVMe and SATA SSDs, hard drives' },
   { name: 'Power Supplies', slug: 'power-supplies', blurb: 'ATX power supplies' },
-  { name: 'Cases', slug: 'cases', blurb: 'Mid-tower chassis' },
-  { name: 'Cooling', slug: 'cooling', blurb: 'CPU coolers' },
+  { name: 'Cases', slug: 'cases', blurb: 'Mid and full towers' },
+  { name: 'Cooling', slug: 'cooling', blurb: 'Air and liquid CPU coolers' },
 ];
 
 export type CategorySummary = CategoryInfo & {

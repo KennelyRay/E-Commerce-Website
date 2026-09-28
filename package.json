@@ -12,7 +12,8 @@
     "db:migrate": "tsx --env-file=.env scripts/db-migrate.ts",
     "db:seed": "tsx --env-file=.env scripts/db-seed.ts",
     "build:static": "cross-env STATIC_EXPORT=true next build",
-    "serve": "npx serve out"
+    "serve": "npx serve out",
+    "catalog:sync": "tsx --env-file=.env scripts/catalog-sync.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1141.0",
